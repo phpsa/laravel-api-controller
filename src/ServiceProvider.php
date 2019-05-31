@@ -1,6 +1,7 @@
 <?php
 
 namespace Phpsa\LaravelApiController;
+use Phpsa\LaravelApiController\Generator\ApiMakeCommand;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
