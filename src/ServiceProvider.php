@@ -18,10 +18,13 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->mergeConfigFrom(
             self::CONFIG_PATH,
             'laravel-api-controller'
-        );
+		);
 
-        $this->app->bind('laravel-api-controller', function () {
-            return new LaravelApiController();
+		$this->app->singleton('command.api.make', function ($app) {
+            return new ApiMakeCommand($app['files']);
         });
+
+		$this->commands('command.api.make');
+
     }
 }

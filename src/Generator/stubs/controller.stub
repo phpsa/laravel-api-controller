@@ -1,0 +1,28 @@
+<?php namespace {{controller.namespace}};
+
+use Omnihost\ApiController\Http\Api\Controller;
+use {{model.fullName}};
+use {{repository.fullName}};
+
+class {{controller.name}} extends Controller
+{
+    /**
+     * Eloquent model.
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    protected function model()
+    {
+        return new {{model.name}};
+    }
+
+    /**
+     * Repository for the current model.
+     *
+     * @return App\Repositories\BaseRepository
+     */
+    protected function repository()
+    {
+        return new {{repository.name}};
+    }
+}
