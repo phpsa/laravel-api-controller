@@ -1,6 +1,6 @@
 {
   "name": "phpsa/laravel-api-controller",
-  "description": "A laravel api controller",
+  "description": "A laravel api base controller with basic CRUD mapped to the model ",
   "license": "MIT",
   "keywords": [
     "laravel",
@@ -10,8 +10,8 @@
   "type": "library",
   "authors": [
     {
-      "name": "",
-      "email": ""
+      "name": "Craig G Smith",
+      "email": "vxdhost@gmail.com"
     }
   ],
   "require": {
