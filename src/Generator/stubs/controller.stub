@@ -1,6 +1,6 @@
 <?php namespace {{controller.namespace}};
 
-use Omnihost\ApiController\Http\Api\Controller;
+use Phpsa\LaravelApiController\Http\Api\Controller;
 use {{model.fullName}};
 use {{repository.fullName}};
 

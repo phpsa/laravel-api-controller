@@ -15,7 +15,7 @@ return [
     /*
      * Relative path from the app directory to the models directory. Typically it's either 'Models' or ''.
      */
-    'models_base_dir'  => '',
+    'models_base_dir'  => 'Models',
     /*
      * Relative path from the base directory to the api controller stub.
      */

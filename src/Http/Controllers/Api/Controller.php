@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Validator;
 use Phpsa\LaravelApiController\UriParser;
 use \Illuminate\Http\Response as Res;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 abstract class Controller extends LaravelController
 {
@@ -161,8 +163,17 @@ abstract class Controller extends LaravelController
 
 	protected function _parseWhere(){
 		$where = $this->uriParser->whereParameters();
+		$columns = Schema::getColumnListing($this->model->getTable());
 		if ($where) {
             foreach ($where as $whr) {
+				if(strpos($whr['key'], '.') > 0){
+					//test if exists in the withs, if not continue out to exclude from the qbuild
+					//continue;
+				}else{
+					if(!in_array($whr['key'], $columns)){
+						continue;
+					}
+				}
                 switch ($whr['type']) {
                     case "In":
                         if (!empty($whr['values'])) {
@@ -183,6 +194,26 @@ abstract class Controller extends LaravelController
         }
 	}
 
+	public function _parseFields(){
+		$columns = Schema::getColumnListing($this->model->getTable());
+		$fields = $this->request->has('fields') && !empty($this->request->input('fields')) ? explode(",", $this->request->input('fields')) : $this->fields;
+		foreach($fields as $field){
+			if($field === '*'){
+				continue;
+			}
+			if( strpos($field, ".") > 0){
+				//check if mapped field exists
+				//@todo
+				continue;
+			}
+			if(!in_array($field, $columns)){
+				throw new UnknownColumnException($field  . " does not exist in table");
+			}
+		}
+
+		return $fields;
+	}
+
 	/**
 	* Display a listing of the resource.
 	* GET /api/{resource}.
@@ -194,19 +225,23 @@ abstract class Controller extends LaravelController
 		$this->_parseWith();
 		$this->_parseSort();
 		$this->_parseWhere();
+		$fields = $this->_parseFields();
 
-		$fields = empty($this->request->input('fields')) ? $this->fields : explode(",", $this->request->input('fields'));
 
-		$limit = $this->request->has('limit') ? $this->request->input('limit') : $this->defaultLimit;
+		$limit = $this->request->has('limit') ? intval($this->request->input('limit')) : $this->defaultLimit;
 		if($this->maximumLimit && ( $limit > $this->maximumLimit || !$limit ) ){
 			$limit = $this->maximumLimit;
 		}
 
-		return $limit ? $this->respondWithPagination(
-			$this->respository->paginate($limit, $fields)
-		) : $this->respondWithMany(
-			$this->repository->get($fields)
-		);
+		//try {
+			return $limit ? $this->respondWithPagination(
+				$this->repository->paginate($limit, $fields)
+			) : $this->respondWithMany(
+				$this->repository->get($fields)
+			);
+	//	}catch(\Exception $e){
+	//		return $this->errorNotFound($e->getMessage());
+	//	}
 
    }
 
@@ -236,7 +271,11 @@ abstract class Controller extends LaravelController
 
 		$this->unguardIfNeeded();
 
-		$item = $this->model->create($columns);
+		try {
+			$item = $this->model->create($insert);
+		}catch(\Exception $e){
+			return $this->errorWrongArgs($e->getMessage());
+		}
 
         return $this->respondCreated($item->id);
 	}
@@ -253,12 +292,13 @@ abstract class Controller extends LaravelController
     {
 		$this->_parseWith();
 		$fields = empty($this->request->input('fields')) ? $this->fields : explode(",", $this->request->input('fields'));
-		$item = $this->repository->getById($id);
 
-        if (!$item) {
-            return $this->errorNotFound();
-        }
-        return $this->respondWithItem($item);
+		try {
+			$item = $this->repository->getById($id);
+		}catch(\Exception $e){
+			return $this->errorNotFound("Record not found");
+		}
+        return $this->respondWithOne($item);
 	}
 
 	  /**
@@ -295,7 +335,7 @@ abstract class Controller extends LaravelController
         $this->unguardIfNeeded();
         $item->fill($fields);
         $item->save();
-        return $this->respondWithItem($item);
+        return $this->respondWithOne($item);
 	}
 
 	/**
@@ -366,7 +406,7 @@ abstract class Controller extends LaravelController
 		return $this->respond([
 			'status'      					=> 'success',
 			'status_code' 					=> Res::HTTP_OK,
-            $this->resourceKeySingular      => $data,
+            $this->resourceKeySingular      => $item,
         ]);
 	}
 
@@ -384,7 +424,7 @@ abstract class Controller extends LaravelController
         return $this->respond([
             'status'      					=> 'success',
             'status_code' 					=> Res::HTTP_OK,
-            $this->resourceKeyPlural        => $data,
+            $this->resourceKeyPlural        => $items,
         ]);
     }
 
@@ -418,11 +458,11 @@ abstract class Controller extends LaravelController
     }
 
     /**
-     * @param Paginator $paginate
+     * @param LengthAwarePaginator $paginate
      * @param $data
      * @return mixed
      */
-    protected function respondWithPagination(Paginator $paginator)
+    protected function respondWithPagination(LengthAwarePaginator $paginator)
     {
 
         return $this->respond([
