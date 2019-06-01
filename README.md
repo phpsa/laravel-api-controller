@@ -49,3 +49,4 @@ instead of using the issue tracker.
 - [All contributors](https://github.com/phpsa/laravel-api-controller/graphs/contributors)
 
 [badge_laravel]:   https://img.shields.io/badge/Laravel-5.8%20to%205.8-orange.svg?style=flat-square
+[badge_issues]:    https://img.shields.io/github/issues/ARCANEDEV/Support.svg?style=flat-square
