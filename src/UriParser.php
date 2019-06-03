@@ -82,7 +82,7 @@ class UriParser
     private function setQueryUri($uri)
     {
         $explode        = explode('?', $uri);
-        $this->queryUri = (isset($explode[1])) ? rawurldecode($explode[1]) : null;
+        $this->queryUri = (isset($explode[1])) ? urldecode($explode[1]) : null;
     }
 
     private function setQueryParameters($queryUri)

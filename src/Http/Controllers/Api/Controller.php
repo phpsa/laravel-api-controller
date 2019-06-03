@@ -486,9 +486,13 @@ abstract class Controller extends LaravelController
      *
      * @return mixed
      */
-    protected function respond($data, $headers = [])
+    protected function respond($data, $code = null, $headers = [])
     {
-        return response()->json($data, $this->getStatusCode(), $headers);
+        return response()->json(
+			$data,
+			$code ? $code : $this->getStatusCode(),
+			$headers
+		);
     }
 
 	/**
