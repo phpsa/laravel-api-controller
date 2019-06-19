@@ -8,14 +8,18 @@ class UriParser
 
 	/**
 	 * Pattern match
-	 * != not equal
-	 * = Equal
-	 * <= smaller or equal
-	 * < smaller
-	 * >= greater or equal
-	 * > greater
+	* '=' =>  Equals
+	* '>' =>  Greater than
+	* '<' =>  Less than
+	* '>=' =>  Greater or equal
+	* '<=' =>  Less or equal
+	* '<>' =>  Where not
+	* '!=' =>  Where not
+	* '~' =>  Contains (LIKE with wildcard on both sides)
+	* '^' =>  Begins with
+	* '$' => Ends with
 	 */
-    const PATTERN = '/!=|=|<=|<|>=|>/';
+    const PATTERN = '/!=|=|~|\^|\$|<>|<=|<|>=|>/';
 
     const ARRAY_QUERY_PATTERN = '/(.*)\[\]/';
 
@@ -58,9 +62,18 @@ class UriParser
 
     public function queryParameter($key)
     {
-        $keys            = array_pluck($this->queryParameters, 'key');
-        $queryParameters = array_combine($keys, $this->queryParameters);
-        return $queryParameters[$key];
+		$keys            = array_pluck($this->queryParameters, 'key');
+		$counts = array_count_values($keys);
+		if($counts[$key] === 1){
+			$idx = array_search($key, $keys);
+			return $this->queryParameters[$idx];
+		}
+
+		$return = [];
+		foreach(array_keys($keys, $key) as $k){
+			$return[] = $this->queryParameters[$k];
+		}
+        return $return;
     }
 
     public function constantParameters()
@@ -105,14 +118,17 @@ class UriParser
 
     private function appendQueryParameterAsBasicWhere($parameter)
     {
-        preg_match(self::PATTERN, $parameter, $matches);
-        $operator          = $matches[0];
+		preg_match(self::PATTERN, $parameter, $matches);
+		if(!isset($matches[0])){
+			return;
+		}
+		$operator          = $matches[0];
         list($key, $value) = explode($operator, $parameter);
 
         $in = strpos($value, "||");
         if ($in) {
             $values = explode("||", $value);
-            if (str_contains($parameter, '!=')) {
+            if (str_contains($parameter, '!=') || str_contains($parameter, '<>')) {
                 $type      = 'NotIn';
                 $seperator = '!=';
             } else {
@@ -130,14 +146,23 @@ class UriParser
         if (!$this->isConstantParameter($key) && $this->isLikeQuery($value)) {
             $operator = 'like';
             $value    = str_replace('*', '%', $value);
-        }
+		}
+		if($operator == '<>'){
+			$operator = '!=';
+		}
+		if(in_array($operator, ['$','^','~'])){
+			$pre  = in_array($operator, ['^','~']) ? '%' : '';
+			$post = in_array($operator, ['$','~']) ? '%' : '';
+			$operator = 'like';
+            $value    = $pre . $value . $post;
+		}
         $this->queryParameters[] = [
             'type'     => 'Basic',
             'key'      => $key,
             'operator' => $operator,
             'value'    => $value,
         ];
-    }
+	}
 
     private function appendQueryParameterAsWhereIn($parameter, $key)
     {
