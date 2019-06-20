@@ -19,7 +19,7 @@ class UriParser
 	* '^' =>  Begins with
 	* '$' => Ends with
 	 */
-    const PATTERN = '/!=|=|~|\^|\$|<>|<=|<|>=|>/';
+    const PATTERN = '/!=|=|!~|~|!\^|\^|!\$|\$|<>|<=|<|>=|>/';
 
     const ARRAY_QUERY_PATTERN = '/(.*)\[\]/';
 
@@ -64,6 +64,9 @@ class UriParser
     {
 		$keys            = array_pluck($this->queryParameters, 'key');
 		$counts = array_count_values($keys);
+		if(empty($counts[$key])){
+			return null;
+		}
 		if($counts[$key] === 1){
 			$idx = array_search($key, $keys);
 			return $this->queryParameters[$idx];
@@ -154,6 +157,12 @@ class UriParser
 			$pre  = in_array($operator, ['^','~']) ? '%' : '';
 			$post = in_array($operator, ['$','~']) ? '%' : '';
 			$operator = 'like';
+            $value    = $pre . $value . $post;
+		}
+		if(in_array($operator, ['!$','!^','!~'])){
+			$pre  = in_array($operator, ['!^','!~']) ? '%' : '';
+			$post = in_array($operator, ['!$','!~']) ? '%' : '';
+			$operator = 'not like';
             $value    = $pre . $value . $post;
 		}
         $this->queryParameters[] = [

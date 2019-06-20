@@ -26,13 +26,13 @@ class LaravelApiControllerTest extends TestCase
 
 	public function testQueryParsers(){
 
-		$myRequest = $this->createRequest('GET', '/test?equal=5&greaterThan>1&lessThan<10&greaterEqual>=11&lessEqual<=20&not<>15&notAgain!=15&contains~raig&starts^craig&ends$smith&ids=1||2||3||4&notin!=1||2||3||4&new[]=1&new[]!=2');
+		$myRequest = $this->createRequest('GET', '/test?equal=5&greaterThan>1&lessThan<10&greaterEqual>=11&lessEqual<=20&not<>15&notAgain!=15&contains~raig&starts^craig&ends$smith&ids=1||2||3||4&notin!=1||2||3||4&new[]=1&new[]!=2&notstart!^fake&notend!$notend&notcontain!~notin');
 
 		$parser = new UriParser($myRequest);
 
 		$params = $parser->whereParameters();
 
-		$this->assertEquals(14, count($params));
+		$this->assertEquals(17, count($params));
 
 		$this->assertEquals($parser->queryParameter('equal'), [
 			'type' => 'Basic',
@@ -142,6 +142,29 @@ class LaravelApiControllerTest extends TestCase
 				]
 			]
 		]);
+
+		$this->assertEquals($parser->queryParameter('notstart'), [
+			'type' => 'Basic',
+		    'key' => 'notstart',
+		    'operator' => 'not like',
+			'value' => '%fake'
+		]);
+
+		$this->assertEquals($parser->queryParameter('notend'), [
+			'type' => 'Basic',
+		    'key' => 'notend',
+		    'operator' => 'not like',
+			'value' => 'notend%'
+		]);
+
+		$this->assertEquals($parser->queryParameter('notcontain'), [
+			'type' => 'Basic',
+		    'key' => 'notcontain',
+		    'operator' => 'not like',
+			'value' => '%notin%'
+		]);
+
+
 
 	}
 

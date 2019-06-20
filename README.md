@@ -36,6 +36,51 @@ This will create a Api/ModelNameControlelr for you and you will have the basic r
 
 You can override the methods by simply putting in your own methods to override - method names in braces above
 
+## Filtering
+
+For the get command you can filter by using the following url patterns
+
+| Seperator | Description 					| Example 		| Result 							|
+| --- 		| --- 							| --- 			| --- 	 							|
+| *`=`* 	| Equals 						| ?field=hello	| select ... where field = 'hello'	|
+| *`!=`*  	| Not Equals 					| ?field!=hello	| select ... where field != 'hello'	|
+| *`<>`* 	| Not Equals (alt) 				| ?field<>hello	| select ... where field != 'hello'	|
+| *`>`* 	| Greater Than					| ?field>5	 	| select ... where field > 5	|
+| *`>=`* 	| Greater  Or Equal to			| ?field=>5	 	| select ... where field >= 5	|
+| *`<`* 	| Less Than						| ?field<5	 	| select ... where field <> 5	|
+| *`<=`* 	| Less Or Equal to				| ?field=<5	 	| select ... where field <= 5	|
+| *`~`*  	| Contains (LIKE with wildcard on both sides)| ?field~hello	| select ... where field like '%hello%'	|
+| *`^`*  	| Starts with (LIKE with wildcard on end)| ?field^hello	| select ... where field like 'hello%'	|
+| *`$`*  	| Ends with (LIKE with wildcard on start)| ?field$hello	| select ... where field like 'hello%'	|
+| *`!~`*  	| Not Contains (LIKE with wildcard on both sides)| ?field!~hello	| select ... where field not like '%hello%'	|
+| *`!^`*  	| Not Starts with (LIKE with wildcard on end)| ?field!^hello	| select ... where field not like 'hello%'	|
+| *`!$`*  	| Not Ends with (LIKE with wildcard on start)| ?field!$hello	| select ... where field not like 'hello%'	|
+
+
+# Fields, Relationships, Sorting & Pagination
+
+## Fields
+By default all fields are returned, you can limit that to specific fields in the following ways:
+
+* Api Controller parameter `$defaultFields` default as `protected $defaultFields = ['*'];` - switch to include an array of fields
+* fields param in url querystring: ie `fields=id,name,age` = will only return those, this will also override the above.
+
+## Relationships
+
+* Using the relationships defined in your models, you can pass a comma delimited list eg `with=join1,join2` which will return those joins (one or many)
+
+## Sorting
+
+* Sorts can be passed as comma list aswell, ie `sort=age asc` or `sort=age asc,name desc,eyes` - generates sql of `sort age asc` and `sort age asc, name desc, eyes asc` respectively
+* Default sort can also be added on the controller using by overrideing the `protected $defaultSort = null;
+` parameter
+
+## Pagination
+* pagination can be enabled/disbled on the controller by overriding the `protected $defaultLimit = 25;` on the controller
+* pagination can also be passed via the url using `limit=xx&page=y`
+* pagination can also be limited to a max per page by overriding the `protected $maximumLimit = false;` parameter
+
+
 
 
 ## Security

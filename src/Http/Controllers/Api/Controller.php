@@ -59,21 +59,6 @@ abstract class Controller extends LaravelController
 	protected $unguard = false;
 
     /**
-     * Number of items displayed at once if not specified.
-     * There is no limit if it is 0 or false.
-     *
-     * @var int|bool
-     */
-	protected $defaultLimit = 25;
-
-    /**
-     * Maximum limit that can be set via $_GET['limit'].
-     *
-     * @var int|bool
-     */
-	protected $maximumLimit = false;
-
-    /**
      * Resource key for an item.
      *
      * @var string
@@ -91,7 +76,6 @@ abstract class Controller extends LaravelController
 	 * Holds teh current authed user object
 	 *
 	 * @var User
-	 * @author Craig Smith <craig.smith@customd.com>
 	 */
 	protected $user;
 
@@ -99,9 +83,30 @@ abstract class Controller extends LaravelController
 	 * Default Fields to response with
 	 *
 	 * @var array
-	 * @author Craig Smith <craig.smith@customd.com>
 	 */
-	protected $fields = ['*'];
+	protected $defaultFields = ['*'];
+
+	/**
+	 * Set the default sorting for queries
+	 *
+	 * @var string
+	 */
+	protected $defaultSort = null;
+
+	/**
+     * Number of items displayed at once if not specified.
+     * There is no limit if it is 0 or false.
+     *
+     * @var int|bool
+     */
+	protected $defaultLimit = 25;
+
+    /**
+     * Maximum limit that can be set via $_GET['limit'].
+     *
+     * @var int|bool
+     */
+	protected $maximumLimit = false;
 
 
 	/**
@@ -142,7 +147,7 @@ abstract class Controller extends LaravelController
 	}
 
 	protected function _parseSort(){
-		$sort     = $this->request->input('sort');
+		$sort     = $this->request->has('sort') ? $this->request->input('sort') : $this->defaultSort;
 
         if ($sort) {
             $sorts = explode(",", $sort);
@@ -196,7 +201,7 @@ abstract class Controller extends LaravelController
 
 	public function _parseFields(){
 		$columns = Schema::getColumnListing($this->model->getTable());
-		$fields = $this->request->has('fields') && !empty($this->request->input('fields')) ? explode(",", $this->request->input('fields')) : $this->fields;
+		$fields = $this->request->has('fields') && !empty($this->request->input('fields')) ? explode(",", $this->request->input('fields')) : $this->defaultFields;
 		foreach($fields as $field){
 			if($field === '*'){
 				continue;
@@ -291,7 +296,7 @@ abstract class Controller extends LaravelController
     public function show($id)
     {
 		$this->_parseWith();
-		$fields = empty($this->request->input('fields')) ? $this->fields : explode(",", $this->request->input('fields'));
+		$fields = empty($this->request->input('fields')) ? $this->defaultFields : explode(",", $this->request->input('fields'));
 
 		try {
 			$item = $this->repository->getById($id);
@@ -436,7 +441,6 @@ abstract class Controller extends LaravelController
 	 * @param [type] $message
 	 *
 	 * @return void
-	 * @author Craig Smith <craig.smith@customd.com>
 	 */
     public function respondCreated($id = null, $message = NULL)
     {
