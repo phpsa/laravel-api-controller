@@ -2,7 +2,6 @@
 
 use Phpsa\LaravelApiController\Http\Api\Controller;
 use {{model.fullName}};
-use {{repository.fullName}};
 
 class {{controller.name}} extends Controller
 {
@@ -13,16 +12,8 @@ class {{controller.name}} extends Controller
      */
     protected function model()
     {
-        return new {{model.name}};
+        return {{model.name}}::class;
     }
 
-    /**
-     * Repository for the current model.
-     *
-     * @return App\Repositories\BaseRepository
-     */
-    protected function repository()
-    {
-        return new {{repository.name}};
-    }
+
 }

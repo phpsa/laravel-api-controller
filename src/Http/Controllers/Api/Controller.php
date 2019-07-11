@@ -12,6 +12,9 @@ use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Phpsa\LaravelApiController\Repository\BaseRepository;
+
+use Illuminate\Database\Eloquent\Model;
 
 abstract class Controller extends LaravelController
 {
@@ -26,14 +29,14 @@ abstract class Controller extends LaravelController
 	/**
      * Eloquent model instance.
      *
-     * @var \Illuminate\Database\Eloquent\Model;
+     * @var Model;
      */
     protected $model;
 
     /**
      * Repository instance
      *
-     * @var  App\Repositories\BaseRepository
+     * @var BaseRepository
      */
     protected $repository;
 
@@ -108,6 +111,7 @@ abstract class Controller extends LaravelController
      */
 	protected $maximumLimit = false;
 
+	protected $tableColumns;
 
 	/**
 	 * Constructor.
@@ -116,66 +120,92 @@ abstract class Controller extends LaravelController
 	 */
     public function __construct(Request $request)
     {
-        $this->model = $this->model();
-        $this->repository = $this->repository();
+		$this->makeModel();
+		$this->makeRepository();
 		$this->request = $request;
-		$this->uriParser = new UriParser($request);
+		$this->uriParser = new UriParser($request, config('laravel-api-controller.parameters.filter'));
 		$this->user = auth()->user();
-    }
+
+		$this->tableColumns = Schema::getColumnListing($this->model->getTable());
+	}
+
+	/**
+     * @throws GeneralException
+     * @return Model|mixed
+     */
+    public function makeModel()
+    {
+        $model = resolve($this->model());
+
+        if (! $model instanceof Model) {
+            throw new GeneralException("Class {$this->model()} must be an instance of ".Model::class);
+        }
+
+        return $this->model = $model;
+	}
+
+	public function makeRepository(){
+		$this->repository = BaseRepository::withModel($this->model());
+	}
 
 	 /**
      * Eloquent model.
      *
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return Model
      */
 	abstract protected function model();
 
-	 /**
-     * Eloquent model.
-     *
-     * @return App\Repositories\BaseRepository
-     */
-	abstract protected function repository();
-
-
-
 	protected function _parseWith(){
-		$with   = $this->request->input('with');
+		$field = config('laravel-api-controller.parameters.include');
+		if(empty($field)){
+			return;
+		}
+		$with   = $this->request->input($field);
 		if ($with !== null) {
 			$this->repository->with(explode(",", $with));
 		}
 	}
 
 	protected function _parseSort(){
-		$sort     = $this->request->has('sort') ? $this->request->input('sort') : $this->defaultSort;
+		$field = config('laravel-api-controller.parameters.sort');
+		$sort     = $field && $this->request->has($field) ? $this->request->input($field) : $this->defaultSort;
 
         if ($sort) {
-            $sorts = explode(",", $sort);
+			$sorts = is_array($sort) ? $sort : explode(",", $sort);
+			if(empty($sorts)){
+				return;
+			}
+
+
             foreach ($sorts as $sort) {
                 if (empty($sort)) {
                     continue;
                 }
                 $sortP = explode(" ", $sort);
 
-                $sortF = $sortP[0];
+				$sortF = $sortP[0];
+
+				if(!in_array($sortF, $this->tableColumns) ) {
+					continue;
+				}
+
                 $sortD = !empty($sortP[1]) && strtolower($sortP[1]) == 'asc' ? 'asc' : 'desc';
                 $this->repository->orderBy($sortF, $sortD);
 
             }
-        }
+		}
 	}
 
 
 	protected function _parseWhere(){
 		$where = $this->uriParser->whereParameters();
-		$columns = Schema::getColumnListing($this->model->getTable());
 		if ($where) {
             foreach ($where as $whr) {
 				if(strpos($whr['key'], '.') > 0){
 					//test if exists in the withs, if not continue out to exclude from the qbuild
 					//continue;
 				}else{
-					if(!in_array($whr['key'], $columns)){
+					if(!in_array($whr['key'], $this->tableColumns)){
 						continue;
 					}
 				}
@@ -200,19 +230,25 @@ abstract class Controller extends LaravelController
 	}
 
 	public function _parseFields(){
-		$columns = Schema::getColumnListing($this->model->getTable());
+		$attributes = $this->model->attributesToArray();
 		$fields = $this->request->has('fields') && !empty($this->request->input('fields')) ? explode(",", $this->request->input('fields')) : $this->defaultFields;
-		foreach($fields as $field){
+		foreach($fields as $k => $field){
 			if($field === '*'){
 				continue;
 			}
 			if( strpos($field, ".") > 0){
 				//check if mapped field exists
 				//@todo
+				unset($fields[$k]);
 				continue;
 			}
-			if(!in_array($field, $columns)){
-				throw new UnknownColumnException($field  . " does not exist in table");
+			if(!in_array($field, $this->tableColumns)){
+				//does the attribute exist ?
+
+				if(!array_key_exists($field, $attributes)){
+					throw new UnknownColumnException($field  . " does not exist in table");
+				}
+				unset($fields[$k]);
 			}
 		}
 
@@ -227,6 +263,7 @@ abstract class Controller extends LaravelController
 	*/
    public function index(){
 
+
 		$this->_parseWith();
 		$this->_parseSort();
 		$this->_parseWhere();
@@ -238,15 +275,12 @@ abstract class Controller extends LaravelController
 			$limit = $this->maximumLimit;
 		}
 
-		//try {
-			return $limit ? $this->respondWithPagination(
-				$this->repository->paginate($limit, $fields)
-			) : $this->respondWithMany(
-				$this->repository->get($fields)
-			);
-	//	}catch(\Exception $e){
-	//		return $this->errorNotFound($e->getMessage());
-	//	}
+
+		return $limit ? $this->respondWithPagination(
+			$this->repository->paginate($limit, $fields)
+		) : $this->respondWithMany(
+			$this->repository->get($fields)
+		);
 
    }
 

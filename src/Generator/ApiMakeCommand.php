@@ -5,7 +5,7 @@ use Illuminate\Console\DetectsApplicationNamespace;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
-
+use Illuminate\Support\Str;
 
 class ApiMakeCommand extends Command
 {
@@ -37,8 +37,7 @@ class ApiMakeCommand extends Command
         'app'         => [],
         'model'       => [],
         'controller'  => [],
-		'route'       => [],
-		'repository'  => []
+		'route'       => []
 	];
 
     protected $modelsBaseNamespace;
@@ -61,7 +60,6 @@ class ApiMakeCommand extends Command
     {
 		$this->prepareVariablesForStubs($this->argument('name'));
         $this->createController();
-        $this->createRepository();
         $this->addRoutes();
     }
     /**
@@ -76,8 +74,7 @@ class ApiMakeCommand extends Command
         $this->modelsBaseNamespace = $baseDir ? trim($baseDir, '\\').'\\' : '';
         $this->setModelData($name)
             ->setControllerData()
-            ->setRouteData()
-            ->setRepositoryData();
+            ->setRouteData();
     }
     /**
      * Set the model name and namespace.
@@ -86,7 +83,7 @@ class ApiMakeCommand extends Command
      */
     protected function setModelData($name)
     {
-        if (str_contains($name, '/')) {
+        if (Str::contains($name, '/')) {
             $name = $this->convertSlashes($name);
         }
         $name = trim($name, '\\');
@@ -118,19 +115,11 @@ class ApiMakeCommand extends Command
     protected function setRouteData()
     {
         $name = str_replace('\\', '', $this->stubVariables['model']['fullNameWithoutRoot']);
-        $name = snake_case($name);
-        $this->stubVariables['route']['name'] = str_plural($name);
+        $name = Str::snake($name);
+        $this->stubVariables['route']['name'] = Str::plural($name);
         return $this;
     }
-    /**
-     * Set the  names and namespaces.
-     *
-     * @return $this
-     */
-    protected function setRepositoryData()
-    {
-        return $this->setDataForEntity('repository');
-    }
+
     /**
      *  Set entity's names and namespaces.
      *
@@ -159,25 +148,21 @@ class ApiMakeCommand extends Command
     {
         $this->createClass('controller');
     }
-    /**
-     *  Create controller class file from a stub.
-     */
-    protected function createRepository()
-    {
-        $this->createClass('repository');
-    }
+
+
     /**
      *  Add routes to routes file.
      */
     protected function addRoutes()
     {
-
         $stub = $this->constructStub(base_path(config('laravel-api-controller.route_stub')));
 		$routesFile = app_path(config('laravel-api-controller.routes_file'));
-
-
         // read file
-        $lines = file($routesFile);
+		$lines = file($routesFile);
+		if(!$lines){
+			//@todo - better error handling here
+			return false;
+		}
         $lastLine = trim($lines[count($lines) - 1]);
         // modify file
         if (strcmp($lastLine, '});') === 0) {
@@ -187,7 +172,11 @@ class ApiMakeCommand extends Command
             $lines[] = "$stub\r\n";
         }
         // save file
-        $fp = fopen($routesFile, 'w');
+		$fp = fopen($routesFile, 'w');
+		if(!$fp){
+			//@todo - better error handling here
+			return false;
+		}
         fwrite($fp, implode('', $lines));
         fclose($fp);
         $this->info('Routes added successfully.');
