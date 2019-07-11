@@ -259,7 +259,7 @@ abstract class Controller extends LaravelController
      * Display a listing of the resource.
      * GET /api/{resource}.
      *
-     * @return Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {

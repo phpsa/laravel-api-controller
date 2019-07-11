@@ -24,9 +24,35 @@ class LaravelApiControllerTest extends TestCase
 
     public function testQueryParsers()
     {
-        $myRequest = $this->createRequest('GET', '/test?equal=5&greaterThan>1&lessThan<10&greaterEqual>=11&lessEqual<=20&not<>15&notAgain!=15&contains~raig&starts^craig&ends$smith&ids=1||2||3||4&notin!=1||2||3||4&new[]=1&new[]!=2&notstart!^fake&notend!$notend&notcontain!~notin');
+		$myRequest = $this->createRequest('GET', '/test',
+		[
+			'ignore' => 'ignored',
+			'sort' => 'sorted column',
+			'limit' => '5',
+			'filter' => [
+				'equal' => 5,
+				'greaterThan>' => '1',
+				'lessThan<' => '10',
+				'greaterEqual>=' => '11',
+				'lessEqual<=' => '20',
+				'not<>' => '15',
+				'notAgain!' => '15',
+				'contains~' => 'raig',
+				'starts^' => 'craig',
+				'ends$' => 'smith',
+				'ids' => '1||2||3||4',
+				'notin!' => '1||2||3||4',
+				'notstart!^' => 'fake',
+				'notend!$' => 'notend',
+				'notcontain!~' => 'notin',
+				'new[]' => 1,
+				'new[]!' => 2
+			]
+		]);
 
-        $parser = new UriParser($myRequest);
+
+		$parser = new UriParser($myRequest, 'filter');
+
 
         $params = $parser->whereParameters();
 
@@ -166,8 +192,8 @@ class LaravelApiControllerTest extends TestCase
     protected function createRequest(
         $method,
         $uri = '/test',
-        $content = '',
         $parameters = [],
+        $content = '',
         $server = ['CONTENT_TYPE' => 'application/json'],
         $cookies = [],
         $files = []
