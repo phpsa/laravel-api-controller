@@ -2,7 +2,7 @@
 
 namespace Phpsa\LaravelApiController\Tests;
 
-use Tests\TestCase;
+use Orchestra\Testbench\TestCase;
 use Illuminate\Http\Request;
 use Phpsa\LaravelApiController\UriParser;
 use Phpsa\LaravelApiController\ServiceProvider;
