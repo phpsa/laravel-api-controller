@@ -66,7 +66,7 @@ class UriParser
 	/**
 	 * Gets our Array pattern
 	 *
-	 * @return array
+	 * @return string
 	 */
     public static function getArrayQueryPattern()
     {

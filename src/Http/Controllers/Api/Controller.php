@@ -100,16 +100,16 @@ abstract class Controller extends LaravelController
      * Number of items displayed at once if not specified.
      * There is no limit if it is 0 or false.
      *
-     * @var int|bool
+     * @var int
      */
 	protected $defaultLimit = 25;
 
     /**
      * Maximum limit that can be set via $_GET['limit'].
      *
-     * @var int|bool
+     * @var int
      */
-	protected $maximumLimit = false;
+	protected $maximumLimit;
 
 	protected $tableColumns;
 
@@ -130,7 +130,7 @@ abstract class Controller extends LaravelController
 	}
 
 	/**
-     * @throws GeneralException
+     * @throws ApiException
      * @return Model|mixed
      */
     public function makeModel()
@@ -138,7 +138,7 @@ abstract class Controller extends LaravelController
         $model = resolve($this->model());
 
         if (! $model instanceof Model) {
-            throw new GeneralException("Class {$this->model()} must be an instance of ".Model::class);
+            throw new ApiException("Class {$this->model()} must be an instance of ".Model::class);
         }
 
         return $this->model = $model;
@@ -199,7 +199,7 @@ abstract class Controller extends LaravelController
 
 	protected function _parseWhere(){
 		$where = $this->uriParser->whereParameters();
-		if ($where) {
+		if (!empty($where)) {
             foreach ($where as $whr) {
 				if(strpos($whr['key'], '.') > 0){
 					//test if exists in the withs, if not continue out to exclude from the qbuild
@@ -276,7 +276,7 @@ abstract class Controller extends LaravelController
 		}
 
 
-		return $limit ? $this->respondWithPagination(
+		return $limit > 0 ? $this->respondWithPagination(
 			$this->repository->paginate($limit, $fields)
 		) : $this->respondWithMany(
 			$this->repository->get($fields)
@@ -357,7 +357,7 @@ abstract class Controller extends LaravelController
 		}
 
 		$item = $this->repository->getById($id);
-		if (!$item) {
+		if ($item->doesntExist()) {
             return $this->errorNotFound();
         }
 
@@ -388,7 +388,7 @@ abstract class Controller extends LaravelController
     public function destroy($id)
     {
 		$item = $this->repository->getById($id);
-        if (!$item) {
+		if ($item->doesntExist()) {
             return $this->errorNotFound();
         }
         $item->delete();

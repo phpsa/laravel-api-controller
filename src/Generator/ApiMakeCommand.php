@@ -173,7 +173,7 @@ class ApiMakeCommand extends Command
         }
         // save file
 		$fp = fopen($routesFile, 'w');
-		if(!$fp){
+		if(!is_resource($fp)){
 			//@todo - better error handling here
 			return false;
 		}

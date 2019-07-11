@@ -2,7 +2,7 @@
 
 namespace Phpsa\LaravelApiController\Repository;
 
-use Phpsa\LaravelApiController\Exceptions\ApiExceotion;
+use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -82,7 +82,7 @@ class BaseRepository
 	}
 
     /**
-     * @throws ApiExceotion
+     * @throws ApiException
      * @return Model|mixed
      */
     public function makeModel(string $model)
@@ -90,7 +90,7 @@ class BaseRepository
         $obj = resolve($model);
 
         if (! $obj instanceof Model) {
-            throw new ApiExceotion("Class {$model} must be an instance of ".Model::class);
+            throw new ApiException("Class {$model} must be an instance of ".Model::class);
         }
 
         return $this->model = $obj;
@@ -178,7 +178,7 @@ class BaseRepository
      * @param $id
      *
      * @throws \Exception
-     * @return bool|null
+     * @return bool
      */
     public function deleteById($id) : bool
     {
@@ -272,7 +272,7 @@ class BaseRepository
      * @param int    $limit
      * @param array  $columns
      * @param string $pageName
-     * @param null   $page
+     * @param int   $page
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
