@@ -2,9 +2,9 @@
 
 namespace Phpsa\LaravelApiController\Repository;
 
-use Phpsa\LaravelApiController\Exceptions\ApiExceotion;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
+use Phpsa\LaravelApiController\Exceptions\ApiExceotion;
 
 /**
  * Class BaseRepository.
@@ -74,12 +74,13 @@ class BaseRepository
      */
     protected $scopes = [];
 
+    public static function withModel(string $model)
+    {
+        $instance = new self();
+        $instance->makeModel($model);
 
-	public static function withModel(string $model){
-		$instance = new self();
-		$instance->makeModel($model);
-		return $instance;
-	}
+        return $instance;
+    }
 
     /**
      * @throws ApiExceotion
@@ -384,7 +385,6 @@ class BaseRepository
 
         return $this;
     }
-
 
     /**
      * Set Eloquent relationships to eager load.
