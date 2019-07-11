@@ -3,30 +3,28 @@
 namespace Phpsa\LaravelApiController\Http\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller as LaravelController;
+use Illuminate\Http\Response as Res;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 use Phpsa\LaravelApiController\UriParser;
-use \Illuminate\Http\Response as Res;
-use Phpsa\LaravelApiController\Exceptions\ApiException;
-use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Routing\Controller as LaravelController;
+use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Repository\BaseRepository;
-
-use Illuminate\Database\Eloquent\Model;
+use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
 
 abstract class Controller extends LaravelController
 {
-
-	/**
+    /**
      * HTTP header status code.
      *
      * @var int
      */
-	protected $statusCode = Res::HTTP_OK;
+    protected $statusCode = Res::HTTP_OK;
 
-	/**
+    /**
      * Eloquent model instance.
      *
      * @var Model;
@@ -34,7 +32,7 @@ abstract class Controller extends LaravelController
     protected $model;
 
     /**
-     * Repository instance
+     * Repository instance.
      *
      * @var BaseRepository
      */
@@ -45,28 +43,28 @@ abstract class Controller extends LaravelController
      *
      * @var Request
      */
-	protected $request;
+    protected $request;
 
-	/**
-	 * UriParser instance
-	 *
-	 * @var UriParser
-	 */
-	protected $uriParser;
+    /**
+     * UriParser instance.
+     *
+     * @var UriParser
+     */
+    protected $uriParser;
 
     /**
      * Do we need to unguard the model before create/update?
      *
      * @var bool
      */
-	protected $unguard = false;
+    protected $unguard = false;
 
     /**
      * Resource key for an item.
      *
      * @var string
      */
-	protected $resourceKeySingular = 'data';
+    protected $resourceKeySingular = 'data';
 
     /**
      * Resource key for a collection.
@@ -75,61 +73,61 @@ abstract class Controller extends LaravelController
      */
     protected $resourceKeyPlural = 'data';
 
-	/**
-	 * Holds teh current authed user object
-	 *
-	 * @var User
-	 */
-	protected $user;
+    /**
+     * Holds teh current authed user object.
+     *
+     * @var User
+     */
+    protected $user;
 
-	/**
-	 * Default Fields to response with
-	 *
-	 * @var array
-	 */
-	protected $defaultFields = ['*'];
+    /**
+     * Default Fields to response with.
+     *
+     * @var array
+     */
+    protected $defaultFields = ['*'];
 
-	/**
-	 * Set the default sorting for queries
-	 *
-	 * @var string
-	 */
-	protected $defaultSort = null;
+    /**
+     * Set the default sorting for queries.
+     *
+     * @var string
+     */
+    protected $defaultSort = null;
 
-	/**
+    /**
      * Number of items displayed at once if not specified.
      * There is no limit if it is 0 or false.
      *
      * @var int
      */
-	protected $defaultLimit = 25;
+    protected $defaultLimit = 25;
 
     /**
      * Maximum limit that can be set via $_GET['limit'].
      *
      * @var int
      */
-	protected $maximumLimit;
+    protected $maximumLimit;
 
-	protected $tableColumns;
+    protected $tableColumns;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param Request $request
-	 */
+    /**
+     * Constructor.
+     *
+     * @param Request $request
+     */
     public function __construct(Request $request)
     {
-		$this->makeModel();
-		$this->makeRepository();
-		$this->request = $request;
-		$this->uriParser = new UriParser($request, config('laravel-api-controller.parameters.filter'));
-		$this->user = auth()->user();
+        $this->makeModel();
+        $this->makeRepository();
+        $this->request = $request;
+        $this->uriParser = new UriParser($request, config('laravel-api-controller.parameters.filter'));
+        $this->user = auth()->user();
 
-		$this->tableColumns = Schema::getColumnListing($this->model->getTable());
-	}
+        $this->tableColumns = Schema::getColumnListing($this->model->getTable());
+    }
 
-	/**
+    /**
      * @throws ApiException
      * @return Model|mixed
      */
@@ -142,147 +140,145 @@ abstract class Controller extends LaravelController
         }
 
         return $this->model = $model;
-	}
+    }
 
-	public function makeRepository(){
-		$this->repository = BaseRepository::withModel($this->model());
-	}
+    public function makeRepository()
+    {
+        $this->repository = BaseRepository::withModel($this->model());
+    }
 
-	 /**
+    /**
      * Eloquent model.
      *
      * @return Model
      */
-	abstract protected function model();
+    abstract protected function model();
 
-	protected function _parseWith(){
-		$field = config('laravel-api-controller.parameters.include');
-		if(empty($field)){
-			return;
-		}
-		$with   = $this->request->input($field);
-		if ($with !== null) {
-			$this->repository->with(explode(",", $with));
-		}
-	}
+    protected function _parseWith()
+    {
+        $field = config('laravel-api-controller.parameters.include');
+        if (empty($field)) {
+            return;
+        }
+        $with = $this->request->input($field);
+        if ($with !== null) {
+            $this->repository->with(explode(',', $with));
+        }
+    }
 
-	protected function _parseSort(){
-		$field = config('laravel-api-controller.parameters.sort');
-		$sort     = $field && $this->request->has($field) ? $this->request->input($field) : $this->defaultSort;
+    protected function _parseSort()
+    {
+        $field = config('laravel-api-controller.parameters.sort');
+        $sort = $field && $this->request->has($field) ? $this->request->input($field) : $this->defaultSort;
 
         if ($sort) {
-			$sorts = is_array($sort) ? $sort : explode(",", $sort);
-			if(empty($sorts)){
-				return;
-			}
-
+            $sorts = is_array($sort) ? $sort : explode(',', $sort);
+            if (empty($sorts)) {
+                return;
+            }
 
             foreach ($sorts as $sort) {
                 if (empty($sort)) {
                     continue;
                 }
-                $sortP = explode(" ", $sort);
+                $sortP = explode(' ', $sort);
 
-				$sortF = $sortP[0];
+                $sortF = $sortP[0];
 
-				if(!in_array($sortF, $this->tableColumns) ) {
-					continue;
-				}
+                if (! in_array($sortF, $this->tableColumns)) {
+                    continue;
+                }
 
-                $sortD = !empty($sortP[1]) && strtolower($sortP[1]) == 'asc' ? 'asc' : 'desc';
+                $sortD = ! empty($sortP[1]) && strtolower($sortP[1]) == 'asc' ? 'asc' : 'desc';
                 $this->repository->orderBy($sortF, $sortD);
-
             }
-		}
-	}
+        }
+    }
 
-
-	protected function _parseWhere(){
-		$where = $this->uriParser->whereParameters();
-		if (!empty($where)) {
+    protected function _parseWhere()
+    {
+        $where = $this->uriParser->whereParameters();
+        if (! empty($where)) {
             foreach ($where as $whr) {
-				if(strpos($whr['key'], '.') > 0){
-					//test if exists in the withs, if not continue out to exclude from the qbuild
-					//continue;
-				}else{
-					if(!in_array($whr['key'], $this->tableColumns)){
-						continue;
-					}
-				}
+                if (strpos($whr['key'], '.') > 0) {
+                    //test if exists in the withs, if not continue out to exclude from the qbuild
+                    //continue;
+                } else {
+                    if (! in_array($whr['key'], $this->tableColumns)) {
+                        continue;
+                    }
+                }
                 switch ($whr['type']) {
-                    case "In":
-                        if (!empty($whr['values'])) {
+                    case 'In':
+                        if (! empty($whr['values'])) {
                             $this->repository->whereIn($whr['key'], $whr['values']);
                         }
                         break;
-                    case "NotIn":
-                        if (!empty($whr['values'])) {
+                    case 'NotIn':
+                        if (! empty($whr['values'])) {
                             $this->repository->whereNotIn($whr['key'], $whr['values']);
                         }
                         break;
-                    case "Basic":
+                    case 'Basic':
                         $this->repository->where($whr['key'], $whr['value'], $whr['operator']);
 
                         break;
                 }
             }
         }
-	}
+    }
 
-	public function _parseFields(){
-		$attributes = $this->model->attributesToArray();
-		$fields = $this->request->has('fields') && !empty($this->request->input('fields')) ? explode(",", $this->request->input('fields')) : $this->defaultFields;
-		foreach($fields as $k => $field){
-			if($field === '*'){
-				continue;
-			}
-			if( strpos($field, ".") > 0){
-				//check if mapped field exists
-				//@todo
-				unset($fields[$k]);
-				continue;
-			}
-			if(!in_array($field, $this->tableColumns)){
-				//does the attribute exist ?
+    public function _parseFields()
+    {
+        $attributes = $this->model->attributesToArray();
+        $fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
+        foreach ($fields as $k => $field) {
+            if ($field === '*') {
+                continue;
+            }
+            if (strpos($field, '.') > 0) {
+                //check if mapped field exists
+                //@todo
+                unset($fields[$k]);
+                continue;
+            }
+            if (! in_array($field, $this->tableColumns)) {
+                //does the attribute exist ?
 
-				if(!array_key_exists($field, $attributes)){
-					throw new UnknownColumnException($field  . " does not exist in table");
-				}
-				unset($fields[$k]);
-			}
-		}
+                if (! array_key_exists($field, $attributes)) {
+                    throw new UnknownColumnException($field.' does not exist in table');
+                }
+                unset($fields[$k]);
+            }
+        }
 
-		return $fields;
-	}
+        return $fields;
+    }
 
-	/**
-	* Display a listing of the resource.
-	* GET /api/{resource}.
-	*
-	* @return Response
-	*/
-   public function index(){
+    /**
+     * Display a listing of the resource.
+     * GET /api/{resource}.
+     *
+     * @return Response
+     */
+    public function index()
+    {
+        $this->_parseWith();
+        $this->_parseSort();
+        $this->_parseWhere();
+        $fields = $this->_parseFields();
 
+        $limit = $this->request->has('limit') ? intval($this->request->input('limit')) : $this->defaultLimit;
+        if ($this->maximumLimit && ($limit > $this->maximumLimit || ! $limit)) {
+            $limit = $this->maximumLimit;
+        }
 
-		$this->_parseWith();
-		$this->_parseSort();
-		$this->_parseWhere();
-		$fields = $this->_parseFields();
-
-
-		$limit = $this->request->has('limit') ? intval($this->request->input('limit')) : $this->defaultLimit;
-		if($this->maximumLimit && ( $limit > $this->maximumLimit || !$limit ) ){
-			$limit = $this->maximumLimit;
-		}
-
-
-		return $limit > 0 ? $this->respondWithPagination(
-			$this->repository->paginate($limit, $fields)
-		) : $this->respondWithMany(
-			$this->repository->get($fields)
-		);
-
-   }
+        return $limit > 0 ? $this->respondWithPagination(
+            $this->repository->paginate($limit, $fields)
+        ) : $this->respondWithMany(
+            $this->repository->get($fields)
+        );
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -292,34 +288,34 @@ abstract class Controller extends LaravelController
      */
     public function store()
     {
-		$data = $this->request->all();
+        $data = $this->request->all();
 
-        if (!$data) {
+        if (! $data) {
             return $this->errorWrongArgs('Empty request');
-		}
+        }
 
-		$validator = Validator::make($data, $this->rulesForCreate());
+        $validator = Validator::make($data, $this->rulesForCreate());
 
         if ($validator->fails()) {
             return $this->errorWrongArgs($validator->messages());
-		}
+        }
 
-		$columns = Schema::getColumnListing($this->model->getTable());
+        $columns = Schema::getColumnListing($this->model->getTable());
 
-		$insert = array_intersect_key($data, array_flip($columns));
+        $insert = array_intersect_key($data, array_flip($columns));
 
-		$this->unguardIfNeeded();
+        $this->unguardIfNeeded();
 
-		try {
-			$item = $this->model->create($insert);
-		}catch(\Exception $e){
-			return $this->errorWrongArgs($e->getMessage());
-		}
+        try {
+            $item = $this->model->create($insert);
+        } catch (\Exception $e) {
+            return $this->errorWrongArgs($e->getMessage());
+        }
 
         return $this->respondCreated($item->id);
-	}
+    }
 
-	/**
+    /**
      * Display the specified resource.
      * GET /api/{resource}/{id}.
      *
@@ -329,18 +325,19 @@ abstract class Controller extends LaravelController
      */
     public function show($id)
     {
-		$this->_parseWith();
-		$fields = empty($this->request->input('fields')) ? $this->defaultFields : explode(",", $this->request->input('fields'));
+        $this->_parseWith();
+        $fields = empty($this->request->input('fields')) ? $this->defaultFields : explode(',', $this->request->input('fields'));
 
-		try {
-			$item = $this->repository->getById($id);
-		}catch(\Exception $e){
-			return $this->errorNotFound("Record not found");
-		}
+        try {
+            $item = $this->repository->getById($id);
+        } catch (\Exception $e) {
+            return $this->errorNotFound('Record not found');
+        }
+
         return $this->respondWithOne($item);
-	}
+    }
 
-	  /**
+    /**
      * Update the specified resource in storage.
      * PUT /api/{resource}/{id}.
      *
@@ -350,34 +347,35 @@ abstract class Controller extends LaravelController
      */
     public function update($id)
     {
-		$data = $this->request->all();
+        $data = $this->request->all();
 
-        if (!$data) {
+        if (! $data) {
             return $this->errorWrongArgs('Empty request');
-		}
+        }
 
-		$item = $this->repository->getById($id);
-		if ($item->doesntExist()) {
+        $item = $this->repository->getById($id);
+        if ($item->doesntExist()) {
             return $this->errorNotFound();
         }
 
-		$validator = Validator::make($data, $this->rulesForUpdate($item->id));
+        $validator = Validator::make($data, $this->rulesForUpdate($item->id));
 
         if ($validator->fails()) {
             return $this->errorWrongArgs($validator->messages());
-		}
+        }
 
-		$columns = Schema::getColumnListing($this->model->getTable());
+        $columns = Schema::getColumnListing($this->model->getTable());
 
-		$fields = array_intersect_key($data, array_flip($columns));
+        $fields = array_intersect_key($data, array_flip($columns));
 
         $this->unguardIfNeeded();
         $item->fill($fields);
         $item->save();
-        return $this->respondWithOne($item);
-	}
 
-	/**
+        return $this->respondWithOne($item);
+    }
+
+    /**
      * Remove the specified resource from storage.
      * DELETE /api/{resource}/{id}.
      *
@@ -387,15 +385,16 @@ abstract class Controller extends LaravelController
      */
     public function destroy($id)
     {
-		$item = $this->repository->getById($id);
-		if ($item->doesntExist()) {
+        $item = $this->repository->getById($id);
+        if ($item->doesntExist()) {
             return $this->errorNotFound();
         }
         $item->delete();
-        return response()->json(['message' => 'Deleted']);
-	}
 
-	 /**
+        return response()->json(['message' => 'Deleted']);
+    }
+
+    /**
      * Show the form for creating the specified resource.
      *
      * @return Response
@@ -404,6 +403,7 @@ abstract class Controller extends LaravelController
     {
         return $this->errorNotImplemented();
     }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -423,6 +423,7 @@ abstract class Controller extends LaravelController
     {
         return $this->statusCode;
     }
+
     /**
      * @param $message
      * @return json Res
@@ -430,10 +431,11 @@ abstract class Controller extends LaravelController
     public function setStatusCode($statusCode)
     {
         $this->statusCode = $statusCode;
-        return $this;
-	}
 
-	/**
+        return $this;
+    }
+
+    /**
      * Respond with a given item.
      *
      * @param $item
@@ -442,14 +444,14 @@ abstract class Controller extends LaravelController
      */
     protected function respondWithOne($item)
     {
-		return $this->respond([
-			'status'      					=> 'success',
-			'status_code' 					=> Res::HTTP_OK,
+        return $this->respond([
+            'status'      					=> 'success',
+            'status_code' 					=> Res::HTTP_OK,
             $this->resourceKeySingular      => $item,
         ]);
-	}
+    }
 
-	 /**
+    /**
      * Respond with a given collection of items.
      *
      * @param $items
@@ -467,31 +469,31 @@ abstract class Controller extends LaravelController
         ]);
     }
 
-
-	/**
-	 * Created Response
-	 *
-	 * @param [int] $id of insterted data
-	 * @param [type] $message
-	 *
-	 * @return void
-	 */
-    public function respondCreated($id = null, $message = NULL)
+    /**
+     * Created Response.
+     *
+     * @param [int] $id of insterted data
+     * @param [type] $message
+     *
+     * @return void
+     */
+    public function respondCreated($id = null, $message = null)
     {
-		$response = [
-			'status'      		=> 'success',
-			'status_code' 		=> Res::HTTP_CREATED
-		];
-		if($message !== NULL){
-			$response['message'] = $message;
-		}
-		if($id !== NULL){
-			if(is_scalar($id)){
-				$response[$this->resourceKeySingular] = $id;
-			}else{
-				$response[$this->resourceKeyPlural] = $id;
-			}
-		}
+        $response = [
+            'status'      		=> 'success',
+            'status_code' 		=> Res::HTTP_CREATED,
+        ];
+        if ($message !== null) {
+            $response['message'] = $message;
+        }
+        if ($id !== null) {
+            if (is_scalar($id)) {
+                $response[$this->resourceKeySingular] = $id;
+            } else {
+                $response[$this->resourceKeyPlural] = $id;
+            }
+        }
+
         return $this->respond($response);
     }
 
@@ -502,7 +504,6 @@ abstract class Controller extends LaravelController
      */
     protected function respondWithPagination(LengthAwarePaginator $paginator)
     {
-
         return $this->respond([
             'status'      					=> 'success',
             'status_code' 					=> Res::HTTP_OK,
@@ -511,12 +512,12 @@ abstract class Controller extends LaravelController
                 'total_pages'  => ceil($paginator->total() / $paginator->perPage()),
                 'current_page' => $paginator->currentPage(),
                 'limit'        => $paginator->perPage(),
-			],
-			$this->resourceKeyPlural => $paginator->items()
+            ],
+            $this->resourceKeyPlural => $paginator->items(),
         ]);
     }
 
-	/**
+    /**
      * Respond with a given response.
      *
      * @param mixed $data
@@ -527,13 +528,13 @@ abstract class Controller extends LaravelController
     protected function respond($data, $code = null, $headers = [])
     {
         return response()->json(
-			$data,
-			$code ? $code : $this->getStatusCode(),
-			$headers
-		);
+            $data,
+            $code ? $code : $this->getStatusCode(),
+            $headers
+        );
     }
 
-	/**
+    /**
      * Response with the current error.
      *
      * @param string $message
@@ -542,14 +543,14 @@ abstract class Controller extends LaravelController
      */
     protected function respondWithError($message)
     {
-		return $this->respond([
+        return $this->respond([
             'status'      => 'error',
             'status_code' =>  $this->statusCode,
             'message'     => $message,
         ]);
-	}
+    }
 
-	/**
+    /**
      * Generate a Response with a 403 HTTP header and a given message.
      *
      * @param $message
@@ -560,6 +561,7 @@ abstract class Controller extends LaravelController
     {
         return $this->setStatusCode(403)->respondWithError($message);
     }
+
     /**
      * Generate a Response with a 500 HTTP header and a given message.
      *
@@ -571,6 +573,7 @@ abstract class Controller extends LaravelController
     {
         return $this->setStatusCode(500)->respondWithError($message);
     }
+
     /**
      * Generate a Response with a 404 HTTP header and a given message.
      *
@@ -582,6 +585,7 @@ abstract class Controller extends LaravelController
     {
         return $this->setStatusCode(404)->respondWithError($message);
     }
+
     /**
      * Generate a Response with a 401 HTTP header and a given message.
      *
@@ -593,6 +597,7 @@ abstract class Controller extends LaravelController
     {
         return $this->setStatusCode(401)->respondWithError($message);
     }
+
     /**
      * Generate a Response with a 400 HTTP header and a given message.
      *
@@ -604,6 +609,7 @@ abstract class Controller extends LaravelController
     {
         return $this->setStatusCode(400)->respondWithError($message);
     }
+
     /**
      * Generate a Response with a 501 HTTP header and a given message.
      *
@@ -616,7 +622,7 @@ abstract class Controller extends LaravelController
         return $this->setStatusCode(501)->respondWithError($message);
     }
 
-	/**
+    /**
      * Get the validation rules for create.
      *
      * @return array
@@ -625,6 +631,7 @@ abstract class Controller extends LaravelController
     {
         return [];
     }
+
     /**
      * Get the validation rules for update.
      *
@@ -635,10 +642,9 @@ abstract class Controller extends LaravelController
     protected function rulesForUpdate($id)
     {
         return [];
-	}
+    }
 
-
-	/**
+    /**
      * Unguard eloquent model if needed.
      */
     protected function unguardIfNeeded()
@@ -648,9 +654,8 @@ abstract class Controller extends LaravelController
         }
     }
 
-
     /**
-     * Check if the user has one or more roles
+     * Check if the user has one or more roles.
      *
      * @param mixed $role role name or array of role names
      *
@@ -665,7 +670,7 @@ abstract class Controller extends LaravelController
     }
 
     /**
-     * Checks if user has all the passed roles
+     * Checks if user has all the passed roles.
      *
      * @param array $roles
      *
@@ -678,7 +683,4 @@ abstract class Controller extends LaravelController
     {
         return $this->user && $this->user->hasRole($roles, true);
     }
-
-
-
 }

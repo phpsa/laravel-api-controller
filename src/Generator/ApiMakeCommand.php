@@ -1,11 +1,12 @@
 <?php
+
 namespace Phpsa\LaravelApiController\Generator;
 
-use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Console\Input\InputArgument;
-use Illuminate\Support\Str;
+use Illuminate\Console\DetectsApplicationNamespace;
 
 class ApiMakeCommand extends Command
 {
@@ -37,10 +38,11 @@ class ApiMakeCommand extends Command
         'app'         => [],
         'model'       => [],
         'controller'  => [],
-		'route'       => []
-	];
+        'route'       => [],
+    ];
 
     protected $modelsBaseNamespace;
+
     /**
      * Create a new controller creator command instance.
      *
@@ -51,6 +53,7 @@ class ApiMakeCommand extends Command
         parent::__construct();
         $this->files = $files;
     }
+
     /**
      * Execute the console command.
      *
@@ -58,10 +61,11 @@ class ApiMakeCommand extends Command
      */
     public function handle()
     {
-		$this->prepareVariablesForStubs($this->argument('name'));
+        $this->prepareVariablesForStubs($this->argument('name'));
         $this->createController();
         $this->addRoutes();
     }
+
     /**
      * Prepare names, paths and namespaces for stubs.
      *
@@ -76,6 +80,7 @@ class ApiMakeCommand extends Command
             ->setControllerData()
             ->setRouteData();
     }
+
     /**
      * Set the model name and namespace.
      *
@@ -95,8 +100,10 @@ class ApiMakeCommand extends Command
         $exploded = explode('\\', $this->stubVariables['model']['fullNameWithoutRoot']);
         array_pop($exploded);
         $this->stubVariables['model']['additionalNamespace'] = implode('\\', $exploded);
+
         return $this;
     }
+
     /**
      * Set the controller names and namespaces.
      *
@@ -106,6 +113,7 @@ class ApiMakeCommand extends Command
     {
         return $this->setDataForEntity('controller');
     }
+
     /**
      * Set route data for a given model.
      * "Profile\Payer" -> "profile_payers".
@@ -117,6 +125,7 @@ class ApiMakeCommand extends Command
         $name = str_replace('\\', '', $this->stubVariables['model']['fullNameWithoutRoot']);
         $name = Str::snake($name);
         $this->stubVariables['route']['name'] = Str::plural($name);
+
         return $this;
     }
 
@@ -129,7 +138,7 @@ class ApiMakeCommand extends Command
      */
     protected function setDataForEntity($entity)
     {
-		$entityNamespace = $this->convertSlashes(config("laravel-api-controller.{$entity}s_dir"));
+        $entityNamespace = $this->convertSlashes(config("laravel-api-controller.{$entity}s_dir"));
         $this->stubVariables[$entity]['name'] = $this->stubVariables['model']['name'].ucfirst($entity);
         $this->stubVariables[$entity]['namespaceWithoutRoot'] = implode('\\', array_filter([
             $entityNamespace,
@@ -139,8 +148,10 @@ class ApiMakeCommand extends Command
         $this->stubVariables[$entity]['namespace'] = $this->stubVariables['app']['namespace'].$this->stubVariables[$entity]['namespaceWithoutRoot'];
         $this->stubVariables[$entity]['fullNameWithoutRoot'] = $this->stubVariables[$entity]['namespaceWithoutRoot'].'\\'.$this->stubVariables[$entity]['name'];
         $this->stubVariables[$entity]['fullName'] = $this->stubVariables[$entity]['namespace'].'\\'.$this->stubVariables[$entity]['name'];
+
         return $this;
     }
+
     /**
      *  Create controller class file from a stub.
      */
@@ -149,20 +160,19 @@ class ApiMakeCommand extends Command
         $this->createClass('controller');
     }
 
-
     /**
      *  Add routes to routes file.
      */
     protected function addRoutes()
     {
         $stub = $this->constructStub(base_path(config('laravel-api-controller.route_stub')));
-		$routesFile = app_path(config('laravel-api-controller.routes_file'));
+        $routesFile = app_path(config('laravel-api-controller.routes_file'));
         // read file
-		$lines = file($routesFile);
-		if(!$lines){
-			//@todo - better error handling here
-			return false;
-		}
+        $lines = file($routesFile);
+        if (! $lines) {
+            //@todo - better error handling here
+            return false;
+        }
         $lastLine = trim($lines[count($lines) - 1]);
         // modify file
         if (strcmp($lastLine, '});') === 0) {
@@ -172,15 +182,16 @@ class ApiMakeCommand extends Command
             $lines[] = "$stub\r\n";
         }
         // save file
-		$fp = fopen($routesFile, 'w');
-		if(!is_resource($fp)){
-			//@todo - better error handling here
-			return false;
-		}
+        $fp = fopen($routesFile, 'w');
+        if (! is_resource($fp)) {
+            //@todo - better error handling here
+            return false;
+        }
         fwrite($fp, implode('', $lines));
         fclose($fp);
         $this->info('Routes added successfully.');
     }
+
     /**
      * Create class with a given type.
      *
@@ -193,12 +204,14 @@ class ApiMakeCommand extends Command
         $path = $this->getPath($this->stubVariables[$type]['fullNameWithoutRoot']);
         if ($this->files->exists($path)) {
             $this->error(ucfirst($type).' already exists!');
+
             return;
         }
         $this->makeDirectoryIfNeeded($path);
         $this->files->put($path, $this->constructStub(base_path(config('laravel-api-controller.'.$type.'_stub'))));
         $this->info(ucfirst($type).' created successfully.');
     }
+
     /**
      * Get the destination file path.
      *
@@ -209,8 +222,10 @@ class ApiMakeCommand extends Command
     protected function getPath($name)
     {
         $name = str_replace($this->stubVariables['app']['namespace'], '', $name);
+
         return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
     }
+
     /**
      * Build the directory for the class if needed.
      *
@@ -220,10 +235,11 @@ class ApiMakeCommand extends Command
      */
     protected function makeDirectoryIfNeeded($path)
     {
-        if (!$this->files->isDirectory(dirname($path))) {
+        if (! $this->files->isDirectory(dirname($path))) {
             $this->files->makeDirectory(dirname($path), 0777, true, true);
         }
     }
+
     /**
      * Get stub content and replace all stub placeholders
      * with data from $this->stubData.
@@ -240,8 +256,10 @@ class ApiMakeCommand extends Command
                 $stub = str_replace("{{{$entity}.{$field}}}", $value, $stub);
             }
         }
+
         return $stub;
     }
+
     /**
      * Get the console command arguments.
      *
@@ -250,9 +268,10 @@ class ApiMakeCommand extends Command
     protected function getArguments()
     {
         return [
-			['name', InputArgument::REQUIRED, 'The name of the model']
+            ['name', InputArgument::REQUIRED, 'The name of the model'],
         ];
     }
+
     /**
      * Convert "/" to "\".
      *

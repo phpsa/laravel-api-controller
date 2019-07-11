@@ -4,6 +4,6 @@ namespace Phpsa\LaravelApiController\Exceptions;
 
 use Exception;
 
-Class ApiException extends Exception {
-
+class ApiException extends Exception
+{
 }
