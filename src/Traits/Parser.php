@@ -4,10 +4,9 @@ namespace Phpsa\LaravelApiController\Traits;
 
 use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
 
-
-Trait Parser {
-
-	/**
+trait Parser
+{
+    /**
      * Default Fields to response with.
      *
      * @var array
@@ -36,136 +35,131 @@ Trait Parser {
      */
     protected $maximumLimit = 0;
 
-	/**
-	 * Parses our include joins
-	 *
-	 * @return void
-	 */
-	protected function parseIncludeParams() : void
+    /**
+     * Parses our include joins.
+     *
+     * @return void
+     */
+    protected function parseIncludeParams() : void
     {
         $field = config('laravel-api-controller.parameters.include');
 
-		if (empty($field)) {
+        if (empty($field)) {
             return;
-		}
+        }
 
-		$with = $this->request->input($field);
+        $with = $this->request->input($field);
 
         if ($with !== null) {
             $this->repository->with(explode(',', $with));
         }
-	}
+    }
 
-	/**
-	 * Parses our sort parameters
-	 *
-	 * @return void
-	 */
-	protected function parseSortParams() : void
+    /**
+     * Parses our sort parameters.
+     *
+     * @return void
+     */
+    protected function parseSortParams() : void
     {
+        $sorts = $this->getSortValue();
 
-		$sorts = $this->getSortValue();
+        foreach ($sorts as $sort) {
+            $sortP = explode(' ', $sort);
+            $sortF = $sortP[0];
 
-		foreach ($sorts as $sort) {
+            if (empty($sortF) || ! in_array($sortF, $this->tableColumns)) {
+                continue;
+            }
 
-			$sortP = explode(' ', $sort);
-			$sortF = $sortP[0];
+            $sortD = ! empty($sortP[1]) && strtolower($sortP[1]) == 'desc' ? 'desc' : 'asc';
+            $this->repository->orderBy($sortF, $sortD);
+        }
+    }
 
-			if (empty($sortF) || ! in_array($sortF, $this->tableColumns)) {
-				continue;
-			}
-
-			$sortD = ! empty($sortP[1]) && strtolower($sortP[1]) == 'desc' ? 'desc' : 'asc';
-			$this->repository->orderBy($sortF, $sortD);
-		}
-	}
-
-	/**
-	 * gets the sort value
-	 *
-	 * @returns array
-	 */
-	protected function getSortValue() : array
-	{
-
-		$field = config('laravel-api-controller.parameters.sort');
+    /**
+     * gets the sort value.
+     *
+     * @returns array
+     */
+    protected function getSortValue() : array
+    {
+        $field = config('laravel-api-controller.parameters.sort');
         $sort = $field && $this->request->has($field) ? $this->request->input($field) : $this->defaultSort;
 
-		if(!$sort){
-			return [];
-		}
+        if (! $sort) {
+            return [];
+        }
 
-		return is_array($sort) ? $sort : explode(',', $sort);
-	}
+        return is_array($sort) ? $sort : explode(',', $sort);
+    }
 
-	/**
-	 * parses our filter parameters
-	 *
-	 * @return void
-	 */
-	protected function parseFilterParams() : void
+    /**
+     * parses our filter parameters.
+     *
+     * @return void
+     */
+    protected function parseFilterParams() : void
     {
-		$where = $this->uriParser->whereParameters();
-		if(empty($where)){
-			return;
-		}
+        $where = $this->uriParser->whereParameters();
+        if (empty($where)) {
+            return;
+        }
 
-		foreach ($where as $whr) {
-			if (strpos($whr['key'], '.') > 0) {
-				//@TODO: test if exists in the withs, if not continue out to exclude from the qbuild
-				//continue;
-			} elseif (! in_array($whr['key'], $this->tableColumns)) {
-				continue;
-			}
+        foreach ($where as $whr) {
+            if (strpos($whr['key'], '.') > 0) {
+                //@TODO: test if exists in the withs, if not continue out to exclude from the qbuild
+                //continue;
+            } elseif (! in_array($whr['key'], $this->tableColumns)) {
+                continue;
+            }
 
-			$this->setWhereClause($whr);
+            $this->setWhereClause($whr);
+        }
+    }
 
-		}
+    /**
+     * set the Where clause.
+     *
+     * @param array $where the where clause
+     *
+     * @return void
+     */
+    protected function setWhereClause($where) : void
+    {
+        switch ($where['type']) {
+            case 'In':
+                if (! empty($where['values'])) {
+                    $this->repository->whereIn($where['key'], $where['values']);
+                }
+                break;
+            case 'NotIn':
+                if (! empty($where['values'])) {
+                    $this->repository->whereNotIn($where['key'], $where['values']);
+                }
+                break;
+            case 'Basic':
+                $this->repository->where($where['key'], $where['value'], $where['operator']);
+                break;
+        }
+    }
 
-	}
-
-	/**
-	 * set the Where clause
-	 *
-	 * @param array $where the where clause
-	 *
-	 * @return void
-	 */
-	protected function setWhereClause($where) : void
-	{
-		switch ($where['type']) {
-			case 'In':
-				if (! empty($where['values'])) {
-					$this->repository->whereIn($where['key'], $where['values']);
-				}
-				break;
-			case 'NotIn':
-				if (! empty($where['values'])) {
-					$this->repository->whereNotIn($where['key'], $where['values']);
-				}
-				break;
-			case 'Basic':
-				$this->repository->where($where['key'], $where['value'], $where['operator']);
-				break;
-		}
-	}
-
-	/**
-	 * parses the fields to return
-	 *
-	 * @throws UnknownColumnException
-	 * @return array
-	 */
-	protected function parseFieldParams() : array
+    /**
+     * parses the fields to return.
+     *
+     * @throws UnknownColumnException
+     * @return array
+     */
+    protected function parseFieldParams() : array
     {
         $attributes = $this->model->attributesToArray();
         $fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
         foreach ($fields as $k => $field) {
-			if (
-				$field === '*'  ||
-				in_array($field, $this->tableColumns)  ||
-				array_key_exists($field, $attributes)
-			) {
+            if (
+                $field === '*' ||
+                in_array($field, $this->tableColumns) ||
+                array_key_exists($field, $attributes)
+            ) {
                 continue;
             }
             if (strpos($field, '.') > 0) {
@@ -173,30 +167,27 @@ Trait Parser {
                 //@todo
                 unset($fields[$k]);
                 continue;
-			}
+            }
 
-			unset($fields[$k]);
-
+            unset($fields[$k]);
         }
 
         return $fields;
-	}
+    }
 
-	/**
-	 * parses the limit value
-	 *
-	 * @return int
-	 */
-	protected function parseLimitParams() : int
-	{
+    /**
+     * parses the limit value.
+     *
+     * @return int
+     */
+    protected function parseLimitParams() : int
+    {
+        $limit = $this->request->has('limit') ? intval($this->request->input('limit')) : $this->defaultLimit;
 
-		$limit = $this->request->has('limit') ? intval($this->request->input('limit')) : $this->defaultLimit;
-
-		if ($this->maximumLimit && ($limit > $this->maximumLimit || ! $limit)) {
+        if ($this->maximumLimit && ($limit > $this->maximumLimit || ! $limit)) {
             $limit = $this->maximumLimit;
         }
 
-		return $limit;
-	}
-
+        return $limit;
+    }
 }
