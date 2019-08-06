@@ -76,7 +76,7 @@ class UriParser
     }
 
     /**
-     * Undocumented function
+     * Undocumented function.
      *
      * @param string $key - key to grab from the filter params
      *
@@ -104,7 +104,7 @@ class UriParser
     }
 
     /**
-     * returns the list of wheres from the query
+     * returns the list of wheres from the query.
      *
      * @return array
      */
@@ -113,7 +113,6 @@ class UriParser
         return $this->queryParameters;
     }
 
-
     private function setQueryParameters($queryUri) : self
     {
         foreach ($queryUri as $key => $value) {
@@ -121,6 +120,7 @@ class UriParser
             $operator = empty($matches[0]) ? '=' : '';
             $this->appendQueryParameter($key.$operator.$value);
         }
+
         return $this;
     }
 

@@ -243,7 +243,7 @@ class BaseRepository
      * @param       $id
      * @param array $columns
      *
-	 * @throws ModelNotFoundException
+     * @throws ModelNotFoundException
      * @return Collection|Model
      */
     public function getById($id, array $columns = ['*'])
