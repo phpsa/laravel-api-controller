@@ -3,27 +3,31 @@
 namespace Phpsa\LaravelApiController\Http\Api;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Response as Res;
+use Illuminate\Http\Response;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Validator;
+
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
-use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Facades\Validator;
-use Phpsa\LaravelApiController\UriParser;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Routing\Controller as LaravelController;
-use Phpsa\LaravelApiController\Exceptions\ApiException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Phpsa\LaravelApiController\Repository\BaseRepository;
-use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
 
-abstract class Controller extends LaravelController
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Phpsa\LaravelApiController\Repository\BaseRepository;
+
+use Phpsa\LaravelApiController\UriParser;
+use Phpsa\LaravelApiController\Traits\Response as ApiResponse;
+use Phpsa\LaravelApiController\Traits\Parser;
+
+/**
+ * Class Controller.
+ */
+abstract class Controller extends BaseController
 {
-    /**
-     * HTTP header status code.
-     *
-     * @var int
-     */
-    protected $statusCode = Res::HTTP_OK;
+
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests, ApiResponse, Parser;
 
     /**
      * Eloquent model instance.
@@ -61,56 +65,20 @@ abstract class Controller extends LaravelController
     protected $unguard = false;
 
     /**
-     * Resource key for an item.
-     *
-     * @var string
-     */
-    protected $resourceKeySingular = 'data';
-
-    /**
-     * Resource key for a collection.
-     *
-     * @var string
-     */
-    protected $resourceKeyPlural = 'data';
-
-    /**
      * Holds the current authed user object.
      *
      * @var \Illuminate\Foundation\Auth\User
      */
     protected $user;
 
+
+
     /**
-     * Default Fields to response with.
+     * Holds the available table columns
      *
      * @var array
      */
-    protected $defaultFields = ['*'];
-
-    /**
-     * Set the default sorting for queries.
-     *
-     * @var string
-     */
-    protected $defaultSort = null;
-
-    /**
-     * Number of items displayed at once if not specified.
-     * There is no limit if it is 0 or false.
-     *
-     * @var int
-     */
-    protected $defaultLimit = 25;
-
-    /**
-     * Maximum limit that can be set via $_GET['limit'].
-     *
-     * @var int
-     */
-    protected $maximumLimit;
-
-    protected $tableColumns;
+    protected $tableColumns = [];
 
     /**
      * Constructor.
@@ -132,7 +100,7 @@ abstract class Controller extends LaravelController
      * @throws ApiException
      * @return Model|mixed
      */
-    public function makeModel()
+    protected function makeModel()
     {
         $model = resolve($this->model());
 
@@ -143,117 +111,9 @@ abstract class Controller extends LaravelController
         return $this->model = $model;
     }
 
-    public function makeRepository()
+    protected function makeRepository()
     {
         $this->repository = BaseRepository::withModel($this->model());
-    }
-
-    /**
-     * Eloquent model.
-     *
-     * @return Model
-     */
-    abstract protected function model();
-
-    protected function _parseWith()
-    {
-        $field = config('laravel-api-controller.parameters.include');
-        if (empty($field)) {
-            return;
-        }
-        $with = $this->request->input($field);
-        if ($with !== null) {
-            $this->repository->with(explode(',', $with));
-        }
-    }
-
-    protected function _parseSort()
-    {
-        $field = config('laravel-api-controller.parameters.sort');
-        $sort = $field && $this->request->has($field) ? $this->request->input($field) : $this->defaultSort;
-
-        if ($sort) {
-            $sorts = is_array($sort) ? $sort : explode(',', $sort);
-            if (empty($sorts)) {
-                return;
-            }
-
-            foreach ($sorts as $sort) {
-                if (empty($sort)) {
-                    continue;
-                }
-                $sortP = explode(' ', $sort);
-
-                $sortF = $sortP[0];
-
-                if (! in_array($sortF, $this->tableColumns)) {
-                    continue;
-                }
-
-                $sortD = ! empty($sortP[1]) && strtolower($sortP[1]) == 'asc' ? 'asc' : 'desc';
-                $this->repository->orderBy($sortF, $sortD);
-            }
-        }
-    }
-
-    protected function _parseWhere()
-    {
-        $where = $this->uriParser->whereParameters();
-        if (! empty($where)) {
-            foreach ($where as $whr) {
-                if (strpos($whr['key'], '.') > 0) {
-                    //test if exists in the withs, if not continue out to exclude from the qbuild
-                    //continue;
-                } else {
-                    if (! in_array($whr['key'], $this->tableColumns)) {
-                        continue;
-                    }
-                }
-                switch ($whr['type']) {
-                    case 'In':
-                        if (! empty($whr['values'])) {
-                            $this->repository->whereIn($whr['key'], $whr['values']);
-                        }
-                        break;
-                    case 'NotIn':
-                        if (! empty($whr['values'])) {
-                            $this->repository->whereNotIn($whr['key'], $whr['values']);
-                        }
-                        break;
-                    case 'Basic':
-                        $this->repository->where($whr['key'], $whr['value'], $whr['operator']);
-
-                        break;
-                }
-            }
-        }
-    }
-
-    public function _parseFields()
-    {
-        $attributes = $this->model->attributesToArray();
-        $fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
-        foreach ($fields as $k => $field) {
-            if ($field === '*') {
-                continue;
-            }
-            if (strpos($field, '.') > 0) {
-                //check if mapped field exists
-                //@todo
-                unset($fields[$k]);
-                continue;
-            }
-            if (! in_array($field, $this->tableColumns)) {
-                //does the attribute exist ?
-
-                if (! array_key_exists($field, $attributes)) {
-                    throw new UnknownColumnException($field.' does not exist in table');
-                }
-                unset($fields[$k]);
-            }
-        }
-
-        return $fields;
     }
 
     /**
@@ -264,15 +124,11 @@ abstract class Controller extends LaravelController
      */
     public function index()
     {
-        $this->_parseWith();
-        $this->_parseSort();
-        $this->_parseWhere();
-        $fields = $this->_parseFields();
-
-        $limit = $this->request->has('limit') ? intval($this->request->input('limit')) : $this->defaultLimit;
-        if ($this->maximumLimit && ($limit > $this->maximumLimit || ! $limit)) {
-            $limit = $this->maximumLimit;
-        }
+        $this->parseIncludeParams();
+        $this->parseSortParams();
+        $this->parseFilterParams();
+        $fields = $this->parseFieldParams();
+        $limit = $this->parseLimitParams();
 
         return $limit > 0 ? $this->respondWithPagination(
             $this->repository->paginate($limit, $fields)
@@ -326,8 +182,8 @@ abstract class Controller extends LaravelController
      */
     public function show($id)
     {
-        $this->_parseWith();
-        $fields = empty($this->request->input('fields')) ? $this->defaultFields : explode(',', $this->request->input('fields'));
+        $this->parseIncludeParams();
+        $fields = $this->parseFieldParams();
 
         try {
             $item = $this->repository->getById($id, $fields);
@@ -419,210 +275,11 @@ abstract class Controller extends LaravelController
     }
 
     /**
-     * @return mixed
+     * Eloquent model.
+     *
+     * @return Model
      */
-    public function getStatusCode()
-    {
-        return $this->statusCode;
-    }
-
-    /**
-     * @param $message
-     * @return self
-     */
-    public function setStatusCode($statusCode)
-    {
-        $this->statusCode = $statusCode;
-
-        return $this;
-    }
-
-    /**
-     * Respond with a given item.
-     *
-     * @param $item
-     *
-     * @return Response
-     */
-    protected function respondWithOne($item)
-    {
-        return $this->respond([
-            'status'      					=> 'success',
-            'status_code' 					=> Res::HTTP_OK,
-            $this->resourceKeySingular      => $item,
-        ]);
-    }
-
-    /**
-     * Respond with a given collection of items.
-     *
-     * @param $items
-     * @param int $skip
-     * @param int $limit
-     *
-     * @return Response
-     */
-    protected function respondWithMany($items)
-    {
-        return $this->respond([
-            'status'      					=> 'success',
-            'status_code' 					=> Res::HTTP_OK,
-            $this->resourceKeyPlural        => $items,
-        ]);
-    }
-
-    /**
-     * Created Response.
-     *
-     * @param int|array    $id      id of insterted data
-     * @param string $message message to respond with
-     *
-     * @return Response
-     */
-    public function respondCreated($id = null, $message = null)
-    {
-        $response = [
-            'status'      		=> 'success',
-            'status_code' 		=> Res::HTTP_CREATED,
-        ];
-        if ($message !== null) {
-            $response['message'] = $message;
-        }
-        if ($id !== null) {
-            if (is_scalar($id)) {
-                $response[$this->resourceKeySingular] = $id;
-            } else {
-                $response[$this->resourceKeyPlural] = $id;
-            }
-        }
-
-        return $this->respond($response);
-    }
-
-    /**
-     * @param LengthAwarePaginator $paginate
-     * @param $data
-     * @return mixed
-     */
-    protected function respondWithPagination(LengthAwarePaginator $paginator)
-    {
-        return $this->respond([
-            'status'      					=> 'success',
-            'status_code' 					=> Res::HTTP_OK,
-            'paginator' => [
-                'total_count'  => $paginator->total(),
-                'total_pages'  => ceil($paginator->total() / $paginator->perPage()),
-                'current_page' => $paginator->currentPage(),
-                'limit'        => $paginator->perPage(),
-            ],
-            $this->resourceKeyPlural => $paginator->items(),
-        ]);
-    }
-
-    /**
-     * Respond with a given response.
-     *
-     * @param mixed $data
-     * @param array $headers
-     *
-     * @return Response
-     */
-    protected function respond($data, $code = null, $headers = [])
-    {
-        return response()->json(
-            $data,
-            $code ? $code : $this->getStatusCode(),
-            $headers
-        );
-    }
-
-    /**
-     * Response with the current error.
-     *
-     * @param string $message
-     *
-     * @return mixed
-     */
-    protected function respondWithError($message)
-    {
-        return $this->respond([
-            'status'      => 'error',
-            'status_code' =>  $this->statusCode,
-            'message'     => $message,
-        ]);
-    }
-
-    /**
-     * Generate a Response with a 403 HTTP header and a given message.
-     *
-     * @param $message
-     *
-     * @return Response
-     */
-    protected function errorForbidden($message = 'Forbidden')
-    {
-        return $this->setStatusCode(403)->respondWithError($message);
-    }
-
-    /**
-     * Generate a Response with a 500 HTTP header and a given message.
-     *
-     * @param string $message
-     *
-     * @return Response
-     */
-    protected function errorInternalError($message = 'Internal Error')
-    {
-        return $this->setStatusCode(500)->respondWithError($message);
-    }
-
-    /**
-     * Generate a Response with a 404 HTTP header and a given message.
-     *
-     * @param string $message
-     *
-     * @return Response
-     */
-    protected function errorNotFound($message = 'Resource Not Found')
-    {
-        return $this->setStatusCode(404)->respondWithError($message);
-    }
-
-    /**
-     * Generate a Response with a 401 HTTP header and a given message.
-     *
-     * @param string $message
-     *
-     * @return Response
-     */
-    protected function errorUnauthorized($message = 'Unauthorized')
-    {
-        return $this->setStatusCode(401)->respondWithError($message);
-    }
-
-    /**
-     * Generate a Response with a 400 HTTP header and a given message.
-     *
-     * @param string$message
-     *
-     * @return Response
-     */
-    protected function errorWrongArgs($message = 'Wrong Arguments')
-    {
-        return $this->setStatusCode(400)->respondWithError($message);
-    }
-
-    /**
-     * Generate a Response with a 501 HTTP header and a given message.
-     *
-     * @param string $message
-     *
-     * @return Response
-     */
-    protected function errorNotImplemented($message = 'Not implemented')
-    {
-        return $this->setStatusCode(501)->respondWithError($message);
-    }
+    abstract protected function model();
 
     /**
      * Get the validation rules for create.
