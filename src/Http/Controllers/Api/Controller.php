@@ -3,30 +3,26 @@
 namespace Phpsa\LaravelApiController\Http\Api;
 
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Facades\Validator;
-
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
-
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Phpsa\LaravelApiController\Exceptions\ApiException;
-use Phpsa\LaravelApiController\Repository\BaseRepository;
-
+use Illuminate\Support\Facades\Validator;
 use Phpsa\LaravelApiController\UriParser;
-use Phpsa\LaravelApiController\Traits\Response as ApiResponse;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Phpsa\LaravelApiController\Traits\Parser;
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Phpsa\LaravelApiController\Repository\BaseRepository;
+use Phpsa\LaravelApiController\Traits\Response as ApiResponse;
 
 /**
  * Class Controller.
  */
 abstract class Controller extends BaseController
 {
-
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests, ApiResponse, Parser;
 
     /**
@@ -70,7 +66,6 @@ abstract class Controller extends BaseController
      * @var \Illuminate\Foundation\Auth\User
      */
     protected $user;
-
 
 
     /**
@@ -264,7 +259,7 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function edit(/** @scrutinizer ignore-unused */ $id)
+    public function edit(/* @scrutinizer ignore-unused */ $id)
     {
         return $this->errorNotImplemented();
     }
@@ -293,7 +288,7 @@ abstract class Controller extends BaseController
      *
      * @return array
      */
-    protected function rulesForUpdate(/** @scrutinizer ignore-unused */ $id)
+    protected function rulesForUpdate(/* @scrutinizer ignore-unused */ $id)
     {
         return [];
     }

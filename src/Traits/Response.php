@@ -2,19 +2,19 @@
 
 namespace Phpsa\LaravelApiController\Traits;
 
-use Symfony\Component\HttpFoundation\Response as Res;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Symfony\Component\HttpFoundation\Response as Res;
 
-Trait Response {
-
-	/**
+trait Response
+{
+    /**
      * HTTP header status code.
      *
      * @var int
      */
-	protected $statusCode = Res::HTTP_OK;
+    protected $statusCode = Res::HTTP_OK;
 
-	/**
+    /**
      * Resource key for an item.
      *
      * @var string
@@ -28,7 +28,7 @@ Trait Response {
      */
     protected $resourceKeyPlural = 'data';
 
-	/**
+    /**
      * @return mixed
      */
     public function getStatusCode()
@@ -45,9 +45,9 @@ Trait Response {
         $this->statusCode = $statusCode;
 
         return $this;
-	}
+    }
 
-	/**
+    /**
      * Respond with a given item.
      *
      * @param $item
@@ -173,9 +173,9 @@ Trait Response {
             'status_code' =>  $this->statusCode,
             'message'     => $message,
         ]);
-	}
+    }
 
-	    /**
+    /**
      * Generate a Response with a 403 HTTP header and a given message.
      *
      * @param $message
