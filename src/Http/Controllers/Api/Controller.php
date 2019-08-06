@@ -233,12 +233,12 @@ abstract class Controller extends BaseController
      */
     public function destroy($id)
     {
-        return $this->respondNoContent();
         try {
             $this->repository->deleteById($id);
         } catch (ModelNotFoundException $e) {
             return $this->errorNotFound('Record does not exist');
         }
+        return $this->respondNoContent();
 
     }
 
