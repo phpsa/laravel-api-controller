@@ -2,7 +2,7 @@
 
 namespace Phpsa\LaravelApiController\Traits;
 
-use Illuminate\Http\Response as Res;
+use Symfony\Component\HttpFoundation\Response as Res;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 Trait Response {

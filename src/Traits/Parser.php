@@ -63,31 +63,39 @@ Trait Parser {
 	 */
 	protected function parseSortParams() : void
     {
-        $field = config('laravel-api-controller.parameters.sort');
+
+		$sorts = $this->getSortValue();
+
+		foreach ($sorts as $sort) {
+
+			$sortP = explode(' ', $sort);
+			$sortF = $sortP[0];
+
+			if (empty($sortF) || ! in_array($sortF, $this->tableColumns)) {
+				continue;
+			}
+
+			$sortD = ! empty($sortP[1]) && strtolower($sortP[1]) == 'desc' ? 'desc' : 'asc';
+			$this->repository->orderBy($sortF, $sortD);
+		}
+	}
+
+	/**
+	 * gets the sort value
+	 *
+	 * @returns array
+	 */
+	protected function getSortValue() : array
+	{
+
+		$field = config('laravel-api-controller.parameters.sort');
         $sort = $field && $this->request->has($field) ? $this->request->input($field) : $this->defaultSort;
 
-        if ($sort) {
-            $sorts = is_array($sort) ? $sort : explode(',', $sort);
-            if (empty($sorts)) {
-                return;
-            }
+		if(!$sort){
+			return [];
+		}
 
-            foreach ($sorts as $sort) {
-                if (empty($sort)) {
-                    continue;
-                }
-                $sortP = explode(' ', $sort);
-
-                $sortF = $sortP[0];
-
-                if (! in_array($sortF, $this->tableColumns)) {
-                    continue;
-                }
-
-                $sortD = ! empty($sortP[1]) && strtolower($sortP[1]) == 'asc' ? 'asc' : 'desc';
-                $this->repository->orderBy($sortF, $sortD);
-            }
-        }
+		return is_array($sort) ? $sort : explode(',', $sort);
 	}
 
 	/**
@@ -97,35 +105,49 @@ Trait Parser {
 	 */
 	protected function parseFilterParams() : void
     {
-        $where = $this->uriParser->whereParameters();
-        if (! empty($where)) {
-            foreach ($where as $whr) {
-                if (strpos($whr['key'], '.') > 0) {
-                    //test if exists in the withs, if not continue out to exclude from the qbuild
-                    //continue;
-                } else {
-                    if (! in_array($whr['key'], $this->tableColumns)) {
-                        continue;
-                    }
-                }
-                switch ($whr['type']) {
-                    case 'In':
-                        if (! empty($whr['values'])) {
-                            $this->repository->whereIn($whr['key'], $whr['values']);
-                        }
-                        break;
-                    case 'NotIn':
-                        if (! empty($whr['values'])) {
-                            $this->repository->whereNotIn($whr['key'], $whr['values']);
-                        }
-                        break;
-                    case 'Basic':
-                        $this->repository->where($whr['key'], $whr['value'], $whr['operator']);
+		$where = $this->uriParser->whereParameters();
+		if(empty($where)){
+			return;
+		}
 
-                        break;
-                }
-            }
-        }
+		foreach ($where as $whr) {
+			if (strpos($whr['key'], '.') > 0) {
+				//@TODO: test if exists in the withs, if not continue out to exclude from the qbuild
+				//continue;
+			} elseif (! in_array($whr['key'], $this->tableColumns)) {
+				continue;
+			}
+
+			$this->setWhereClause($whr);
+
+		}
+
+	}
+
+	/**
+	 * set the Where clause
+	 *
+	 * @param array $where the where clause
+	 *
+	 * @return void
+	 */
+	protected function setWhereClause($where) : void
+	{
+		switch ($where['type']) {
+			case 'In':
+				if (! empty($where['values'])) {
+					$this->repository->whereIn($where['key'], $where['values']);
+				}
+				break;
+			case 'NotIn':
+				if (! empty($where['values'])) {
+					$this->repository->whereNotIn($where['key'], $where['values']);
+				}
+				break;
+			case 'Basic':
+				$this->repository->where($where['key'], $where['value'], $where['operator']);
+				break;
+		}
 	}
 
 	/**
@@ -139,23 +161,22 @@ Trait Parser {
         $attributes = $this->model->attributesToArray();
         $fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
         foreach ($fields as $k => $field) {
-            if ($field === '*') {
+			if (
+				$field === '*'  ||
+				in_array($field, $this->tableColumns)  ||
+				array_key_exists($field, $attributes)
+			) {
                 continue;
             }
             if (strpos($field, '.') > 0) {
-                //check if mapped field exists
+                //@TODO check if mapped field exists
                 //@todo
                 unset($fields[$k]);
                 continue;
-            }
-            if (! in_array($field, $this->tableColumns)) {
-                //does the attribute exist ?
+			}
 
-                if (! array_key_exists($field, $attributes)) {
-                    throw new UnknownColumnException($field.' does not exist in table');
-                }
-                unset($fields[$k]);
-            }
+			unset($fields[$k]);
+
         }
 
         return $fields;
