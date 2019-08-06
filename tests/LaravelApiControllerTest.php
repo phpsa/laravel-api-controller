@@ -24,34 +24,34 @@ class LaravelApiControllerTest extends TestCase
 
     public function testQueryParsers()
     {
-		$myRequest = $this->createRequest('GET', '/test',
-		[
-			'ignore' => 'ignored',
-			'sort' => 'sorted column',
-			'limit' => '5',
-			'filter' => [
-				'equal' => 5,
-				'greaterThan>' => '1',
-				'lessThan<' => '10',
-				'greaterEqual>=' => '11',
-				'lessEqual<=' => '20',
-				'not<>' => '15',
-				'notAgain!' => '15',
-				'contains~' => 'raig',
-				'starts^' => 'craig',
-				'ends$' => 'smith',
-				'ids' => '1||2||3||4',
-				'notin!' => '1||2||3||4',
-				'notstart!^' => 'fake',
-				'notend!$' => 'notend',
-				'notcontain!~' => 'notin',
-				'new[]' => 1,
-				'new[]!' => 2
-			]
-		]);
+        $myRequest = $this->createRequest('GET', '/test',
+        [
+            'ignore' => 'ignored',
+            'sort' => 'sorted column',
+            'limit' => '5',
+            'filter' => [
+                'equal' => 5,
+                'greaterThan>' => '1',
+                'lessThan<' => '10',
+                'greaterEqual>=' => '11',
+                'lessEqual<=' => '20',
+                'not<>' => '15',
+                'notAgain!' => '15',
+                'contains~' => 'raig',
+                'starts^' => 'craig',
+                'ends$' => 'smith',
+                'ids' => '1||2||3||4',
+                'notin!' => '1||2||3||4',
+                'notstart!^' => 'fake',
+                'notend!$' => 'notend',
+                'notcontain!~' => 'notin',
+                'new[]' => 1,
+                'new[]!' => 2
+            ]
+        ]);
 
 
-		$parser = new UriParser($myRequest, 'filter');
+        $parser = new UriParser($myRequest, 'filter');
 
 
         $params = $parser->whereParameters();

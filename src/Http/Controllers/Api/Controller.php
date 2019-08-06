@@ -354,9 +354,9 @@ abstract class Controller extends LaravelController
             return $this->errorWrongArgs('Empty request');
         }
 
-		try {
-			$item = $this->repository->getById($id);
-		}catch(ModelNotFoundException $e) {
+        try {
+            $item = $this->repository->getById($id);
+        }catch(ModelNotFoundException $e) {
             return $this->errorNotFound('Record does not exist');
         }
 
@@ -387,11 +387,11 @@ abstract class Controller extends LaravelController
      */
     public function destroy($id)
     {
-		try {
-			$this->respository->deleteById($id);
-		}catch(ModelNotFoundException $e) {
-			return $this->errorNotFound('Record does not exist');
-		}
+        try {
+            $this->respository->deleteById($id);
+        }catch(ModelNotFoundException $e) {
+            return $this->errorNotFound('Record does not exist');
+        }
 
         return response()->json(['message' => 'Deleted']);
     }
