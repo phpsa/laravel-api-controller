@@ -77,7 +77,7 @@ abstract class Controller extends LaravelController
     /**
      * Holds the current authed user object.
      *
-     * @var Illuminate\Contracts\Auth\Authenticatable
+     * @var \Illuminate\Contracts\Auth\Authenticatable
      */
     protected $user;
 
@@ -291,7 +291,7 @@ abstract class Controller extends LaravelController
     {
         $data = $this->request->all();
 
-        if (!is_array($data) || empty($data)) {
+        if (empty($data)) {
             return $this->errorWrongArgs('Empty request');
         }
 
@@ -350,7 +350,7 @@ abstract class Controller extends LaravelController
     {
         $data = $this->request->all();
 
-        if (!is_array($data) ||  empty($data)) {
+        if (empty($data)) {
             return $this->errorWrongArgs('Empty request');
         }
 
@@ -474,7 +474,7 @@ abstract class Controller extends LaravelController
     /**
      * Created Response.
      *
-     * @param int    $id      id of insterted data
+     * @param int|array    $id      id of insterted data
      * @param string $message message to respond with
      *
      * @return Response

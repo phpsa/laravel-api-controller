@@ -45,7 +45,7 @@ class UriParser
      * @param \Illuminate\Http\Request $request
      * @param string $filter - which key to filer on
      */
-    public function __construct(Request $request, $filter)
+    public function __construct(Request $request, string $filter)
     {
         $this->request = $request;
 
@@ -60,7 +60,7 @@ class UriParser
      *
      * @return string
      */
-    public static function getPattern()
+    public static function getPattern() : string
     {
         return self::PATTERN;
     }
@@ -70,11 +70,18 @@ class UriParser
      *
      * @return string
      */
-    public static function getArrayQueryPattern()
+    public static function getArrayQueryPattern() : string
     {
         return self::ARRAY_QUERY_PATTERN;
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param string $key - key to grab from the filter params
+     *
+     * @return mixed
+     */
     public function queryParameter($key)
     {
         $keys = Arr::pluck($this->queryParameters, 'key');
@@ -96,18 +103,25 @@ class UriParser
         return $return;
     }
 
-    public function whereParameters()
+    /**
+     * returns the list of wheres from the query
+     *
+     * @return array
+     */
+    public function whereParameters() : array
     {
         return $this->queryParameters;
     }
 
-    private function setQueryParameters($queryUri)
+
+    private function setQueryParameters($queryUri) : self
     {
         foreach ($queryUri as $key => $value) {
             preg_match(self::PATTERN, urldecode($key), $matches);
             $operator = empty($matches[0]) ? '=' : '';
             $this->appendQueryParameter($key.$operator.$value);
         }
+        return $this;
     }
 
     private function appendQueryParameter($parameter)
@@ -203,7 +217,7 @@ class UriParser
         }
     }
 
-    public function hasQueryUri()
+    public function hasQueryUri() : bool
     {
         return ! empty($this->queryUri);
     }
@@ -213,19 +227,19 @@ class UriParser
         return $this->queryUri;
     }
 
-    public function hasQueryParameters()
+    public function hasQueryParameters() : bool
     {
         return count($this->queryParameters) > 0;
     }
 
-    public function hasQueryParameter($key)
+    public function hasQueryParameter($key) : bool
     {
         $keys = Arr::pluck($this->queryParameters, 'key');
 
         return in_array($key, $keys);
     }
 
-    private function isLikeQuery($query)
+    private function isLikeQuery($query) : bool
     {
         $pattern = "/^\*|\*$/";
 
