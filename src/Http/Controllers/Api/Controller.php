@@ -77,7 +77,7 @@ abstract class Controller extends LaravelController
     /**
      * Holds the current authed user object.
      *
-     * @var \Illuminate\Contracts\Auth\Authenticatable
+     * @var \Illuminate\Foundation\Auth\User
      */
     protected $user;
 

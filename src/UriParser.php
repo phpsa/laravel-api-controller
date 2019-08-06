@@ -243,6 +243,6 @@ class UriParser
     {
         $pattern = "/^\*|\*$/";
 
-        return preg_match($pattern, $query, $matches);
+        return preg_match($pattern, $query, $matches) ? true : false;
     }
 }
