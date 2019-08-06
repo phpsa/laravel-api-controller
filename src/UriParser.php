@@ -43,10 +43,12 @@ class UriParser
      * Constructor.
      *
      * @param \Illuminate\Http\Request $request
+	 * @param string $filter - which key to filer on
      */
     public function __construct(Request $request, $filter)
     {
-        $this->request = $request;
+		$this->request = $request;
+
         $this->queryUri = $request->query($filter);
         if ($this->hasQueryUri()) {
             $this->setQueryParameters($this->queryUri);

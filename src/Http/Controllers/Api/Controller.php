@@ -14,6 +14,7 @@ use Illuminate\Routing\Controller as LaravelController;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Repository\BaseRepository;
 use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 abstract class Controller extends LaravelController
 {
@@ -353,9 +354,10 @@ abstract class Controller extends LaravelController
             return $this->errorWrongArgs('Empty request');
         }
 
-        $item = $this->repository->getById($id);
-        if ($item->doesntExist()) {
-            return $this->errorNotFound();
+		try {
+			$item = $this->repository->getById($id);
+		}catch(ModelNotFoundException $e) {
+            return $this->errorNotFound('Record does not exist');
         }
 
         $validator = Validator::make($data, $this->rulesForUpdate($item->id));
@@ -385,11 +387,11 @@ abstract class Controller extends LaravelController
      */
     public function destroy($id)
     {
-        $item = $this->repository->getById($id);
-        if ($item->doesntExist()) {
-            return $this->errorNotFound();
-        }
-        $item->delete();
+		try {
+			$this->respository->deleteById($id);
+		}catch(ModelNotFoundException $e) {
+			return $this->errorNotFound('Record does not exist');
+		}
 
         return response()->json(['message' => 'Deleted']);
     }
