@@ -5,7 +5,7 @@ namespace Phpsa\LaravelApiController\Traits;
 use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
 
 
-Class Parser {
+Trait Parser {
 
 	/**
      * Default Fields to response with.
@@ -168,6 +168,8 @@ Class Parser {
 	 */
 	protected function parseLimitParams() : int
 	{
+
+		$limit = $this->request->has('limit') ? intval($this->request->input('limit')) : $this->defaultLimit;
 
 		if ($this->maximumLimit && ($limit > $this->maximumLimit || ! $limit)) {
             $limit = $this->maximumLimit;

@@ -5,7 +5,7 @@ namespace Phpsa\LaravelApiController\Traits;
 use Illuminate\Http\Response as Res;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-Class Response {
+Trait Response {
 
 	/**
      * HTTP header status code.

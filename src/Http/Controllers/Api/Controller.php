@@ -71,8 +71,6 @@ abstract class Controller extends BaseController
      */
     protected $user;
 
-
-
     /**
      * Holds the available table columns
      *
