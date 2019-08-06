@@ -84,7 +84,7 @@ trait Response
     /**
      * Created Response.
      *
-     * @param int|array    $id      id of insterted data
+     * @param mixed  $id      id of insterted data
      * @param string $message message to respond with
      *
      * @return Res

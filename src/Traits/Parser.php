@@ -221,44 +221,28 @@ Trait Parser {
 	 */
 	protected function parseFieldParams() : array
     {
-        $attributes = $this->model->attributesToArray();
+
         $fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
         foreach ($fields as $k => $field) {
 			if (
 				$field === '*'  ||
-				in_array($field, $this->getTableColumns()) /* ||
-				array_key_exists($field, $attributes) */
+				in_array($field, $this->getTableColumns())
 			) {
                 continue;
             }
-            if (strpos($field, '.') > 0) {
-                //@TODO check if mapped field exists
-				//@todo
-				// $fieldParts = explode(".", $field);
-				// $join = $fieldParts[0];
-				// $joinField = $fieldParts[1];
-				// $sub = $this->model->{$join}()->getRelated();
-
-       			// \dd($this->model->{$join}()->getRelated());
-
-                unset($fields[$k]);
-                continue;
-			}
-
 			unset($fields[$k]);
-
         }
 
         return $fields;
 	}
 
 	/**
-	 * Parses an includes fields and returns as an array or null if none
-	 * @param $include - the table definer
+	 * Parses an includes fields and returns as an array
+	 * @param string $include - the table definer
 	 *
-	 * @return array|null
+	 * @return array
 	 */
-	protected function getIncludesFields($include) : ?array
+	protected function getIncludesFields(string $include) : array
 	{
 		$fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
 		foreach($fields as $k =>$field){

@@ -244,9 +244,9 @@ class BaseRepository
      * @param array $columns
      *
      * @throws ModelNotFoundException
-     * @return Collection|Model
+     * @return Model
      */
-    public function getById($id, array $columns = ['*'])
+    public function getById($id, array $columns = ['*']) : Model
     {
         $this->unsetClauses();
 

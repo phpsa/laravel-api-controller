@@ -80,8 +80,6 @@ abstract class Controller extends BaseController
         $this->request = $request;
         $this->uriParser = new UriParser($request, config('laravel-api-controller.parameters.filter'));
         $this->user = auth()->user();
-        $str = 'providers';
-
     }
 
 
