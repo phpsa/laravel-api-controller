@@ -5,6 +5,7 @@ namespace Phpsa\LaravelApiController\Repository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
  * Class BaseRepository.
@@ -178,7 +179,7 @@ class BaseRepository
      *
      * @param $id
      *
-     * @throws \Exception
+     * @throws ModelNotFoundException
      * @return bool
      */
     public function deleteById($id) : bool
@@ -242,6 +243,7 @@ class BaseRepository
      * @param       $id
      * @param array $columns
      *
+	 * @throws ModelNotFoundException
      * @return Collection|Model
      */
     public function getById($id, array $columns = ['*'])

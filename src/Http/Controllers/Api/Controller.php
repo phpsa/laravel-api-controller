@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response as Res;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Response;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Validator;
 use Phpsa\LaravelApiController\UriParser;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -75,9 +75,9 @@ abstract class Controller extends LaravelController
     protected $resourceKeyPlural = 'data';
 
     /**
-     * Holds teh current authed user object.
+     * Holds the current authed user object.
      *
-     * @var User
+     * @var Illuminate\Contracts\Auth\Authenticatable
      */
     protected $user;
 
@@ -260,7 +260,7 @@ abstract class Controller extends LaravelController
      * Display a listing of the resource.
      * GET /api/{resource}.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return Response
      */
     public function index()
     {
@@ -291,7 +291,7 @@ abstract class Controller extends LaravelController
     {
         $data = $this->request->all();
 
-        if (! $data) {
+        if (!is_array($data) || empty($data)) {
             return $this->errorWrongArgs('Empty request');
         }
 
@@ -330,7 +330,7 @@ abstract class Controller extends LaravelController
         $fields = empty($this->request->input('fields')) ? $this->defaultFields : explode(',', $this->request->input('fields'));
 
         try {
-            $item = $this->repository->getById($id);
+            $item = $this->repository->getById($id, $fields);
         } catch (\Exception $e) {
             return $this->errorNotFound('Record not found');
         }
@@ -350,7 +350,7 @@ abstract class Controller extends LaravelController
     {
         $data = $this->request->all();
 
-        if (! $data) {
+        if (!is_array($data) ||  empty($data)) {
             return $this->errorWrongArgs('Empty request');
         }
 
@@ -388,7 +388,7 @@ abstract class Controller extends LaravelController
     public function destroy($id)
     {
         try {
-            $this->respository->deleteById($id);
+            $this->repository->deleteById($id);
         }catch(ModelNotFoundException $e) {
             return $this->errorNotFound('Record does not exist');
         }
@@ -413,7 +413,7 @@ abstract class Controller extends LaravelController
      *
      * @return Response
      */
-    public function edit($id)
+    public function edit(/** @scrutinizer ignore-unused */ $id)
     {
         return $this->errorNotImplemented();
     }
@@ -428,7 +428,7 @@ abstract class Controller extends LaravelController
 
     /**
      * @param $message
-     * @return json Res
+     * @return self
      */
     public function setStatusCode($statusCode)
     {
@@ -442,7 +442,7 @@ abstract class Controller extends LaravelController
      *
      * @param $item
      *
-     * @return mixed
+     * @return Response
      */
     protected function respondWithOne($item)
     {
@@ -460,7 +460,7 @@ abstract class Controller extends LaravelController
      * @param int $skip
      * @param int $limit
      *
-     * @return mixed
+     * @return Response
      */
     protected function respondWithMany($items)
     {
@@ -474,10 +474,10 @@ abstract class Controller extends LaravelController
     /**
      * Created Response.
      *
-     * @param [int] $id of insterted data
-     * @param [type] $message
+     * @param int    $id      id of insterted data
+     * @param string $message message to respond with
      *
-     * @return void
+     * @return Response
      */
     public function respondCreated($id = null, $message = null)
     {
@@ -525,7 +525,7 @@ abstract class Controller extends LaravelController
      * @param mixed $data
      * @param array $headers
      *
-     * @return mixed
+     * @return Response
      */
     protected function respond($data, $code = null, $headers = [])
     {
@@ -641,7 +641,7 @@ abstract class Controller extends LaravelController
      *
      * @return array
      */
-    protected function rulesForUpdate($id)
+    protected function rulesForUpdate(/** @scrutinizer ignore-unused */ $id)
     {
         return [];
     }
