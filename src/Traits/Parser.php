@@ -1,7 +1,8 @@
 <?php
 
 namespace Phpsa\LaravelApiController\Traits;
-
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
 
 
@@ -34,7 +35,52 @@ Trait Parser {
      *
      * @var int
      */
-    protected $maximumLimit = 0;
+	protected $maximumLimit = 0;
+
+	/**
+     * Holds the available table columns
+     *
+     * @var array
+     */
+    protected $tableColumns = [];
+
+
+	/**
+     * Set which columns area available in the model
+     *
+     * @param Model $model
+     *
+     * @return void
+     */
+    protected function setTableColumns(Model $model = null) : void
+    {
+		if(null === $model){
+			$model = $this->model;
+		}
+		$table = $model->getTable();
+        $this->tableColumns[$table] = Schema::getColumnListing($table);
+    }
+
+    /**
+     * gets avaialble columns for the table
+     *
+     * @param Model $model
+     *
+     * @return array
+     */
+    protected function getTableColumns(Model $model = null) : array
+    {
+		if(null === $model){
+			$model = $this->model;
+		}
+
+		$table = $model->getTable();
+
+        if(!isset($this->tableColumns[$table])){
+            $this->setTableColumns($model);
+        }
+        return $this->tableColumns[$table];
+    }
 
 	/**
 	 * Parses our include joins
@@ -49,11 +95,28 @@ Trait Parser {
             return;
 		}
 
-		$with = $this->request->input($field);
+		$includes = $this->request->input($field);
 
-        if ($with !== null) {
-            $this->repository->with(explode(',', $with));
-        }
+		if(empty($includes)){
+			return;
+		}
+
+		$withs = explode(",", $includes);
+
+		foreach($withs as $idx => $with){
+
+			$sub = $this->model->{$with}()->getRelated();
+			$fields = $this->getIncludesFields($with);
+
+			if(!empty($fields)){
+				$fields[] = $sub->getKeyName();
+				$withs[$idx] = $with . ':' . implode(",", array_unique($fields));
+			}
+		}
+
+		$this->repository->with($withs);
+
+
 	}
 
 	/**
@@ -71,7 +134,7 @@ Trait Parser {
 			$sortP = explode(' ', $sort);
 			$sortF = $sortP[0];
 
-			if (empty($sortF) || ! in_array($sortF, $this->tableColumns)) {
+			if (empty($sortF) || ! in_array($sortF, $this->getTableColumns())) {
 				continue;
 			}
 
@@ -114,7 +177,7 @@ Trait Parser {
 			if (strpos($whr['key'], '.') > 0) {
 				//@TODO: test if exists in the withs, if not continue out to exclude from the qbuild
 				//continue;
-			} elseif (! in_array($whr['key'], $this->tableColumns)) {
+			} elseif (! in_array($whr['key'], $this->getTableColumns())) {
 				continue;
 			}
 
@@ -163,14 +226,21 @@ Trait Parser {
         foreach ($fields as $k => $field) {
 			if (
 				$field === '*'  ||
-				in_array($field, $this->tableColumns)  ||
-				array_key_exists($field, $attributes)
+				in_array($field, $this->getTableColumns()) /* ||
+				array_key_exists($field, $attributes) */
 			) {
                 continue;
             }
             if (strpos($field, '.') > 0) {
                 //@TODO check if mapped field exists
-                //@todo
+				//@todo
+				// $fieldParts = explode(".", $field);
+				// $join = $fieldParts[0];
+				// $joinField = $fieldParts[1];
+				// $sub = $this->model->{$join}()->getRelated();
+
+       			// \dd($this->model->{$join}()->getRelated());
+
                 unset($fields[$k]);
                 continue;
 			}
@@ -180,6 +250,26 @@ Trait Parser {
         }
 
         return $fields;
+	}
+
+	/**
+	 * Parses an includes fields and returns as an array or null if none
+	 * @param $include - the table definer
+	 *
+	 * @return array|null
+	 */
+	protected function getIncludesFields($include) : ?array
+	{
+		$fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
+		foreach($fields as $k =>$field){
+			if (strpos($field, $include . '.') === false) {
+				unset($fields[$k]);
+				continue;
+			}
+			$fields[$k] = str_replace($include . '.', "", $field);
+		}
+		return $fields;
+
 	}
 
 	/**

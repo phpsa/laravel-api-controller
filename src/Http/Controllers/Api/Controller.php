@@ -71,12 +71,7 @@ abstract class Controller extends BaseController
      */
     protected $user;
 
-    /**
-     * Holds the available table columns
-     *
-     * @var array
-     */
-    protected $tableColumns = [];
+
 
     /**
      * Constructor.
@@ -90,9 +85,11 @@ abstract class Controller extends BaseController
         $this->request = $request;
         $this->uriParser = new UriParser($request, config('laravel-api-controller.parameters.filter'));
         $this->user = auth()->user();
+        $str = 'providers';
 
-        $this->tableColumns = Schema::getColumnListing($this->model->getTable());
     }
+
+
 
     /**
      * @throws ApiException
@@ -167,7 +164,7 @@ abstract class Controller extends BaseController
             return $this->errorWrongArgs($e->getMessage());
         }
 
-        return $this->respondCreated($item->id);
+        return $this->respondCreated($this->repository->getById($item->id));
     }
 
     /**
@@ -241,13 +238,13 @@ abstract class Controller extends BaseController
      */
     public function destroy($id)
     {
+        return $this->respondNoContent();
         try {
-            $this->respository->deleteById($id);
+            $this->repository->deleteById($id);
         } catch (ModelNotFoundException $e) {
             return $this->errorNotFound('Record does not exist');
         }
 
-        return response()->json(['message' => 'Deleted']);
     }
 
     /**

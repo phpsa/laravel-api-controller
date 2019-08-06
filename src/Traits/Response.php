@@ -144,6 +144,19 @@ Trait Response {
             $code ? $code : $this->getStatusCode(),
             $headers
         );
+	}
+
+	 /**
+     * Respond with a given response.
+     *
+     * @param mixed $data
+     * @param array $headers
+     *
+     * @return Res
+     */
+    protected function respondNoContent()
+    {
+		return response("",Res::HTTP_NO_CONTENT);
     }
 
     /**

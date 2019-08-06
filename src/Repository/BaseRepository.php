@@ -399,7 +399,7 @@ class BaseRepository
     {
         if (is_string($relations)) {
             $relations = func_get_args();
-        }
+		}
 
         $this->with = $relations;
 
