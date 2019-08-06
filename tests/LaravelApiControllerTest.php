@@ -2,8 +2,8 @@
 
 namespace Phpsa\LaravelApiController\Tests;
 
-use Orchestra\Testbench\TestCase;
 use Illuminate\Http\Request;
+use Orchestra\Testbench\TestCase;
 use Phpsa\LaravelApiController\UriParser;
 use Phpsa\LaravelApiController\ServiceProvider;
 use Phpsa\LaravelApiController\Facades\LaravelApiController;
@@ -46,13 +46,11 @@ class LaravelApiControllerTest extends TestCase
                 'notend!$' => 'notend',
                 'notcontain!~' => 'notin',
                 'new[]' => 1,
-                'new[]!' => 2
-            ]
+                'new[]!' => 2,
+            ],
         ]);
 
-
         $parser = new UriParser($myRequest, 'filter');
-
 
         $params = $parser->whereParameters();
 

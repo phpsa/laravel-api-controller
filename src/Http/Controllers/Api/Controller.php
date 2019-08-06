@@ -12,9 +12,9 @@ use Phpsa\LaravelApiController\UriParser;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Controller as LaravelController;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Phpsa\LaravelApiController\Repository\BaseRepository;
 use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 abstract class Controller extends LaravelController
 {
@@ -356,7 +356,7 @@ abstract class Controller extends LaravelController
 
         try {
             $item = $this->repository->getById($id);
-        }catch(ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return $this->errorNotFound('Record does not exist');
         }
 
@@ -388,8 +388,8 @@ abstract class Controller extends LaravelController
     public function destroy($id)
     {
         try {
-            $this->repository->deleteById($id);
-        }catch(ModelNotFoundException $e) {
+            $this->respository->deleteById($id);
+        } catch (ModelNotFoundException $e) {
             return $this->errorNotFound('Record does not exist');
         }
 
