@@ -144,9 +144,9 @@ trait Response
             $code ? $code : $this->getStatusCode(),
             $headers
         );
-	}
+    }
 
-	 /**
+    /**
      * Respond with a given response.
      *
      * @param mixed $data
@@ -156,7 +156,7 @@ trait Response
      */
     protected function respondNoContent()
     {
-		return response("",Res::HTTP_NO_CONTENT);
+        return response('', Res::HTTP_NO_CONTENT);
     }
 
     /**

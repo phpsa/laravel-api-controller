@@ -67,7 +67,6 @@ abstract class Controller extends BaseController
      */
     protected $user;
 
-
     /**
      * Constructor.
      *
@@ -81,8 +80,6 @@ abstract class Controller extends BaseController
         $this->uriParser = new UriParser($request, config('laravel-api-controller.parameters.filter'));
         $this->user = auth()->user();
     }
-
-
 
     /**
      * @throws ApiException
@@ -236,8 +233,8 @@ abstract class Controller extends BaseController
         } catch (ModelNotFoundException $e) {
             return $this->errorNotFound('Record does not exist');
         }
-        return $this->respondNoContent();
 
+        return $this->respondNoContent();
     }
 
     /**
