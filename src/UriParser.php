@@ -1,110 +1,127 @@
 <?php
+
 namespace Phpsa\LaravelApiController;
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class UriParser
 {
-
-	/**
-	 * Pattern match
-	* '=' =>  Equals
-	* '>' =>  Greater than
-	* '<' =>  Less than
-	* '>=' =>  Greater or equal
-	* '<=' =>  Less or equal
-	* '<>' =>  Where not
-	* '!=' =>  Where not
-	* '~' =>  Contains (LIKE with wildcard on both sides)
-	* '^' =>  Begins with
-	* '$' => Ends with
-	 */
+    /**
+     * Pattern match
+     * '=' =>  Equals
+     * '>' =>  Greater than
+     * '<' =>  Less than
+     * '>=' =>  Greater or equal
+     * '<=' =>  Less or equal
+     * '<>' =>  Where not
+     * '!=' =>  Where not
+     * '~' =>  Contains (LIKE with wildcard on both sides)
+     * '^' =>  Begins with
+     * '$' => Ends with.
+     */
     const PATTERN = '/!=|=|!~|~|!\^|\^|!\$|\$|<>|<=|<|>=|>/';
 
+    /**
+     * Patttern to match an array within the url structure.
+     */
     const ARRAY_QUERY_PATTERN = '/(.*)\[\]/';
 
+    /**
+     * Undocumented variable.
+     *
+     * @var Request
+     */
     protected $request;
-
-    protected $constantParameters = [
-        'order_by',
-        'group_by',
-        'limit',
-        'page',
-        'fields',
-        'with',
-    ];
-
-    protected $uri;
 
     protected $queryUri;
 
     protected $queryParameters = [];
 
-    public function __construct(Request $request)
+    /**
+     * Constructor.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $filter - which key to filer on
+     */
+    public function __construct(Request $request, string $filter)
     {
         $this->request = $request;
-        $this->uri     = $request->getRequestUri();
-        $this->setQueryUri($this->uri);
+
+        $this->queryUri = $request->query($filter);
         if ($this->hasQueryUri()) {
             $this->setQueryParameters($this->queryUri);
         }
     }
 
-    public static function getPattern()
+    /**
+     * gets our pattern.
+     *
+     * @return string
+     */
+    public static function getPattern() : string
     {
         return self::PATTERN;
     }
 
-    public static function getArrayQueryPattern()
+    /**
+     * Gets our Array pattern.
+     *
+     * @return string
+     */
+    public static function getArrayQueryPattern() : string
     {
         return self::ARRAY_QUERY_PATTERN;
     }
 
+    /**
+     * Undocumented function.
+     *
+     * @param string $key - key to grab from the filter params
+     *
+     * @return mixed
+     */
     public function queryParameter($key)
     {
-		$keys            = array_pluck($this->queryParameters, 'key');
-		$counts = array_count_values($keys);
-		if(empty($counts[$key])){
-			return null;
-		}
-		if($counts[$key] === 1){
-			$idx = array_search($key, $keys);
-			return $this->queryParameters[$idx];
-		}
+        $keys = Arr::pluck($this->queryParameters, 'key');
+        $counts = array_count_values($keys);
+        if (empty($counts[$key])) {
+            return;
+        }
+        if ($counts[$key] === 1) {
+            $idx = array_search($key, $keys);
 
-		$return = [];
-		foreach(array_keys($keys, $key) as $k){
-			$return[] = $this->queryParameters[$k];
-		}
+            return $this->queryParameters[$idx];
+        }
+
+        $return = [];
+        foreach (array_keys($keys, $key) as $k) {
+            $return[] = $this->queryParameters[$k];
+        }
+
         return $return;
     }
 
-    public function constantParameters()
+    /**
+     * returns the list of wheres from the query.
+     *
+     * @return array
+     */
+    public function whereParameters() : array
     {
-        return $this->constantParameters;
+        return $this->queryParameters;
     }
 
-    public function whereParameters()
+    private function setQueryParameters($queryUri) : self
     {
-        return array_filter(
-            $this->queryParameters,
-            function ($queryParameter) {
-                $key = $queryParameter['key'];
-                return (!in_array($key, $this->constantParameters));
-            }
-        );
-    }
+        foreach ($queryUri as $key => $value) {
+            preg_match(self::PATTERN, urldecode($key), $matches);
+            $operator = empty($matches[0]) ? '=' : '';
+            $this->appendQueryParameter($key.$operator.$value);
+        }
 
-    private function setQueryUri($uri)
-    {
-        $explode        = explode('?', $uri);
-        $this->queryUri = (isset($explode[1])) ? urldecode($explode[1]) : null;
-    }
-
-    private function setQueryParameters($queryUri)
-    {
-        $queryParameters = array_filter(explode('&', $queryUri));
-        array_map([$this, 'appendQueryParameter'], $queryParameters);
+        return $this;
     }
 
     private function appendQueryParameter($parameter)
@@ -113,6 +130,7 @@ class UriParser
         preg_match(self::ARRAY_QUERY_PATTERN, $parameter, $arrayMatches);
         if (count($arrayMatches) > 0) {
             $this->appendQueryParameterAsWhereIn($parameter, $arrayMatches[1]);
+
             return;
         }
         // basic where expression
@@ -121,65 +139,64 @@ class UriParser
 
     private function appendQueryParameterAsBasicWhere($parameter)
     {
-		preg_match(self::PATTERN, $parameter, $matches);
-		if(!isset($matches[0])){
-			return;
-		}
-		$operator          = $matches[0];
-        list($key, $value) = explode($operator, $parameter);
+        preg_match(self::PATTERN, $parameter, $matches);
+        if (! isset($matches[0])) {
+            return;
+        }
+        $operator = $matches[0];
+        [$key, $value] = explode($operator, $parameter);
 
-        $in = strpos($value, "||");
+        $in = strpos($value, '||');
         if ($in) {
-            $values = explode("||", $value);
-            if (str_contains($parameter, '!=') || str_contains($parameter, '<>')) {
-                $type      = 'NotIn';
-                $seperator = '!=';
+            $values = explode('||', $value);
+            if (Str::contains($parameter, '!=') || Str::contains($parameter, '<>')) {
+                $type = 'NotIn';
             } else {
-                $type      = 'In';
-                $seperator = '=';
+                $type = 'In';
             }
             $this->queryParameters[] = [
                 'type'   => $type,
                 'key'    => $key,
                 'values' => $values,
             ];
+
             return;
         }
 
-        if (!$this->isConstantParameter($key) && $this->isLikeQuery($value)) {
+        if ($this->isLikeQuery($value)) {
             $operator = 'like';
-            $value    = str_replace('*', '%', $value);
-		}
-		if($operator == '<>'){
-			$operator = '!=';
-		}
-		if(in_array($operator, ['$','^','~'])){
-			$pre  = in_array($operator, ['^','~']) ? '%' : '';
-			$post = in_array($operator, ['$','~']) ? '%' : '';
-			$operator = 'like';
-            $value    = $pre . $value . $post;
-		}
-		if(in_array($operator, ['!$','!^','!~'])){
-			$pre  = in_array($operator, ['!^','!~']) ? '%' : '';
-			$post = in_array($operator, ['!$','!~']) ? '%' : '';
-			$operator = 'not like';
-            $value    = $pre . $value . $post;
-		}
+            $value = str_replace('*', '%', $value);
+        }
+        if ($operator == '<>') {
+            $operator = '!=';
+        }
+        if (in_array($operator, ['$', '^', '~'])) {
+            $pre = in_array($operator, ['^', '~']) ? '%' : '';
+            $post = in_array($operator, ['$', '~']) ? '%' : '';
+            $operator = 'like';
+            $value = $pre.$value.$post;
+        }
+        if (in_array($operator, ['!$', '!^', '!~'])) {
+            $pre = in_array($operator, ['!^', '!~']) ? '%' : '';
+            $post = in_array($operator, ['!$', '!~']) ? '%' : '';
+            $operator = 'not like';
+            $value = $pre.$value.$post;
+        }
         $this->queryParameters[] = [
             'type'     => 'Basic',
             'key'      => $key,
             'operator' => $operator,
             'value'    => $value,
         ];
-	}
+    }
 
     private function appendQueryParameterAsWhereIn($parameter, $key)
     {
-        if (str_contains($parameter, '!=')) {
-            $type      = 'NotIn';
+        if (Str::contains($parameter, '!=')) {
+            $type = 'NotIn';
             $seperator = '!=';
         } else {
-            $type      = 'In';
+            $type = 'In';
             $seperator = '=';
         }
         $index = null;
@@ -199,30 +216,33 @@ class UriParser
             ];
         }
     }
-    public function hasQueryUri()
+
+    public function hasQueryUri() : bool
     {
-        return ($this->queryUri);
+        return ! empty($this->queryUri);
     }
+
     public function getQueryUri()
     {
         return $this->queryUri;
     }
-    public function hasQueryParameters()
+
+    public function hasQueryParameters() : bool
     {
-        return (count($this->queryParameters) > 0);
+        return count($this->queryParameters) > 0;
     }
-    public function hasQueryParameter($key)
+
+    public function hasQueryParameter($key) : bool
     {
-        $keys = array_pluck($this->queryParameters, 'key');
-        return (in_array($key, $keys));
+        $keys = Arr::pluck($this->queryParameters, 'key');
+
+        return in_array($key, $keys);
     }
-    private function isLikeQuery($query)
+
+    private function isLikeQuery($query) : bool
     {
         $pattern = "/^\*|\*$/";
-        return (preg_match($pattern, $query, $matches));
-    }
-    private function isConstantParameter($key)
-    {
-        return (in_array($key, $this->constantParameters));
+
+        return preg_match($pattern, $query, $matches) ? true : false;
     }
 }

@@ -40,21 +40,21 @@ You can override the methods by simply putting in your own methods to override -
 
 For the get command you can filter by using the following url patterns
 
-| Seperator | Description 					| Example 		| Result 							|
-| --- 		| --- 							| --- 			| --- 	 							|
-| *`=`* 	| Equals 						| ?field=hello	| select ... where field = 'hello'	|
-| *`!=`*  	| Not Equals 					| ?field!=hello	| select ... where field != 'hello'	|
-| *`<>`* 	| Not Equals (alt) 				| ?field<>hello	| select ... where field != 'hello'	|
-| *`>`* 	| Greater Than					| ?field>5	 	| select ... where field > 5	|
-| *`>=`* 	| Greater  Or Equal to			| ?field=>5	 	| select ... where field >= 5	|
-| *`<`* 	| Less Than						| ?field<5	 	| select ... where field <> 5	|
-| *`<=`* 	| Less Or Equal to				| ?field=<5	 	| select ... where field <= 5	|
-| *`~`*  	| Contains (LIKE with wildcard on both sides)| ?field~hello	| select ... where field like '%hello%'	|
-| *`^`*  	| Starts with (LIKE with wildcard on end)| ?field^hello	| select ... where field like 'hello%'	|
-| *`$`*  	| Ends with (LIKE with wildcard on start)| ?field$hello	| select ... where field like 'hello%'	|
-| *`!~`*  	| Not Contains (LIKE with wildcard on both sides)| ?field!~hello	| select ... where field not like '%hello%'	|
-| *`!^`*  	| Not Starts with (LIKE with wildcard on end)| ?field!^hello	| select ... where field not like 'hello%'	|
-| *`!$`*  	| Not Ends with (LIKE with wildcard on start)| ?field!$hello	| select ... where field not like 'hello%'	|
+| Seperator | Description 					| Example 					| Result 							|
+| --- 		| --- 							| --- 						| --- 	 							|
+| *`=`* 	| Equals 						| ?filter[field]=hello		| select ... where field = 'hello'	|
+| *`!=`*  	| Not Equals 					| ?filter[field!]=hello		| select ... where field != 'hello'	|
+| *`<>`* 	| Not Equals (alt) 				| ?filter[field<>]=hello	| select ... where field != 'hello'	|
+| *`>`* 	| Greater Than					| ?filter[field>]=5	 		| select ... where field > 5	|
+| *`>=`* 	| Greater  Or Equal to			| ?filter[field=>]=5	 	| select ... where field >= 5	|
+| *`<`* 	| Less Than						| ?filter[field<]=5	 		| select ... where field <> 5	|
+| *`<=`* 	| Less Or Equal to				| ?filter[field=<]=5	 	| select ... where field <= 5	|
+| *`~`*  	| Contains (LIKE with wildcard on both sides)		| ?filter[field~]=hello		| select ... where field like '%hello%'	|
+| *`^`*  	| Starts with (LIKE with wildcard on end)			| ?filter[field^]=hello		| select ... where field like 'hello%'	|
+| *`$`*  	| Ends with (LIKE with wildcard on start)			| ?filter[field$]=hello		| select ... where field like 'hello%'	|
+| *`!~`*  	| Not Contains (LIKE with wildcard on both sides)	| ?filter[field!~]=hello	| select ... where field not like '%hello%'	|
+| *`!^`*  	| Not Starts with (LIKE with wildcard on end)		| ?filter[field!^]=hello	| select ... where field not like 'hello%'	|
+| *`!$`*  	| Not Ends with (LIKE with wildcard on start)		| ?filter[field!$]=hello	| select ... where field not like 'hello%'	|
 
 
 # Fields, Relationships, Sorting & Pagination
@@ -80,8 +80,28 @@ By default all fields are returned, you can limit that to specific fields in the
 * pagination can also be passed via the url using `limit=xx&page=y`
 * pagination can also be limited to a max per page by overriding the `protected $maximumLimit = false;` parameter
 
+## Validation
+* When Posting a new record, validation can be done by adding a `rulesForCreate` method to your controller returning an array eg
+```php
+[
+    'email' => 'required|email',
+    'games' => 'required|numeric',
+]
+```
+see https://laravel.com/docs/5.8/validation#conditionally-adding-rules
+* for updating a record, add a method `rulesForUpdate` per above.
 
+## Defaults
 
+The following parameters are set in the Base Api controller and can be overwritten by your Controller on a case by case basis:
+
+* `protected $resourceKeySingular = 'data';`	Resource key for an item.
+* `protected $resourceKeyPlural = 'data';`		Resource key for a collection.
+* `protected $defaultFields = ['*'];`			Default Fields to respond with
+* `protected $defaultSort = null;`				Set the default sorting for queries.
+* `protected $defaultLimit = 25;`				Number of items displayed at once if not specified. (0 = maximumLimit)
+* `protected $maximumLimit = 0;`				Maximum limit that can be set via $_GET['limit']. - this ties in with the defaultLimit aswell, and if wanting to disable pagination , both should be 0. ) will allow all records to be returned in a single call.
+* `protected $unguard = false;`   				Do we need to unguard the model before create/update?
 
 ## Security
 
