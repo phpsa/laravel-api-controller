@@ -56,6 +56,10 @@ For the get command you can filter by using the following url patterns
 | *`!^`*  	| Not Starts with (LIKE with wildcard on end)		| ?filter[field!^]=hello	| select ... where field not like 'hello%'	|
 | *`!$`*  	| Not Ends with (LIKE with wildcard on start)		| ?filter[field!$]=hello	| select ... where field not like 'hello%'	|
 
+# In / Not In
+You can pass to the filters an array of values
+ie: `filter[user_id]=1||2||||4||7` or `filter[user_id!]=55||33`
+
 
 # Fields, Relationships, Sorting & Pagination
 

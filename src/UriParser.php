@@ -171,14 +171,14 @@ class UriParser
             $operator = '!=';
         }
         if (in_array($operator, ['$', '^', '~'])) {
-            $pre = in_array($operator, ['^', '~']) ? '%' : '';
-            $post = in_array($operator, ['$', '~']) ? '%' : '';
+            $pre = in_array($operator, ['$', '~']) ? '%' : '';
+            $post = in_array($operator, ['^', '~']) ? '%' : '';
             $operator = 'like';
             $value = $pre.$value.$post;
         }
         if (in_array($operator, ['!$', '!^', '!~'])) {
-            $pre = in_array($operator, ['!^', '!~']) ? '%' : '';
-            $post = in_array($operator, ['!$', '!~']) ? '%' : '';
+            $pre = in_array($operator, ['!$', '!~']) ? '%' : '';
+            $post = in_array($operator, ['!^', '!~']) ? '%' : '';
             $operator = 'not like';
             $value = $pre.$value.$post;
         }
