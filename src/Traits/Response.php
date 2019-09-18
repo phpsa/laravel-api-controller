@@ -163,21 +163,21 @@ trait Response
      * Response with the current error.
      *
      * @param string $message
-	 * @param array  $errors
+     * @param array  $errors
      *
      * @return Res
      */
     protected function respondWithError($message, array $errors = [])
     {
-		$response = [
+        $response = [
             'status'      => 'error',
             'status_code' =>  $this->statusCode,
             'message'     => $message,
-		];
+        ];
 
-		if(count($errors)){
-			$response['errors'] = $errors;
-		}
+        if (count($errors)) {
+            $response['errors'] = $errors;
+        }
 
         return $this->respond($response);
     }
@@ -186,7 +186,7 @@ trait Response
      * Generate a Response with a 403 HTTP header and a given message.
      *
      * @param $message
-	 * @param array  $errors
+     * @param array  $errors
      *
      * @return Res
      */
@@ -199,7 +199,7 @@ trait Response
      * Generate a Response with a 500 HTTP header and a given message.
      *
      * @param string $message
-	 * @param array  $errors
+     * @param array  $errors
      *
      * @return Res
      */
@@ -212,7 +212,7 @@ trait Response
      * Generate a Response with a 404 HTTP header and a given message.
      *
      * @param string $message
-	 * @param array  $errors
+     * @param array  $errors
      *
      * @return Res
      */
@@ -225,7 +225,7 @@ trait Response
      * Generate a Response with a 401 HTTP header and a given message.
      *
      * @param string $message
-	 * @param array  $errors
+     * @param array  $errors
      *
      * @return Res
      */
@@ -238,26 +238,25 @@ trait Response
      * Generate a Response with a 400 HTTP header and a given message.
      *
      * @param string $message
-	 * @param array  $errors
+     * @param array  $errors
      *
      * @return Res
      */
     protected function errorWrongArgs($message = 'Wrong Arguments', array $errors = [])
     {
         return $this->setStatusCode(400)->respondWithError($message, $errors);
-	}
+    }
 
     /**
      * Generate a Response with a 501 HTTP header and a given message.
      *
      * @param string $message
-	 * @param array  $errors
+     * @param array  $errors
      *
      * @return Res
      */
     protected function errorNotImplemented($message = 'Not implemented', array $errors = [])
     {
         return $this->setStatusCode(501)->respondWithError($message, $errors);
-	}
-
+    }
 }
