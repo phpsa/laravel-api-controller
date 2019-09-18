@@ -163,87 +163,101 @@ trait Response
      * Response with the current error.
      *
      * @param string $message
+	 * @param array  $errors
      *
      * @return Res
      */
-    protected function respondWithError($message)
+    protected function respondWithError($message, array $errors = [])
     {
-        return $this->respond([
+		$response = [
             'status'      => 'error',
             'status_code' =>  $this->statusCode,
             'message'     => $message,
-        ]);
+		];
+
+		if(count($errors)){
+			$response['errors'] = $errors;
+		}
+
+        return $this->respond($response);
     }
 
     /**
      * Generate a Response with a 403 HTTP header and a given message.
      *
      * @param $message
+	 * @param array  $errors
      *
      * @return Res
      */
-    protected function errorForbidden($message = 'Forbidden')
+    protected function errorForbidden($message = 'Forbidden', array $errors = [])
     {
-        return $this->setStatusCode(403)->respondWithError($message);
+        return $this->setStatusCode(403)->respondWithError($message, $errors);
     }
 
     /**
      * Generate a Response with a 500 HTTP header and a given message.
      *
      * @param string $message
+	 * @param array  $errors
      *
      * @return Res
      */
-    protected function errorInternalError($message = 'Internal Error')
+    protected function errorInternalError($message = 'Internal Error', array $errors = [])
     {
-        return $this->setStatusCode(500)->respondWithError($message);
+        return $this->setStatusCode(500)->respondWithError($message, $errors);
     }
 
     /**
      * Generate a Response with a 404 HTTP header and a given message.
      *
      * @param string $message
+	 * @param array  $errors
      *
      * @return Res
      */
-    protected function errorNotFound($message = 'Resource Not Found')
+    protected function errorNotFound($message = 'Resource Not Found', array $errors = [])
     {
-        return $this->setStatusCode(404)->respondWithError($message);
+        return $this->setStatusCode(404)->respondWithError($message, $errors);
     }
 
     /**
      * Generate a Response with a 401 HTTP header and a given message.
      *
      * @param string $message
+	 * @param array  $errors
      *
      * @return Res
      */
-    protected function errorUnauthorized($message = 'Unauthorized')
+    protected function errorUnauthorized($message = 'Unauthorized', array $errors = [])
     {
-        return $this->setStatusCode(401)->respondWithError($message);
+        return $this->setStatusCode(401)->respondWithError($message, $errors);
     }
 
     /**
      * Generate a Response with a 400 HTTP header and a given message.
      *
-     * @param string$message
+     * @param string $message
+	 * @param array  $errors
      *
      * @return Res
      */
-    protected function errorWrongArgs($message = 'Wrong Arguments')
+    protected function errorWrongArgs($message = 'Wrong Arguments', array $errors = [])
     {
-        return $this->setStatusCode(400)->respondWithError($message);
-    }
+        return $this->setStatusCode(400)->respondWithError($message, $errors);
+	}
 
     /**
      * Generate a Response with a 501 HTTP header and a given message.
      *
      * @param string $message
+	 * @param array  $errors
      *
      * @return Res
      */
-    protected function errorNotImplemented($message = 'Not implemented')
+    protected function errorNotImplemented($message = 'Not implemented', array $errors = [])
     {
-        return $this->setStatusCode(501)->respondWithError($message);
-    }
+        return $this->setStatusCode(501)->respondWithError($message, $errors);
+	}
+
 }
