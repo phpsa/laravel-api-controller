@@ -11,14 +11,14 @@ class Created
     /**
      * The authenticated user.
      *
-     * @var Illuminate\Database\Eloquent\Model
+     * @var \Illuminate\Database\Eloquent\Model
      */
     public $record;
 
     /**
      * Create a new event instance.
      *
-     * @param  Illuminate\Database\Eloquent\Model  $record
+     * @param  \Illuminate\Database\Eloquent\Model  $record
      * @return void
      */
     public function __construct($record)

@@ -238,7 +238,7 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function destroy($id, Request $request)
+    public function destroy($id,  /** @scrutinizer ignore-unused */ Request $request)
     {
         try {
             $item = $this->repository->getById($id);
