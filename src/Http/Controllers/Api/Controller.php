@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Validator;
 use Phpsa\LaravelApiController\UriParser;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Phpsa\LaravelApiController\Traits\Parser;
+use Phpsa\LaravelApiController\Events\Created;
+use Phpsa\LaravelApiController\Events\Deleted;
+use Phpsa\LaravelApiController\Events\Updated;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -17,10 +20,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Phpsa\LaravelApiController\Repository\BaseRepository;
 use Phpsa\LaravelApiController\Traits\Response as ApiResponse;
-
-Use Phpsa\LaravelApiController\Events\Created;
-Use Phpsa\LaravelApiController\Events\Updated;
-Use Phpsa\LaravelApiController\Events\Deleted;
 
 /**
  * Class Controller.
@@ -107,14 +106,14 @@ abstract class Controller extends BaseController
      * Display a listing of the resource.
      * GET /api/{resource}.
      *
-	 * @param Request $request
-	 *
+     * @param Request $request
+     *
      * @return Response
      */
     public function index(Request $request)
     {
-		$this->request = $request;
-		$this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
+        $this->request = $request;
+        $this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
 
         $this->parseIncludeParams();
         $this->parseSortParams();
@@ -156,8 +155,8 @@ abstract class Controller extends BaseController
         $this->unguardIfNeeded();
 
         try {
-			$item = $this->model->create($insert);
-			event(new Created($item));
+            $item = $this->model->create($insert);
+            event(new Created($item));
         } catch (\Exception $e) {
             return $this->errorWrongArgs($e->getMessage());
         }
@@ -175,8 +174,8 @@ abstract class Controller extends BaseController
      */
     public function show($id, Request $request)
     {
-		$this->request = $request;
-		$this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
+        $this->request = $request;
+        $this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
 
         $this->parseIncludeParams();
         $fields = $this->parseFieldParams();
@@ -224,9 +223,9 @@ abstract class Controller extends BaseController
 
         $this->unguardIfNeeded();
         $item->fill($fields);
-		$item->save();
+        $item->save();
 
-		event(new Updated($item));
+        event(new Updated($item));
 
         return $this->respondWithOne($item);
     }
@@ -242,9 +241,9 @@ abstract class Controller extends BaseController
     public function destroy($id, Request $request)
     {
         try {
-			$item = $this->repository->getById($id);
-			$this->repository->deleteById($id);
-			event(new Deleted($item));
+            $item = $this->repository->getById($id);
+            $this->repository->deleteById($id);
+            event(new Deleted($item));
         } catch (ModelNotFoundException $e) {
             return $this->errorNotFound('Record does not exist');
         }
