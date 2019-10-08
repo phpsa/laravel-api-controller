@@ -18,6 +18,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Phpsa\LaravelApiController\Repository\BaseRepository;
 use Phpsa\LaravelApiController\Traits\Response as ApiResponse;
 
+Use Phpsa\LaravelApiController\Events\Created;
+Use Phpsa\LaravelApiController\Events\Updated;
+Use Phpsa\LaravelApiController\Events\Deleted;
+
 /**
  * Class Controller.
  */
@@ -72,12 +76,10 @@ abstract class Controller extends BaseController
      *
      * @param Request $request
      */
-    public function __construct(Request $request)
+    public function __construct()
     {
         $this->makeModel();
         $this->makeRepository();
-        $this->request = $request;
-        $this->uriParser = new UriParser($request, config('laravel-api-controller.parameters.filter'));
         $this->user = auth()->user();
     }
 
@@ -105,10 +107,15 @@ abstract class Controller extends BaseController
      * Display a listing of the resource.
      * GET /api/{resource}.
      *
+	 * @param Request $request
+	 *
      * @return Response
      */
-    public function index()
+    public function index(Request $request)
     {
+		$this->request = $request;
+		$this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
+
         $this->parseIncludeParams();
         $this->parseSortParams();
         $this->parseFilterParams();
@@ -128,9 +135,9 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function store()
+    public function store(Request $request)
     {
-        $data = $this->request->all();
+        $data = $request->all();
 
         if (empty($data)) {
             return $this->errorWrongArgs('Empty request');
@@ -149,7 +156,8 @@ abstract class Controller extends BaseController
         $this->unguardIfNeeded();
 
         try {
-            $item = $this->model->create($insert);
+			$item = $this->model->create($insert);
+			event(new Created($item));
         } catch (\Exception $e) {
             return $this->errorWrongArgs($e->getMessage());
         }
@@ -165,8 +173,11 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function show($id)
+    public function show($id, Request $request)
     {
+		$this->request = $request;
+		$this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
+
         $this->parseIncludeParams();
         $fields = $this->parseFieldParams();
 
@@ -187,9 +198,9 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function update($id)
+    public function update($id, Request $request)
     {
-        $data = $this->request->all();
+        $data = $request->all();
 
         if (empty($data)) {
             return $this->errorWrongArgs('Empty request');
@@ -213,7 +224,9 @@ abstract class Controller extends BaseController
 
         $this->unguardIfNeeded();
         $item->fill($fields);
-        $item->save();
+		$item->save();
+
+		event(new Updated($item));
 
         return $this->respondWithOne($item);
     }
@@ -226,10 +239,12 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
         try {
-            $this->repository->deleteById($id);
+			$item = $this->repository->getById($id);
+			$this->repository->deleteById($id);
+			event(new Deleted($item));
         } catch (ModelNotFoundException $e) {
             return $this->errorNotFound('Record does not exist');
         }

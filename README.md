@@ -26,15 +26,22 @@ php artisan vendor:publish --provider="Phpsa\LaravelApiController\ServiceProvide
 
 **Generate a new Api Controller, Repository and Route via `php artisan make:api {ModelName}`**
 
-This will create a Api/ModelNameControlelr for you and you will have the basic routes in place as follows:
+This will create a Api/ModelNameController for you and you will have the basic routes in place as follows:
 
-* GET `api/v1/{model_name}` - list all/paged/filtered (index)
-* GET `api/v1/{model_name}/$id` - Show a specified id (show)
-* POST `api/v1/{model_name}` - Insert a new record (store)
-* PUT `api/v1/{model_name}/$id` - Update an existing record (update)
-* DELETE `api/v1/{model_name}/$id` - Delete an existing record (destroy)
+* GET `api/v1/{model_name}` - list all/paged/filtered (class::index)
+* GET `api/v1/{model_name}/$id` - Show a specified id (class::show)
+* POST `api/v1/{model_name}` - Insert a new record (class::store)
+* PUT `api/v1/{model_name}/$id` - Update an existing record (class::update)
+* DELETE `api/v1/{model_name}/$id` - Delete an existing record (class::destroy)
 
 You can override the methods by simply putting in your own methods to override - method names in braces above
+
+## Events
+
+* POST (class::store) - triggers a new `Phpsa\LaravelApiController\Events\Created` Event which has the new record available as `$record`
+* PUT  (class::update) - triggers a new `Phpsa\LaravelApiController\Events\Updated` Event which has the updated record available as `$record`
+* DELETE (class::destry) - triggers a new `Phpsa\LaravelApiController\Events\Deleted` Event which has the deleted record available as `$record`
+
 
 ## Filtering
 
