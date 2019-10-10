@@ -1,6 +1,7 @@
 <?php namespace {{controller.namespace}};
 
 use Phpsa\LaravelApiController\Http\Api\Controller;
+use Illuminate\Http\Request;
 use {{model.fullName}};
 
 class {{controller.name}} extends Controller
