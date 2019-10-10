@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Validator;
 use Phpsa\LaravelApiController\UriParser;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Phpsa\LaravelApiController\Traits\Parser;
+use Phpsa\LaravelApiController\Events\Created;
+use Phpsa\LaravelApiController\Events\Deleted;
+use Phpsa\LaravelApiController\Events\Updated;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -72,12 +75,10 @@ abstract class Controller extends BaseController
      *
      * @param Request $request
      */
-    public function __construct(Request $request)
+    public function __construct()
     {
         $this->makeModel();
         $this->makeRepository();
-        $this->request = $request;
-        $this->uriParser = new UriParser($request, config('laravel-api-controller.parameters.filter'));
         $this->user = auth()->user();
     }
 
@@ -105,10 +106,15 @@ abstract class Controller extends BaseController
      * Display a listing of the resource.
      * GET /api/{resource}.
      *
+     * @param Request $request
+     *
      * @return Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $this->request = $request;
+        $this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
+
         $this->parseIncludeParams();
         $this->parseSortParams();
         $this->parseFilterParams();
@@ -128,9 +134,9 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function store()
+    public function store(Request $request)
     {
-        $data = $this->request->all();
+        $data = $request->all();
 
         if (empty($data)) {
             return $this->errorWrongArgs('Empty request');
@@ -150,6 +156,7 @@ abstract class Controller extends BaseController
 
         try {
             $item = $this->model->create($insert);
+            event(new Created($item));
         } catch (\Exception $e) {
             return $this->errorWrongArgs($e->getMessage());
         }
@@ -165,8 +172,11 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function show($id)
+    public function show($id, Request $request)
     {
+        $this->request = $request;
+        $this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
+
         $this->parseIncludeParams();
         $fields = $this->parseFieldParams();
 
@@ -187,9 +197,9 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function update($id)
+    public function update($id, Request $request)
     {
-        $data = $this->request->all();
+        $data = $request->all();
 
         if (empty($data)) {
             return $this->errorWrongArgs('Empty request');
@@ -215,6 +225,8 @@ abstract class Controller extends BaseController
         $item->fill($fields);
         $item->save();
 
+        event(new Updated($item));
+
         return $this->respondWithOne($item);
     }
 
@@ -226,10 +238,12 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function destroy($id)
+    public function destroy($id,  /** @scrutinizer ignore-unused */ Request $request)
     {
         try {
+            $item = $this->repository->getById($id);
             $this->repository->deleteById($id);
+            event(new Deleted($item));
         } catch (ModelNotFoundException $e) {
             return $this->errorNotFound('Record does not exist');
         }
