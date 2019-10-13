@@ -23,7 +23,7 @@ class Deleted
      */
     public function __construct($record, $request)
     {
-		$this->record = $record;
-		$this->request = $request;
+        $this->record = $record;
+        $this->request = $request;
     }
 }
