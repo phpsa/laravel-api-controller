@@ -21,8 +21,9 @@ class Updated
      * @param  \Illuminate\Database\Eloquent\Model  $record
      * @return void
      */
-    public function __construct($record)
+    public function __construct($record, $request)
     {
-        $this->record = $record;
+		$this->record = $record;
+		$this->request = $request;
     }
 }

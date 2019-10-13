@@ -27,7 +27,7 @@ class {{controller.name}} extends Controller
      */
     public function index(Request $request)
 	{
-		return parent::index($request);
+		return $this->handleIndexAction($request);
 	}
 
 	   /**
@@ -40,7 +40,7 @@ class {{controller.name}} extends Controller
      */
     public function store(Request $request)
     {
-        return parent::store($request);
+        return $this->handleStoreAction($request);
     }
 
     /**
@@ -54,7 +54,7 @@ class {{controller.name}} extends Controller
      */
     public function show($id, Request $request)
     {
-		return parent::show($id, $request);
+		return $this->handleShowAction($id, $request);
     }
 
     /**
@@ -68,7 +68,7 @@ class {{controller.name}} extends Controller
      */
     public function update($id, Request $request)
     {
-        return parent::update($id, $request);
+        return $this->handleUpdateAction($id, $request);
     }
 
     /**
@@ -82,7 +82,7 @@ class {{controller.name}} extends Controller
      */
     public function destroy($id, Request $request)
     {
-        return parent::destroy($id, $request);
+        return $this->handleDestroyAction($id, $request);
     }
 
 }

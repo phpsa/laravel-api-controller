@@ -13,7 +13,9 @@ class Created
      *
      * @var \Illuminate\Database\Eloquent\Model
      */
-    public $record;
+	public $record;
+
+	public $request;
 
     /**
      * Create a new event instance.
@@ -21,8 +23,9 @@ class Created
      * @param  \Illuminate\Database\Eloquent\Model  $record
      * @return void
      */
-    public function __construct($record)
+    public function __construct($record, $request)
     {
-        $this->record = $record;
+		$this->record = $record;
+		$this->request = $request;
     }
 }
