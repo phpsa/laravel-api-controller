@@ -112,9 +112,9 @@ abstract class Controller extends BaseController
      */
     public function handleIndexAction($request)
     {
-		if(!is_a($request, Request::class)){
-			throw new ApiException("Request should be an instance of Illuminate\Http\Request");
-		}
+        if (! is_a($request, Request::class)) {
+            throw new ApiException("Request should be an instance of Illuminate\Http\Request");
+        }
 
         $this->request = $request;
         $this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
@@ -140,9 +140,9 @@ abstract class Controller extends BaseController
      */
     public function handleStoreAction($request)
     {
-		if(!is_a($request, Request::class)){
-			throw new ApiException("Request should be an instance of Illuminate\Http\Request");
-		}
+        if (! is_a($request, Request::class)) {
+            throw new ApiException("Request should be an instance of Illuminate\Http\Request");
+        }
 
         $data = $request->all();
 
@@ -182,9 +182,9 @@ abstract class Controller extends BaseController
      */
     public function handleShowAction($id, $request)
     {
-		if(!is_a($request, Request::class)){
-			throw new ApiException("Request should be an instance of Illuminate\Http\Request");
-		}
+        if (! is_a($request, Request::class)) {
+            throw new ApiException("Request should be an instance of Illuminate\Http\Request");
+        }
 
         $this->request = $request;
         $this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
@@ -211,9 +211,9 @@ abstract class Controller extends BaseController
      */
     public function handleUpdateAction($id, $request)
     {
-		if(!is_a($request, Request::class)){
-			throw new ApiException("Request should be an instance of Illuminate\Http\Request");
-		}
+        if (! is_a($request, Request::class)) {
+            throw new ApiException("Request should be an instance of Illuminate\Http\Request");
+        }
 
         $data = $request->all();
 
@@ -256,9 +256,9 @@ abstract class Controller extends BaseController
      */
     public function handleDestroyAction($id, $request)
     {
-		if(!is_a($request, Request::class)){
-			throw new ApiException("Request should be an instance of Illuminate\Http\Request");
-		}
+        if (! is_a($request, Request::class)) {
+            throw new ApiException("Request should be an instance of Illuminate\Http\Request");
+        }
 
         try {
             $item = $this->repository->getById($id);
