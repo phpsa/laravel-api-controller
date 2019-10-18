@@ -74,6 +74,13 @@ class BaseRepository
      * @var array
      */
     protected $scopes = [];
+    
+    public function __construct()
+	{
+		if(method_exists($this, 'model')){
+			$this->makeModel($this->model())
+		}
+	}
 
     public static function withModel(string $model)
     {
