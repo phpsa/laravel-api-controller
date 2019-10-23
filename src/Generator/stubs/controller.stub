@@ -17,30 +17,30 @@ class {{controller.name}} extends Controller
     }
 
 
-	/**
+    /**
      * Display a listing of the resource.
      * GET /api/{resource}.
      *
-	 * @param Request $request
-	 *
-     * @return Response
-     */
-    public function index(Request $request)
-	{
-		return parent::index($request);
-	}
-
-	   /**
-     * Store a newly created resource in storage.
-     * POST /api/{resource}.
-	 *
-	 * @param Request $request
+     * @param Request $request
      *
      * @return Response
      */
+    public function index(Request $request)
+    {
+        return $this->handleIndexAction($request);
+    }
+
+   /**
+    * Store a newly created resource in storage.
+    * POST /api/{resource}.
+	  *
+	  * @param Request $request
+    *
+    * @return Response
+    */
     public function store(Request $request)
     {
-        return parent::store($request);
+        return $this->handleStoreAction($request);
     }
 
     /**
@@ -48,13 +48,13 @@ class {{controller.name}} extends Controller
      * GET /api/{resource}/{id}.
      *
      * @param int $id
-	 * @param Request $request
+	   * @param Request $request
      *
      * @return Response
      */
     public function show($id, Request $request)
     {
-		return parent::show($id, $request);
+		    return $this->handleShowAction($id, $request);
     }
 
     /**
@@ -62,13 +62,13 @@ class {{controller.name}} extends Controller
      * PUT /api/{resource}/{id}.
      *
      * @param int $id
-	 * @param Request $request
+	   * @param Request $request
      *
      * @return Response
      */
     public function update($id, Request $request)
     {
-        return parent::update($id, $request);
+        return $this->handleUpdateAction($id, $request);
     }
 
     /**
@@ -76,13 +76,13 @@ class {{controller.name}} extends Controller
      * DELETE /api/{resource}/{id}.
      *
      * @param int $id
-	 * @param Request $request
+	   * @param Request $request
      *
      * @return Response
      */
     public function destroy($id, Request $request)
     {
-        return parent::destroy($id, $request);
+        return $this->handleDestroyAction($id, $request);
     }
 
 }

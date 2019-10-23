@@ -110,8 +110,12 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function index(Request $request)
+    public function handleIndexAction($request)
     {
+        if (! is_a($request, Request::class)) {
+            throw new ApiException("Request should be an instance of Illuminate\Http\Request");
+        }
+
         $this->request = $request;
         $this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
 
@@ -134,8 +138,12 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function store(Request $request)
+    public function handleStoreAction($request)
     {
+        if (! is_a($request, Request::class)) {
+            throw new ApiException("Request should be an instance of Illuminate\Http\Request");
+        }
+
         $data = $request->all();
 
         if (empty($data)) {
@@ -156,7 +164,7 @@ abstract class Controller extends BaseController
 
         try {
             $item = $this->model->create($insert);
-            event(new Created($item));
+            event(new Created($item, $request));
         } catch (\Exception $e) {
             return $this->errorWrongArgs($e->getMessage());
         }
@@ -172,8 +180,12 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function show($id, Request $request)
+    public function handleShowAction($id, $request)
     {
+        if (! is_a($request, Request::class)) {
+            throw new ApiException("Request should be an instance of Illuminate\Http\Request");
+        }
+
         $this->request = $request;
         $this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
 
@@ -197,8 +209,12 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function update($id, Request $request)
+    public function handleUpdateAction($id, $request)
     {
+        if (! is_a($request, Request::class)) {
+            throw new ApiException("Request should be an instance of Illuminate\Http\Request");
+        }
+
         $data = $request->all();
 
         if (empty($data)) {
@@ -225,7 +241,7 @@ abstract class Controller extends BaseController
         $item->fill($fields);
         $item->save();
 
-        event(new Updated($item));
+        event(new Updated($item, $request));
 
         return $this->respondWithOne($item);
     }
@@ -238,12 +254,16 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function destroy($id,  /** @scrutinizer ignore-unused */ Request $request)
+    public function handleDestroyAction($id, $request)
     {
+        if (! is_a($request, Request::class)) {
+            throw new ApiException("Request should be an instance of Illuminate\Http\Request");
+        }
+
         try {
             $item = $this->repository->getById($id);
             $this->repository->deleteById($id);
-            event(new Deleted($item));
+            event(new Deleted($item, $request));
         } catch (ModelNotFoundException $e) {
             return $this->errorNotFound('Record does not exist');
         }
