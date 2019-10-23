@@ -18,7 +18,7 @@ class Updated
     /**
      * the request object.
      *
-     * @var \Illuminate\Http\Request|Illuminate\Foundation\Http\FormRequest
+     * @var \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest
      */
     public $request;
 
@@ -26,7 +26,7 @@ class Updated
      * Create a new event instance.
      *
      * @param  \Illuminate\Database\Eloquent\Model  $record
-     * @param \Illuminate\Http\Request|Illuminate\Foundation\Http\FormRequest $request
+     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      *
      * @return void
      */
