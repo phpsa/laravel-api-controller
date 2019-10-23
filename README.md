@@ -74,7 +74,7 @@ By default all fields are returned, you can limit that to specific fields in the
 
 ## Relationships
 
-* Using the relationships defined in your models, you can pass a comma delimited list eg `with=join1,join2` which will return those joins (one or many)
+* Using the relationships defined in your models, you can pass a comma delimited list eg `include=join1,join2` which will return those joins (one or many)
 
 ## Sorting
 
