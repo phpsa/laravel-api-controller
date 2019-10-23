@@ -116,14 +116,14 @@ class LaravelApiControllerTest extends TestCase
             'type' => 'Basic',
             'key' => 'starts',
             'operator' => 'like',
-            'value' => '%craig',
+            'value' => 'craig%',
         ]);
 
         $this->assertEquals($parser->queryParameter('ends'), [
             'type' => 'Basic',
             'key' => 'ends',
             'operator' => 'like',
-            'value' => 'smith%',
+            'value' => '%smith',
         ]);
 
         $this->assertEquals($parser->queryParameter('ids'), [
@@ -169,14 +169,14 @@ class LaravelApiControllerTest extends TestCase
             'type' => 'Basic',
             'key' => 'notstart',
             'operator' => 'not like',
-            'value' => '%fake',
+            'value' => 'fake%',
         ]);
 
         $this->assertEquals($parser->queryParameter('notend'), [
             'type' => 'Basic',
             'key' => 'notend',
             'operator' => 'not like',
-            'value' => 'notend%',
+            'value' => '%notend',
         ]);
 
         $this->assertEquals($parser->queryParameter('notcontain'), [
