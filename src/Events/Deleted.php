@@ -16,7 +16,7 @@ class Deleted
     public $record;
 
     /**
-     * the request object
+     * the request object.
      *
      * @var \Illuminate\Http\Request|Illuminate\Foundation\Http\FormRequest
      */
