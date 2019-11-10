@@ -17,12 +17,12 @@ class {{controller.name}} extends Controller
     }
 
 
-	/**
+    /**
      * Display a listing of the resource.
      * GET /api/{resource}.
      *
-	 * @param Request $request
-	 *
+     * @param Request $request
+     *
      * @return Response
      */
     public function index(Request $request)
@@ -30,14 +30,14 @@ class {{controller.name}} extends Controller
 		return $this->handleIndexAction($request);
 	}
 
-	   /**
-     * Store a newly created resource in storage.
-     * POST /api/{resource}.
-	 *
-	 * @param Request $request
-     *
-     * @return Response
-     */
+   /**
+    * Store a newly created resource in storage.
+    * POST /api/{resource}.
+	  *
+	  * @param Request $request
+    *
+    * @return Response
+    */
     public function store(Request $request)
     {
         return $this->handleStoreAction($request);
@@ -48,7 +48,7 @@ class {{controller.name}} extends Controller
      * GET /api/{resource}/{id}.
      *
      * @param int $id
-	 * @param Request $request
+	   * @param Request $request
      *
      * @return Response
      */
@@ -62,7 +62,7 @@ class {{controller.name}} extends Controller
      * PUT /api/{resource}/{id}.
      *
      * @param int $id
-	 * @param Request $request
+	   * @param Request $request
      *
      * @return Response
      */
@@ -76,7 +76,7 @@ class {{controller.name}} extends Controller
      * DELETE /api/{resource}/{id}.
      *
      * @param int $id
-	 * @param Request $request
+	   * @param Request $request
      *
      * @return Response
      */
