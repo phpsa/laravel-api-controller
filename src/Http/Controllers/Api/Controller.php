@@ -2,24 +2,24 @@
 
 namespace Phpsa\LaravelApiController\Http\Api;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Validator;
-use Phpsa\LaravelApiController\UriParser;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Phpsa\LaravelApiController\Traits\Parser;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Validator;
 use Phpsa\LaravelApiController\Events\Created;
 use Phpsa\LaravelApiController\Events\Deleted;
 use Phpsa\LaravelApiController\Events\Updated;
-use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Foundation\Validation\ValidatesRequests;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Phpsa\LaravelApiController\Repository\BaseRepository;
+use Phpsa\LaravelApiController\Traits\Parser;
 use Phpsa\LaravelApiController\Traits\Response as ApiResponse;
+use Phpsa\LaravelApiController\UriParser;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class Controller.

@@ -2,10 +2,10 @@
 
 namespace Phpsa\LaravelApiController\Repository;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
-use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Phpsa\LaravelApiController\Exceptions\ApiException;
 
 /**
  * Class BaseRepository.
