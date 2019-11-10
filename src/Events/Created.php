@@ -13,7 +13,7 @@ class Created
      *
      * @var \Illuminate\Database\Eloquent\Model
      */
-	public $record;
+    public $record;
 
     /**
      * the request object.
