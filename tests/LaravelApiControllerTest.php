@@ -4,9 +4,9 @@ namespace Phpsa\LaravelApiController\Tests;
 
 use Illuminate\Http\Request;
 use Orchestra\Testbench\TestCase;
-use Phpsa\LaravelApiController\UriParser;
-use Phpsa\LaravelApiController\ServiceProvider;
 use Phpsa\LaravelApiController\Facades\LaravelApiController;
+use Phpsa\LaravelApiController\ServiceProvider;
+use Phpsa\LaravelApiController\UriParser;
 
 class LaravelApiControllerTest extends TestCase
 {
