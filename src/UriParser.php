@@ -50,6 +50,7 @@ class UriParser
         $this->request = $request;
 
         $this->queryUri = $request->query($filter);
+
         if ($this->hasQueryUri()) {
             $this->setQueryParameters($this->queryUri);
         }
@@ -86,9 +87,11 @@ class UriParser
     {
         $keys = Arr::pluck($this->queryParameters, 'key');
         $counts = array_count_values($keys);
+
         if (empty($counts[$key])) {
             return;
         }
+
         if ($counts[$key] === 1) {
             $idx = array_search($key, $keys);
 
@@ -118,7 +121,7 @@ class UriParser
         foreach ($queryUri as $key => $value) {
             preg_match(self::PATTERN, urldecode($key), $matches);
             $operator = empty($matches[0]) ? '=' : '';
-            $this->appendQueryParameter($key.$operator.$value);
+            $this->appendQueryParameter($key . $operator . $value);
         }
 
         return $this;
@@ -128,6 +131,7 @@ class UriParser
     {
         // whereIn expression
         preg_match(self::ARRAY_QUERY_PATTERN, $parameter, $arrayMatches);
+
         if (count($arrayMatches) > 0) {
             $this->appendQueryParameterAsWhereIn($parameter, $arrayMatches[1]);
 
@@ -140,6 +144,7 @@ class UriParser
     private function appendQueryParameterAsBasicWhere($parameter)
     {
         preg_match(self::PATTERN, $parameter, $matches);
+
         if (! isset($matches[0])) {
             return;
         }
@@ -147,16 +152,18 @@ class UriParser
         [$key, $value] = explode($operator, $parameter);
 
         $in = strpos($value, '||');
+
         if ($in) {
             $values = explode('||', $value);
+
             if (Str::contains($parameter, '!=') || Str::contains($parameter, '<>')) {
                 $type = 'NotIn';
             } else {
                 $type = 'In';
             }
             $this->queryParameters[] = [
-                'type'   => $type,
-                'key'    => $key,
+                'type' => $type,
+                'key' => $key,
                 'values' => $values,
             ];
 
@@ -167,26 +174,29 @@ class UriParser
             $operator = 'like';
             $value = str_replace('*', '%', $value);
         }
+
         if ($operator == '<>') {
             $operator = '!=';
         }
+
         if (in_array($operator, ['$', '^', '~'])) {
             $pre = in_array($operator, ['$', '~']) ? '%' : '';
             $post = in_array($operator, ['^', '~']) ? '%' : '';
             $operator = 'like';
-            $value = $pre.$value.$post;
+            $value = $pre . $value . $post;
         }
+
         if (in_array($operator, ['!$', '!^', '!~'])) {
             $pre = in_array($operator, ['!$', '!~']) ? '%' : '';
             $post = in_array($operator, ['!^', '!~']) ? '%' : '';
             $operator = 'not like';
-            $value = $pre.$value.$post;
+            $value = $pre . $value . $post;
         }
         $this->queryParameters[] = [
-            'type'     => 'Basic',
-            'key'      => $key,
+            'type' => 'Basic',
+            'key' => $key,
             'operator' => $operator,
-            'value'    => $value,
+            'value' => $value,
         ];
     }
 
@@ -206,12 +216,13 @@ class UriParser
                 break;
             }
         }
+
         if ($index !== null) {
             $this->queryParameters[$index]['values'][] = explode($seperator, $parameter)[1];
         } else {
             $this->queryParameters[] = [
-                'type'   => $type,
-                'key'    => $key,
+                'type' => $type,
+                'key' => $key,
                 'values' => [explode($seperator, $parameter)[1]],
             ];
         }

@@ -9,33 +9,11 @@ use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
 trait Parser
 {
     /**
-     * Default Fields to response with.
+     * UriParser instance.
      *
-     * @var array
+     * @var UriParser
      */
-    protected $defaultFields = ['*'];
-
-    /**
-     * Set the default sorting for queries.
-     *
-     * @var string
-     */
-    protected $defaultSort = null;
-
-    /**
-     * Number of items displayed at once if not specified.
-     * There is no limit if it is 0 or false.
-     *
-     * @var int
-     */
-    protected $defaultLimit = 25;
-
-    /**
-     * Maximum limit that can be set via $_GET['limit'].
-     *
-     * @var int
-     */
-    protected $maximumLimit = 0;
+    protected $uriParser;
 
     /**
      * Holds the available table columns.
@@ -48,8 +26,6 @@ trait Parser
      * Set which columns area available in the model.
      *
      * @param Model $model
-     *
-     * @return void
      */
     protected function setTableColumns(Model $model = null) : void
     {
@@ -84,8 +60,6 @@ trait Parser
 
     /**
      * Parses our include joins.
-     *
-     * @return void
      */
     protected function parseIncludeParams() : void
     {
@@ -109,7 +83,7 @@ trait Parser
 
             if (! empty($fields)) {
                 $fields[] = $sub->getKeyName();
-                $withs[$idx] = $with.':'.implode(',', array_unique($fields));
+                $withs[$idx] = $with . ':' . implode(',', array_unique($fields));
             }
         }
 
@@ -118,8 +92,6 @@ trait Parser
 
     /**
      * Parses our sort parameters.
-     *
-     * @return void
      */
     protected function parseSortParams() : void
     {
@@ -157,12 +129,11 @@ trait Parser
 
     /**
      * parses our filter parameters.
-     *
-     * @return void
      */
     protected function parseFilterParams() : void
     {
         $where = $this->uriParser->whereParameters();
+
         if (empty($where)) {
             return;
         }
@@ -183,8 +154,6 @@ trait Parser
      * set the Where clause.
      *
      * @param array $where the where clause
-     *
-     * @return void
      */
     protected function setWhereClause($where) : void
     {
@@ -236,12 +205,13 @@ trait Parser
     protected function getIncludesFields(string $include) : array
     {
         $fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
-        foreach ($fields as $k =>$field) {
-            if (strpos($field, $include.'.') === false) {
+        foreach ($fields as $k => $field) {
+            if (strpos($field, $include . '.') === false) {
                 unset($fields[$k]);
+
                 continue;
             }
-            $fields[$k] = str_replace($include.'.', '', $field);
+            $fields[$k] = str_replace($include . '.', '', $field);
         }
 
         return $fields;
