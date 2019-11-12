@@ -11,7 +11,7 @@ trait Parser
     /**
      * UriParser instance.
      *
-     * @var UriParser
+     * @var \Phpsa\LaravelApiController\UriParser
      */
     protected $uriParser;
 

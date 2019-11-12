@@ -177,7 +177,7 @@ abstract class Controller extends BaseController
         }
 
         try {
-            $res = $this->authorize('viewAny', $this->model());
+            $this->authorize('viewAny', $this->model());
         } catch (AuthorizationException $exception) {
             return $this->errorForbidden($exception->getMessage());
         }
@@ -209,7 +209,7 @@ abstract class Controller extends BaseController
         }
 
         try {
-            $res = $this->authorize('create', $this->model());
+            $this->authorize('create', $this->model());
         } catch (AuthorizationException $exception) {
             return $this->errorForbidden($exception->getMessage());
         }
@@ -257,7 +257,7 @@ abstract class Controller extends BaseController
         }
 
         try {
-            $res = $this->authorize('view', $this->model::find($id));
+            $this->authorize('view', $this->model::find($id));
         } catch (AuthorizationException $exception) {
             return $this->errorForbidden($exception->getMessage());
         }

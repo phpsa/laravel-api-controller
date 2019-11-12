@@ -75,7 +75,7 @@ trait Response
      */
     protected function respondItemCreated($item, $code = 201, $headers = [])
     {
-        return $this->responseWithOne($item, $code, $headers);
+        return $this->respondWithOne($item, $code, $headers);
     }
 
     /**
