@@ -6,7 +6,7 @@ use Phpsa\LaravelApiController\Generator\ApiMakeCommand;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
-    const CONFIG_PATH = __DIR__ . '/../config/laravel-api-controller.php';
+    const CONFIG_PATH = __DIR__.'/../config/laravel-api-controller.php';
 
     public function boot()
     {
