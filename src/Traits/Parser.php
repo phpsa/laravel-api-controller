@@ -2,8 +2,9 @@
 
 namespace Phpsa\LaravelApiController\Traits;
 
-use Illuminate\Database\Eloquent\Model;
+use Gate;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Eloquent\Model;
 use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
 
 trait Parser
@@ -83,7 +84,7 @@ trait Parser
 
             if (! empty($fields)) {
                 $fields[] = $sub->getKeyName();
-                $withs[$idx] = $with.':'.implode(',', array_unique($fields));
+                $withs[$idx] = $with . ':' . implode(',', array_unique($fields));
             }
         }
 
@@ -206,12 +207,12 @@ trait Parser
     {
         $fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
         foreach ($fields as $k => $field) {
-            if (strpos($field, $include.'.') === false) {
+            if (strpos($field, $include . '.') === false) {
                 unset($fields[$k]);
 
                 continue;
             }
-            $fields[$k] = str_replace($include.'.', '', $field);
+            $fields[$k] = str_replace($include . '.', '', $field);
         }
 
         return $fields;
@@ -231,5 +232,72 @@ trait Parser
         }
 
         return $limit;
+    }
+
+    /**
+     * Qualifies the collection query to allow you to add params vai the policy
+     * ie to limit to a specific user id mapping.
+     */
+    protected function qualifyCollectionQuery(): void
+    {
+        $user = auth()->user();
+        $modelPolicy = Gate::getPolicyFor($this->model);
+
+        if ($modelPolicy && method_exists($modelPolicy, 'qualifyCollectionQueryWithUser')) {
+            $modelPolicy->qualifyCollectionQueryWithUser($user, $this->repository);
+        }
+    }
+
+    /**
+     * Qualifies the collection query to allow you to add params vai the policy
+     * ie to limit to a specific user id mapping
+     * This may be overkill but could be usedfull ?
+     */
+    protected function qualifyItemQuery(): void
+    {
+        $user = auth()->user();
+        $modelPolicy = Gate::getPolicyFor($this->model);
+
+        if ($modelPolicy && method_exists($modelPolicy, 'qualifyItemQueryWithUser')) {
+            $modelPolicy->qualifyItemQueryWithUser($user, $this->repository);
+        }
+    }
+
+    /**
+     * Allows you to massage the data when creating a new record.
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    protected function qualifyStoreQuery(array $data): array
+    {
+        $user = auth()->user();
+        $modelPolicy = Gate::getPolicyFor($this->model);
+
+        if ($modelPolicy && method_exists($modelPolicy, 'qualifyStoreDataWithUser')) {
+            $modelPolicy->qualifyStoreDataWithUser($user, $data);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Allows you to massage the data when updating an existing record.
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    protected function qualifyUpdateQuery(array $data): array
+    {
+        $user = auth()->user();
+        $modelPolicy = Gate::getPolicyFor($this->model);
+
+        if ($modelPolicy && method_exists($modelPolicy, 'qualifyUpdateDataWithUser')) {
+            $modelPolicy->qualifyUpdateDataWithUser($user, $data);
+        }
+
+        return $data;
     }
 }
