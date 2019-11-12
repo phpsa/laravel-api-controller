@@ -2,12 +2,15 @@
 
 namespace Phpsa\LaravelApiController\Http\Api;
 
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
@@ -26,35 +29,32 @@ use Symfony\Component\HttpFoundation\Response;
  */
 abstract class Controller extends BaseController
 {
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests, ApiResponse, Parser;
+    use AuthorizesRequests;
+    use DispatchesJobs;
+    use ValidatesRequests;
+    use ApiResponse;
+    use Parser;
 
     /**
      * Eloquent model instance.
      *
-     * @var Model;
+     * @var mixed|Model instance
      */
     protected $model;
 
     /**
      * Repository instance.
      *
-     * @var BaseRepository
+     * @var mixed|BaseRepository
      */
     protected $repository;
 
     /**
      * Illuminate\Http\Request instance.
      *
-     * @var Request
+     * @var mixed|Request
      */
     protected $request;
-
-    /**
-     * UriParser instance.
-     *
-     * @var UriParser
-     */
-    protected $uriParser;
 
     /**
      * Do we need to unguard the model before create/update?
@@ -67,8 +67,68 @@ abstract class Controller extends BaseController
      * Holds the current authed user object.
      *
      * @var \Illuminate\Foundation\Auth\User
+     * @deprecated 0.5.0 - see auth()->user() || Request::user()
      */
     protected $user;
+
+    /**
+     * Resource key for an item.
+     *
+     * @var string
+     * @deprecated 0.5.0 - to be removed 0.6.0
+     */
+    protected $resourceKeySingular = 'data';
+
+    /**
+     * Resource key for a collection.
+     *
+     * @var string
+     * @deprecated 0.5.0 - to be removed 0.6.0
+     */
+    protected $resourceKeyPlural = 'data';
+
+    /**
+     * Resource for item.
+     *
+     * @var mixed instance of \Illuminate\Http\Resources\Json\JsonResource
+     */
+    protected $resourceSingle = JsonResource::class;
+
+    /**
+     * Resource for collection.
+     *
+     * @var mixed instance of \Illuminate\Http\Resources\Json\ResourceCollection
+     */
+    protected $resourceCollection = ResourceCollection::class;
+
+    /**
+     * Default Fields to response with.
+     *
+     * @var array
+     */
+    protected $defaultFields = ['*'];
+
+    /**
+     * Set the default sorting for queries.
+     *
+     * @var string
+     */
+    protected $defaultSort = null;
+
+    /**
+     * Number of items displayed at once if not specified.
+     * There is no limit if it is 0 or false.
+     *
+     * @var int
+     */
+    protected $defaultLimit = 25;
+
+    /**
+     * Maximum limit that can be set via $_GET['limit'].
+     *
+     * @var int
+     */
+    protected $maximumLimit = 0;
 
     /**
      * Constructor.
@@ -116,6 +176,12 @@ abstract class Controller extends BaseController
             throw new ApiException("Request should be an instance of Illuminate\Http\Request");
         }
 
+        try {
+            $this->authorize('viewAny', $this->model());
+        } catch (AuthorizationException $exception) {
+            return $this->errorForbidden($exception->getMessage());
+        }
+
         $this->request = $request;
         $this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
 
@@ -125,11 +191,9 @@ abstract class Controller extends BaseController
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
 
-        return $limit > 0 ? $this->respondWithPagination(
-            $this->repository->paginate($limit, $fields)
-        ) : $this->respondWithMany(
-            $this->repository->get($fields)
-        );
+        $items = $limit > 0 ? $this->repository->paginate($limit, $fields) : $this->repository->get($fields);
+
+        return $this->respondWithMany($items);
     }
 
     /**
@@ -142,6 +206,12 @@ abstract class Controller extends BaseController
     {
         if (! is_a($request, Request::class)) {
             throw new ApiException("Request should be an instance of Illuminate\Http\Request");
+        }
+
+        try {
+            $this->authorize('create', $this->model());
+        } catch (AuthorizationException $exception) {
+            return $this->errorForbidden($exception->getMessage());
         }
 
         $data = $request->all();
@@ -169,7 +239,7 @@ abstract class Controller extends BaseController
             return $this->errorWrongArgs($e->getMessage());
         }
 
-        return $this->respondCreated($this->repository->getById($item->id));
+        return $this->respondItemCreated($this->repository->getById($item->id));
     }
 
     /**
@@ -184,6 +254,12 @@ abstract class Controller extends BaseController
     {
         if (! is_a($request, Request::class)) {
             throw new ApiException("Request should be an instance of Illuminate\Http\Request");
+        }
+
+        try {
+            $this->authorize('view', $this->model::find($id));
+        } catch (AuthorizationException $exception) {
+            return $this->errorForbidden($exception->getMessage());
         }
 
         $this->request = $request;
@@ -213,6 +289,12 @@ abstract class Controller extends BaseController
     {
         if (! is_a($request, Request::class)) {
             throw new ApiException("Request should be an instance of Illuminate\Http\Request");
+        }
+
+        try {
+            $this->authorize('update', $this->model::find($id));
+        } catch (AuthorizationException $exception) {
+            return $this->errorForbidden($exception->getMessage());
         }
 
         $data = $request->all();
@@ -261,6 +343,12 @@ abstract class Controller extends BaseController
         }
 
         try {
+            $this->authorize('delete', $this->model::find($id));
+        } catch (AuthorizationException $exception) {
+            return $this->errorForbidden($exception->getMessage());
+        }
+
+        try {
             $item = $this->repository->getById($id);
             $this->repository->deleteById($id);
             event(new Deleted($item, $request));
@@ -288,7 +376,7 @@ abstract class Controller extends BaseController
      *
      * @return Response
      */
-    public function edit(/* @scrutinizer ignore-unused */ $id)
+    public function edit(/* @scrutinizer ignore-unused */$id)
     {
         return $this->errorNotImplemented();
     }
@@ -317,7 +405,7 @@ abstract class Controller extends BaseController
      *
      * @return array
      */
-    protected function rulesForUpdate(/* @scrutinizer ignore-unused */ $id)
+    protected function rulesForUpdate(/* @scrutinizer ignore-unused */$id)
     {
         return [];
     }
@@ -338,9 +426,8 @@ abstract class Controller extends BaseController
      * @param mixed $role role name or array of role names
      *
      * @return bool
-     * @author Craig Smith <craig.smith@customd.com>
-     * @copyright 2018 Custom D
-     * @since 1.0.0
+     *
+     * @deprecated 0.5.0
      */
     protected function hasRole($role)
     {
@@ -353,9 +440,7 @@ abstract class Controller extends BaseController
      * @param array $roles
      *
      * @return bool
-     * @author Craig Smith <craig.smith@customd.com>
-     * @copyright 2018 Custom D
-     * @since 1.0.0
+     * @deprecated 0.5.0
      */
     protected function hasAllRoles($roles)
     {

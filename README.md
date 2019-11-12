@@ -42,6 +42,29 @@ You can override the methods by simply putting in your own methods to override -
 * PUT  (class::update) - triggers a new `Phpsa\LaravelApiController\Events\Updated` Event which has the updated record available as `$record`
 * DELETE (class::destry) - triggers a new `Phpsa\LaravelApiController\Events\Deleted` Event which has the deleted record available as `$record`
 
+## Policies
+
+Policies: https://laravel.com/docs/6.x/authorization#generating-policies
+
+Generate with `php artisan make:policy PostPolicy --model=Post`
+
+* Get list - calls the `viewAny` policy
+* Get single - calls the `view` policy
+* Post New - calls the `create` policy
+* Put Update - calls the `update` policy
+* Delete item - calls the `delete` policy
+
+## Resources / Collections (Transforming)
+ Resources: https://laravel.com/docs/6.x/eloquent-resources
+
+ Generate with
+ `php artisan make:resource UserResource` and `php artisan make:resource UserCollection`
+
+in your controller override the following params:
+```php
+	protected $resourceSingle = UserResource::class;
+	protected $resourceCollection = UserCollection::class;
+```
 
 ## Filtering
 
@@ -106,13 +129,16 @@ see https://laravel.com/docs/5.8/validation#conditionally-adding-rules
 
 The following parameters are set in the Base Api controller and can be overwritten by your Controller on a case by case basis:
 
-* `protected $resourceKeySingular = 'data';`	Resource key for an item.
-* `protected $resourceKeyPlural = 'data';`		Resource key for a collection.
-* `protected $defaultFields = ['*'];`			Default Fields to respond with
-* `protected $defaultSort = null;`				Set the default sorting for queries.
-* `protected $defaultLimit = 25;`				Number of items displayed at once if not specified. (0 = maximumLimit)
-* `protected $maximumLimit = 0;`				Maximum limit that can be set via $_GET['limit']. - this ties in with the defaultLimit aswell, and if wanting to disable pagination , both should be 0. ) will allow all records to be returned in a single call.
-* `protected $unguard = false;`   				Do we need to unguard the model before create/update?
+* **DEPRECATED** `protected $resourceKeySingular = 'data';`
+* **DEPRECATED** `protected $resourceKeyPlural = 'data';`
+
+* `protected $resourceSingle = JsonResource::class;`			Collection to use for your single resource
+* `protected $resourceCollection = ResourceCollection::class;`	Collection to use for your resource collection
+* `protected $defaultFields = ['*'];`							Default Fields to respond with
+* `protected $defaultSort = null;`								Set the default sorting for queries.
+* `protected $defaultLimit = 25;`								Number of items displayed at once if not specified. (0 = maximumLimit)
+* `protected $maximumLimit = 0;`								Maximum limit that can be set via $_GET['limit']. - this ties in with the defaultLimit aswell, and if wanting to disable pagination , both should be 0. ) will allow all records to be returned in a single call.
+* `protected $unguard = false;`   								Do we need to unguard the model before create/update?
 
 ## Security
 
@@ -122,7 +148,11 @@ instead of using the issue tracker.
 ## Credits
 
 - [Craig G Smith](https://github.com/phpsa)
+- [Phil Taylor]()
 - [All contributors](https://github.com/phpsa/laravel-api-controller/graphs/contributors)
 
-[badge_laravel]:   https://img.shields.io/badge/Laravel-5.8%20to%205.8-orange.svg?style=flat-square
+## Sponsors
+- [Custom D](https://customd.com)
+
+[badge_laravel]:   https://img.shields.io/badge/Laravel-5.8%20to%206-orange.svg?style=flat-square
 [badge_issues]:    https://img.shields.io/github/issues/ARCANEDEV/Support.svg?style=flat-square

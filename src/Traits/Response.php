@@ -15,20 +15,6 @@ trait Response
     protected $statusCode = Res::HTTP_OK;
 
     /**
-     * Resource key for an item.
-     *
-     * @var string
-     */
-    protected $resourceKeySingular = 'data';
-
-    /**
-     * Resource key for a collection.
-     *
-     * @var string
-     */
-    protected $resourceKeyPlural = 'data';
-
-    /**
      * @return mixed
      */
     public function getStatusCode()
@@ -54,13 +40,12 @@ trait Response
      *
      * @return Res
      */
-    protected function respondWithOne($item)
+    protected function respondWithOne($item, $code = null, $headers = [])
     {
-        return $this->respond([
-            'status'      					=> 'success',
-            'status_code' 					=> Res::HTTP_OK,
-            $this->resourceKeySingular      => $item,
-        ]);
+        return $this->resourceSingle::make($item)
+            ->response()
+            ->setStatusCode($code ?? $this->getStatusCode())
+            ->withHeaders($headers);
     }
 
     /**
@@ -72,13 +57,12 @@ trait Response
      *
      * @return Res
      */
-    protected function respondWithMany($items)
+    protected function respondWithMany($items, $code = null, $headers = [])
     {
-        return $this->respond([
-            'status'      					=> 'success',
-            'status_code' 					=> Res::HTTP_OK,
-            $this->resourceKeyPlural        => $items,
-        ]);
+        return $this->resourceCollection::make($items)
+            ->response()
+            ->setStatusCode($code ?? $this->getStatusCode())
+            ->withHeaders($headers);
     }
 
     /**
@@ -89,15 +73,29 @@ trait Response
      *
      * @return Res
      */
+    protected function respondItemCreated($item, $code = 201, $headers = [])
+    {
+        return $this->respondWithOne($item, $code, $headers);
+    }
+
+    /**
+     * Created Response.
+     *
+     * @param mixed  $id      id of insterted data
+     * @param string $message message to respond with
+     *
+     * @deprecated 0.4.0 - to be removed by 0.5.0 @see self::respond() || self::respondItemCreated ||
+     *
+     * @return Res
+     */
     public function respondCreated($id = null, $message = null)
     {
-        $response = [
-            'status'      		=> 'success',
-            'status_code' 		=> Res::HTTP_CREATED,
-        ];
+        $response = [];
+
         if ($message !== null) {
             $response['message'] = $message;
         }
+
         if ($id !== null) {
             if (is_scalar($id)) {
                 $response[$this->resourceKeySingular] = $id;
@@ -113,20 +111,12 @@ trait Response
      * @param LengthAwarePaginator $paginate
      * @param $data
      * @return Res
+     *
+     * @deprecated 0.5.0 - to be removed by 0.6.0
      */
     protected function respondWithPagination(LengthAwarePaginator $paginator)
     {
-        return $this->respond([
-            'status'      					=> 'success',
-            'status_code' 					=> Res::HTTP_OK,
-            'paginator' => [
-                'total_count'  => $paginator->total(),
-                'total_pages'  => ceil($paginator->total() / $paginator->perPage()),
-                'current_page' => $paginator->currentPage(),
-                'limit'        => $paginator->perPage(),
-            ],
-            $this->resourceKeyPlural => $paginator->items(),
-        ]);
+        return $this->resourceCollection::make($paginator);
     }
 
     /**
@@ -170,9 +160,7 @@ trait Response
     protected function respondWithError($message, array $errors = [])
     {
         $response = [
-            'status'      => 'error',
-            'status_code' =>  $this->statusCode,
-            'message'     => $message,
+            'message' => $message,
         ];
 
         if (count($errors)) {

@@ -11,34 +11,38 @@ use Symfony\Component\Console\Input\InputArgument;
 class ApiMakeCommand extends Command
 {
     use DetectsApplicationNamespace;
+
     /**
      * The filesystem instance.
      *
      * @var \Illuminate\Filesystem\Filesystem
      */
     protected $files;
+
     /**
      * The console command name.
      *
      * @var string
      */
     protected $name = 'make:api';
+
     /**
      * The console command description.
      *
      * @var string
      */
     protected $description = 'Create api controller and api routes for a given model (phpsa/laravel-api-controller)';
+
     /**
      * The array of variables available in stubs.
      *
      * @var array
      */
     protected $stubVariables = [
-        'app'         => [],
-        'model'       => [],
-        'controller'  => [],
-        'route'       => [],
+        'app' => [],
+        'model' => [],
+        'controller' => [],
+        'route' => [],
     ];
 
     protected $modelsBaseNamespace;
@@ -56,8 +60,6 @@ class ApiMakeCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return void
      */
     public function handle()
     {
@@ -169,6 +171,7 @@ class ApiMakeCommand extends Command
         $routesFile = app_path(config('laravel-api-controller.routes_file'));
         // read file
         $lines = file($routesFile);
+
         if (! $lines) {
             //@todo - better error handling here
             return false;
@@ -183,6 +186,7 @@ class ApiMakeCommand extends Command
         }
         // save file
         $fp = fopen($routesFile, 'w');
+
         if (! is_resource($fp)) {
             //@todo - better error handling here
             return false;
@@ -202,6 +206,7 @@ class ApiMakeCommand extends Command
     protected function createClass($type)
     {
         $path = $this->getPath($this->stubVariables[$type]['fullNameWithoutRoot']);
+
         if ($this->files->exists($path)) {
             $this->error(ucfirst($type).' already exists!');
 

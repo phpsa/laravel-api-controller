@@ -27,8 +27,6 @@ class Deleted
      *
      * @param  \Illuminate\Database\Eloquent\Model  $record
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
-     *
-     * @return void
      */
     public function __construct($record, $request)
     {
