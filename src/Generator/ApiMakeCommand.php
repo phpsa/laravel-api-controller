@@ -2,11 +2,11 @@
 
 namespace Phpsa\LaravelApiController\Generator;
 
-use Illuminate\Support\Str;
 use Illuminate\Console\Command;
-use Illuminate\Filesystem\Filesystem;
-use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Str;
+use Symfony\Component\Console\Input\InputArgument;
 
 class ApiMakeCommand extends Command
 {
