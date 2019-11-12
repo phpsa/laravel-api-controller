@@ -2,11 +2,11 @@
 
 namespace Phpsa\LaravelApiController\Generator;
 
-use Illuminate\Support\Str;
 use Illuminate\Console\Command;
-use Illuminate\Filesystem\Filesystem;
-use Symfony\Component\Console\Input\InputArgument;
 use Illuminate\Console\DetectsApplicationNamespace;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Str;
+use Symfony\Component\Console\Input\InputArgument;
 
 class ApiMakeCommand extends Command
 {
@@ -77,7 +77,7 @@ class ApiMakeCommand extends Command
     {
         $this->stubVariables['app']['namespace'] = $this->getAppNamespace();
         $baseDir = config('laravel-api-controller.models_base_dir');
-        $this->modelsBaseNamespace = $baseDir ? trim($baseDir, '\\') . '\\' : '';
+        $this->modelsBaseNamespace = $baseDir ? trim($baseDir, '\\').'\\' : '';
         $this->setModelData($name)
             ->setControllerData()
             ->setRouteData();
@@ -95,7 +95,7 @@ class ApiMakeCommand extends Command
         }
         $name = trim($name, '\\');
         $this->stubVariables['model']['fullNameWithoutRoot'] = $name;
-        $this->stubVariables['model']['fullName'] = $this->stubVariables['app']['namespace'] . $this->modelsBaseNamespace . $name;
+        $this->stubVariables['model']['fullName'] = $this->stubVariables['app']['namespace'].$this->modelsBaseNamespace.$name;
         $exploded = explode('\\', $this->stubVariables['model']['fullName']);
         $this->stubVariables['model']['name'] = array_pop($exploded);
         $this->stubVariables['model']['namespace'] = implode('\\', $exploded);
@@ -141,15 +141,15 @@ class ApiMakeCommand extends Command
     protected function setDataForEntity($entity)
     {
         $entityNamespace = $this->convertSlashes(config("laravel-api-controller.{$entity}s_dir"));
-        $this->stubVariables[$entity]['name'] = $this->stubVariables['model']['name'] . ucfirst($entity);
+        $this->stubVariables[$entity]['name'] = $this->stubVariables['model']['name'].ucfirst($entity);
         $this->stubVariables[$entity]['namespaceWithoutRoot'] = implode('\\', array_filter([
             $entityNamespace,
             $this->stubVariables['model']['additionalNamespace'],
         ]));
-        $this->stubVariables[$entity]['namespaceBase'] = $this->stubVariables['app']['namespace'] . $entityNamespace;
-        $this->stubVariables[$entity]['namespace'] = $this->stubVariables['app']['namespace'] . $this->stubVariables[$entity]['namespaceWithoutRoot'];
-        $this->stubVariables[$entity]['fullNameWithoutRoot'] = $this->stubVariables[$entity]['namespaceWithoutRoot'] . '\\' . $this->stubVariables[$entity]['name'];
-        $this->stubVariables[$entity]['fullName'] = $this->stubVariables[$entity]['namespace'] . '\\' . $this->stubVariables[$entity]['name'];
+        $this->stubVariables[$entity]['namespaceBase'] = $this->stubVariables['app']['namespace'].$entityNamespace;
+        $this->stubVariables[$entity]['namespace'] = $this->stubVariables['app']['namespace'].$this->stubVariables[$entity]['namespaceWithoutRoot'];
+        $this->stubVariables[$entity]['fullNameWithoutRoot'] = $this->stubVariables[$entity]['namespaceWithoutRoot'].'\\'.$this->stubVariables[$entity]['name'];
+        $this->stubVariables[$entity]['fullName'] = $this->stubVariables[$entity]['namespace'].'\\'.$this->stubVariables[$entity]['name'];
 
         return $this;
     }
@@ -179,7 +179,7 @@ class ApiMakeCommand extends Command
         $lastLine = trim($lines[count($lines) - 1]);
         // modify file
         if (strcmp($lastLine, '});') === 0) {
-            $lines[count($lines) - 1] = '    ' . $stub;
+            $lines[count($lines) - 1] = '    '.$stub;
             $lines[] = "\r\n});\r\n";
         } else {
             $lines[] = "$stub\r\n";
@@ -208,13 +208,13 @@ class ApiMakeCommand extends Command
         $path = $this->getPath($this->stubVariables[$type]['fullNameWithoutRoot']);
 
         if ($this->files->exists($path)) {
-            $this->error(ucfirst($type) . ' already exists!');
+            $this->error(ucfirst($type).' already exists!');
 
             return;
         }
         $this->makeDirectoryIfNeeded($path);
-        $this->files->put($path, $this->constructStub(base_path(config('laravel-api-controller.' . $type . '_stub'))));
-        $this->info(ucfirst($type) . ' created successfully.');
+        $this->files->put($path, $this->constructStub(base_path(config('laravel-api-controller.'.$type.'_stub'))));
+        $this->info(ucfirst($type).' created successfully.');
     }
 
     /**
@@ -228,7 +228,7 @@ class ApiMakeCommand extends Command
     {
         $name = str_replace($this->stubVariables['app']['namespace'], '', $name);
 
-        return $this->laravel['path'] . '/' . str_replace('\\', '/', $name) . '.php';
+        return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
     }
 
     /**

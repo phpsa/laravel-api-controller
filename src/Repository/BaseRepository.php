@@ -2,10 +2,10 @@
 
 namespace Phpsa\LaravelApiController\Repository;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
-use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Phpsa\LaravelApiController\Exceptions\ApiException;
 
 /**
  * Class BaseRepository.
@@ -92,7 +92,7 @@ class BaseRepository
         $obj = resolve($model);
 
         if (! $obj instanceof Model) {
-            throw new ApiException("Class {$model} must be an instance of " . Model::class);
+            throw new ApiException("Class {$model} must be an instance of ".Model::class);
         }
 
         return $this->model = $obj;

@@ -2,8 +2,8 @@
 
 namespace Phpsa\LaravelApiController\Traits;
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
 
 trait Parser
@@ -83,7 +83,7 @@ trait Parser
 
             if (! empty($fields)) {
                 $fields[] = $sub->getKeyName();
-                $withs[$idx] = $with . ':' . implode(',', array_unique($fields));
+                $withs[$idx] = $with.':'.implode(',', array_unique($fields));
             }
         }
 
@@ -206,12 +206,12 @@ trait Parser
     {
         $fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
         foreach ($fields as $k => $field) {
-            if (strpos($field, $include . '.') === false) {
+            if (strpos($field, $include.'.') === false) {
                 unset($fields[$k]);
 
                 continue;
             }
-            $fields[$k] = str_replace($include . '.', '', $field);
+            $fields[$k] = str_replace($include.'.', '', $field);
         }
 
         return $fields;
