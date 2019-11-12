@@ -176,11 +176,7 @@ abstract class Controller extends BaseController
             throw new ApiException("Request should be an instance of Illuminate\Http\Request");
         }
 
-        try {
-            $this->authorize('viewAny', $this->model());
-        } catch (AuthorizationException $exception) {
-            return $this->errorForbidden($exception->getMessage());
-        }
+        $this->authoriseUserAction('viewAny', $this->model());
 
         $this->request = $request;
         $this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
@@ -210,11 +206,8 @@ abstract class Controller extends BaseController
             throw new ApiException("Request should be an instance of Illuminate\Http\Request");
         }
 
-        try {
-            $this->authorize('create', $this->model());
-        } catch (AuthorizationException $exception) {
-            return $this->errorForbidden($exception->getMessage());
-        }
+        $this->authoriseUserAction('create', $this->model());
+
 
         $data = $request->all();
 
@@ -260,11 +253,8 @@ abstract class Controller extends BaseController
             throw new ApiException("Request should be an instance of Illuminate\Http\Request");
         }
 
-        try {
-            $this->authorize('view', $this->model::find($id));
-        } catch (AuthorizationException $exception) {
-            return $this->errorForbidden($exception->getMessage());
-        }
+        $this->authoriseUserAction('view', $this->model::find($id));
+
 
         $this->request = $request;
         $this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
@@ -297,11 +287,7 @@ abstract class Controller extends BaseController
             throw new ApiException("Request should be an instance of Illuminate\Http\Request");
         }
 
-        try {
-            $this->authorize('update', $this->model::find($id));
-        } catch (AuthorizationException $exception) {
-            return $this->errorForbidden($exception->getMessage());
-        }
+        $this->authoriseUserAction('update', $this->model::find($id));
 
         $data = $request->all();
 
@@ -350,11 +336,7 @@ abstract class Controller extends BaseController
             throw new ApiException("Request should be an instance of Illuminate\Http\Request");
         }
 
-        try {
-            $this->authorize('delete', $this->model::find($id));
-        } catch (AuthorizationException $exception) {
-            return $this->errorForbidden($exception->getMessage());
-        }
+        $this->authoriseUserAction('delete', $this->model::find($id));
 
         try {
             $item = $this->repository->getById($id);
@@ -365,7 +347,9 @@ abstract class Controller extends BaseController
         }
 
         return $this->respondNoContent();
-    }
+	}
+
+
 
     /**
      * Show the form for creating the specified resource.

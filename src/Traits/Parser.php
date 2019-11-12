@@ -299,5 +299,46 @@ trait Parser
         }
 
         return $data;
-    }
+	}
+
+
+	protected function authoriseUserAction($ability, $arguments = [])
+	{
+
+		if (is_null($ability)) {
+            return true;
+		}
+
+		if (! $this->testUserPolicyAction($ability, $arguments)) {
+            abort(401, 'Unauthorised');
+        }
+	}
+
+	protected function testUserPolicyAction($ability, $arguments)
+	{
+		$user = auth()->user();
+        // If no arguments are specified, set it to the controller's model (default)
+        if (empty($arguments)) {
+            $arguments = $this->model;
+		}
+
+		// Get policy for model
+        if (is_array($arguments)) {
+            $model = reset($arguments);
+        } else {
+            $model = $arguments;
+		}
+
+		$modelPolicy = Gate::getPolicyFor($model);
+        // If no policy exists for this model, then there's nothing to check
+        if (is_null($modelPolicy)) {
+            return true;
+		}
+
+        // Check if the authenticated user has the required ability for the model
+        if ($user->can($ability, $arguments)) {
+            return true;
+        }
+        return false;
+	}
 }
