@@ -2,8 +2,8 @@
 
 namespace Phpsa\LaravelApiController\Traits;
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
 
 trait Parser

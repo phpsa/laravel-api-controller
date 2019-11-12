@@ -26,9 +26,9 @@ class {{controller.name}} extends Controller
      * @return Response
      */
     public function index(Request $request)
-    {
-        return $this->handleIndexAction($request);
-    }
+	{
+		return $this->handleIndexAction($request);
+	}
 
    /**
     * Store a newly created resource in storage.
@@ -54,7 +54,7 @@ class {{controller.name}} extends Controller
      */
     public function show($id, Request $request)
     {
-		    return $this->handleShowAction($id, $request);
+		return $this->handleShowAction($id, $request);
     }
 
     /**
