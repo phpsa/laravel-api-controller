@@ -27,6 +27,7 @@ trait Response
     public function setStatusCode($statusCode): self
     {
         $this->statusCode = $statusCode;
+
         return $this;
     }
 
@@ -95,7 +96,7 @@ trait Response
     }
 
     /**
-     * Respond with a no content reponse
+     * Respond with a no content reponse.
      *
      * @return Res
      */
