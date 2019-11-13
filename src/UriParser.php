@@ -21,12 +21,12 @@ class UriParser
      * '^' =>  Begins with
      * '$' => Ends with.
      */
-    const PATTERN = '/!=|=|!~|~|!\^|\^|!\$|\$|<>|<=|<|>=|>/';
+    protected const PATTERN = '/!=|=|!~|~|!\^|\^|!\$|\$|<>|<=|<|>=|>/';
 
     /**
      * Patttern to match an array within the url structure.
      */
-    const ARRAY_QUERY_PATTERN = '/(.*)\[\]/';
+    protected const ARRAY_QUERY_PATTERN = '/(.*)\[\]/';
 
     /**
      * Undocumented variable.
@@ -61,7 +61,7 @@ class UriParser
      *
      * @return string
      */
-    public static function getPattern() : string
+    public static function getPattern(): string
     {
         return self::PATTERN;
     }
@@ -71,7 +71,7 @@ class UriParser
      *
      * @return string
      */
-    public static function getArrayQueryPattern() : string
+    public static function getArrayQueryPattern(): string
     {
         return self::ARRAY_QUERY_PATTERN;
     }
@@ -99,8 +99,8 @@ class UriParser
         }
 
         $return = [];
-        foreach (array_keys($keys, $key) as $k) {
-            $return[] = $this->queryParameters[$k];
+        foreach (array_keys($keys, $key) as $param) {
+            $return[] = $this->queryParameters[$param];
         }
 
         return $return;
@@ -111,12 +111,12 @@ class UriParser
      *
      * @return array
      */
-    public function whereParameters() : array
+    public function whereParameters(): array
     {
         return $this->queryParameters;
     }
 
-    private function setQueryParameters($queryUri) : self
+    private function setQueryParameters($queryUri): self
     {
         foreach ($queryUri as $key => $value) {
             preg_match(self::PATTERN, urldecode($key), $matches);
@@ -151,9 +151,9 @@ class UriParser
         $operator = $matches[0];
         [$key, $value] = explode($operator, $parameter);
 
-        $in = strpos($value, '||');
+        $isAnIn = strpos($value, '||');
 
-        if ($in) {
+        if ($isAnIn) {
             $values = explode('||', $value);
 
             if (Str::contains($parameter, '!=') || Str::contains($parameter, '<>')) {
@@ -175,7 +175,7 @@ class UriParser
             $value = str_replace('*', '%', $value);
         }
 
-        if ($operator == '<>') {
+        if ($operator === '<>') {
             $operator = '!=';
         }
 
@@ -211,7 +211,7 @@ class UriParser
         }
         $index = null;
         foreach ($this->queryParameters as $_index => $queryParameter) {
-            if ($queryParameter['type'] == $type && $queryParameter['key'] == $key) {
+            if ($queryParameter['type'] === $type && $queryParameter['key'] === $key) {
                 $index = $_index;
                 break;
             }
@@ -228,7 +228,7 @@ class UriParser
         }
     }
 
-    public function hasQueryUri() : bool
+    public function hasQueryUri(): bool
     {
         return ! empty($this->queryUri);
     }
@@ -238,19 +238,19 @@ class UriParser
         return $this->queryUri;
     }
 
-    public function hasQueryParameters() : bool
+    public function hasQueryParameters(): bool
     {
         return count($this->queryParameters) > 0;
     }
 
-    public function hasQueryParameter($key) : bool
+    public function hasQueryParameter($key): bool
     {
         $keys = Arr::pluck($this->queryParameters, 'key');
 
         return in_array($key, $keys);
     }
 
-    private function isLikeQuery($query) : bool
+    private function isLikeQuery($query): bool
     {
         $pattern = "/^\*|\*$/";
 

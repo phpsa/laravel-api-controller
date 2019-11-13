@@ -1,16 +1,13 @@
 <?php
 
-namespace Phpsa\LaravelApiController\Traits;
+namespace Phpsa\LaravelApiController\Contracts;
 
-use Illuminate\Pagination\LengthAwarePaginator;
 use Symfony\Component\HttpFoundation\Response as Res;
 
 trait Response
 {
     /**
      * HTTP header status code.
-     *
-     * @var int
      */
     protected $statusCode = Res::HTTP_OK;
 
@@ -24,12 +21,12 @@ trait Response
 
     /**
      * @param $message
+     *
      * @return self
      */
-    public function setStatusCode($statusCode)
+    public function setStatusCode($statusCode): self
     {
         $this->statusCode = $statusCode;
-
         return $this;
     }
 
@@ -51,9 +48,9 @@ trait Response
     /**
      * Respond with a given collection of items.
      *
-     * @param $items
-     * @param int $skip
-     * @param int $limit
+     * @param mixed $items
+     * @param mixed $code
+     * @param array $headers
      *
      * @return Res
      */
@@ -68,8 +65,9 @@ trait Response
     /**
      * Created Response.
      *
-     * @param mixed  $id      id of insterted data
-     * @param string $message message to respond with
+     * @param mixed $item
+     * @param mixed $code
+     * @param array $headers
      *
      * @return Res
      */
@@ -79,50 +77,10 @@ trait Response
     }
 
     /**
-     * Created Response.
-     *
-     * @param mixed  $id      id of insterted data
-     * @param string $message message to respond with
-     *
-     * @deprecated 0.4.0 - to be removed by 0.5.0 @see self::respond() || self::respondItemCreated ||
-     *
-     * @return Res
-     */
-    public function respondCreated($id = null, $message = null)
-    {
-        $response = [];
-
-        if ($message !== null) {
-            $response['message'] = $message;
-        }
-
-        if ($id !== null) {
-            if (is_scalar($id)) {
-                $response[$this->resourceKeySingular] = $id;
-            } else {
-                $response[$this->resourceKeyPlural] = $id;
-            }
-        }
-
-        return $this->respond($response);
-    }
-
-    /**
-     * @param LengthAwarePaginator $paginate
-     * @param $data
-     * @return Res
-     *
-     * @deprecated 0.5.0 - to be removed by 0.6.0
-     */
-    protected function respondWithPagination(LengthAwarePaginator $paginator)
-    {
-        return $this->resourceCollection::make($paginator);
-    }
-
-    /**
      * Respond with a given response.
      *
      * @param mixed $data
+     * @param mixed $code
      * @param array $headers
      *
      * @return Res
@@ -137,10 +95,7 @@ trait Response
     }
 
     /**
-     * Respond with a given response.
-     *
-     * @param mixed $data
-     * @param array $headers
+     * Respond with a no content reponse
      *
      * @return Res
      */

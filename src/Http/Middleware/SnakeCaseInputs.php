@@ -30,17 +30,17 @@ class SnakeCaseInputs
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
-     * @param  string|null  $guard
+     *
      * @return mixed
      */
-    public function handle($request, Closure $next, $guard = null)
+    public function handle($request, Closure $next)
     {
         // Query string parameters
-        if (in_array($request->method(), static::RELEVANT_METHODS_QUERY)) {
+        if (in_array($request->method(), self::RELEVANT_METHODS_QUERY)) {
             $this->processParamBag($request->query);
         }
         // Input parameters
-        if (in_array($request->method(), static::RELEVANT_METHODS_BODY)) {
+        if (in_array($request->method(), self::RELEVANT_METHODS_BODY)) {
             $this->processParamBag($request->request);
 
             if ($request->isJson()) {

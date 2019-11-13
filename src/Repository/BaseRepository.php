@@ -85,9 +85,8 @@ class BaseRepository
 
     /**
      * @throws ApiException
-     * @return Model|mixed
      */
-    public function makeModel(string $model)
+    public function makeModel(string $model): void
     {
         $obj = resolve($model);
 
@@ -95,7 +94,7 @@ class BaseRepository
             throw new ApiException("Class {$model} must be an instance of " . Model::class);
         }
 
-        return $this->model = $obj;
+        $this->model = $obj;
     }
 
     /**
@@ -103,7 +102,7 @@ class BaseRepository
      *
      * @param array $columns
      *
-     * @return Collection|static[]
+     * @return Collection
      */
     public function all(array $columns = ['*'])
     {
@@ -121,7 +120,7 @@ class BaseRepository
      *
      * @return int
      */
-    public function count() : int
+    public function count(): int
     {
         return $this->model->count();
     }
@@ -151,8 +150,8 @@ class BaseRepository
     {
         $models = new Collection();
 
-        foreach ($data as $d) {
-            $models->push($this->create($d));
+        foreach ($data as $record) {
+            $models->push($this->create($record));
         }
 
         return $models;
@@ -180,9 +179,10 @@ class BaseRepository
      * @param $id
      *
      * @throws ModelNotFoundException
+     *
      * @return bool
      */
-    public function deleteById($id) : bool
+    public function deleteById($id): bool
     {
         $this->unsetClauses();
 
@@ -196,7 +196,7 @@ class BaseRepository
      *
      * @return int
      */
-    public function deleteMultipleById(array $ids) : int
+    public function deleteMultipleById(array $ids): int
     {
         return $this->model->destroy($ids);
     }
@@ -224,7 +224,7 @@ class BaseRepository
      *
      * @param array $columns
      *
-     * @return Collection|static[]
+     * @return Collection
      */
     public function get(array $columns = ['*'])
     {
@@ -244,9 +244,10 @@ class BaseRepository
      * @param array $columns
      *
      * @throws ModelNotFoundException
+     *
      * @return Model
      */
-    public function getById($id, array $columns = ['*']) : Model
+    public function getById($id, array $columns = ['*']): Model
     {
         $this->unsetClauses();
 
@@ -260,7 +261,7 @@ class BaseRepository
      * @param       $column
      * @param array $columns
      *
-     * @return Model|null|static
+     * @return Model|null
      */
     public function getByColumn($item, $column, array $columns = ['*'])
     {
@@ -329,6 +330,7 @@ class BaseRepository
      *
      * @param string $column
      * @param string $direction
+     *
      * @return $this
      */
     public function orderBy($column, $direction = 'asc')

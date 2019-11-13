@@ -2,27 +2,25 @@
 
 namespace Phpsa\LaravelApiController\Http\Api;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Validator;
-use Phpsa\LaravelApiController\UriParser;
+
+use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Phpsa\LaravelApiController\Traits\Parser;
 use Phpsa\LaravelApiController\Events\Created;
 use Phpsa\LaravelApiController\Events\Deleted;
 use Phpsa\LaravelApiController\Events\Updated;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Auth\Access\AuthorizationException;
+use Phpsa\LaravelApiController\Contracts\Parser;
+use Phpsa\LaravelApiController\Contracts\Policies;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Phpsa\LaravelApiController\Contracts\Relationships;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Phpsa\LaravelApiController\Repository\BaseRepository;
-use Phpsa\LaravelApiController\Traits\Response as ApiResponse;
+use Phpsa\LaravelApiController\Contracts\ModelRepository;
+use Phpsa\LaravelApiController\Contracts\Validation;
+use Phpsa\LaravelApiController\Contracts\Response as ApiResponse;
 
 /**
  * Class Controller.
@@ -34,25 +32,15 @@ abstract class Controller extends BaseController
     use ValidatesRequests;
     use ApiResponse;
     use Parser;
+    use Relationships;
+    use Policies;
+    use ModelRepository;
+    use Validation;
 
     /**
-     * Eloquent model instance.
+     * \Illuminate\Http\Request instance.
      *
-     * @var mixed|Model instance
-     */
-    protected $model;
-
-    /**
-     * Repository instance.
-     *
-     * @var mixed|BaseRepository
-     */
-    protected $repository;
-
-    /**
-     * Illuminate\Http\Request instance.
-     *
-     * @var mixed|Request
+     * @var mixed|\Illuminate\Http\Request | Illuminate\Foundation\Http\FormRequest;
      */
     protected $request;
 
@@ -62,30 +50,6 @@ abstract class Controller extends BaseController
      * @var bool
      */
     protected $unguard = false;
-
-    /**
-     * Holds the current authed user object.
-     *
-     * @var \Illuminate\Foundation\Auth\User
-     * @deprecated 0.5.0 - see auth()->user() || Request::user()
-     */
-    protected $user;
-
-    /**
-     * Resource key for an item.
-     *
-     * @var string
-     * @deprecated 0.5.0 - to be removed 0.6.0
-     */
-    protected $resourceKeySingular = 'data';
-
-    /**
-     * Resource key for a collection.
-     *
-     * @var string
-     * @deprecated 0.5.0 - to be removed 0.6.0
-     */
-    protected $resourceKeyPlural = 'data';
 
     /**
      * Resource for item.
@@ -130,56 +94,33 @@ abstract class Controller extends BaseController
      */
     protected $maximumLimit = 0;
 
+    protected $includesWhitelist = [];
+
+    protected $includesBlacklist = [];
+
     /**
      * Constructor.
-     *
-     * @param Request $request
      */
     public function __construct()
     {
         $this->makeModel();
+        $this->parseIncludesMap();
         $this->makeRepository();
-        $this->user = auth()->user();
-    }
-
-    /**
-     * @throws ApiException
-     * @return Model|mixed
-     */
-    protected function makeModel()
-    {
-        $model = resolve($this->model());
-
-        if (! $model instanceof Model) {
-            throw new ApiException("Class {$this->model()} must be an instance of " . Model::class);
-        }
-
-        return $this->model = $model;
-    }
-
-    protected function makeRepository()
-    {
-        $this->repository = BaseRepository::withModel($this->model());
     }
 
     /**
      * Display a listing of the resource.
      * GET /api/{resource}.
      *
-     * @param Request $request
+     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      *
-     * @return Response
+     * @return ApiResponse
      */
     public function handleIndexAction($request)
     {
-        if (! is_a($request, Request::class)) {
-            throw new ApiException("Request should be an instance of Illuminate\Http\Request");
-        }
-
-        $this->authoriseUserAction('viewAny', $this->model());
-
-        $this->request = $request;
-        $this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
+        $this->validateRequestType($request);
+        $this->authoriseUserAction('viewAny');
+        $this->getUriParser($request);
 
         $this->parseIncludeParams();
         $this->parseSortParams();
@@ -198,16 +139,15 @@ abstract class Controller extends BaseController
      * Store a newly created resource in storage.
      * POST /api/{resource}.
      *
-     * @return Response
+     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
+     *
+     * @return ApiResponse
      */
     public function handleStoreAction($request)
     {
-        if (! is_a($request, Request::class)) {
-            throw new ApiException("Request should be an instance of Illuminate\Http\Request");
-        }
+        $this->validateRequestType($request);
 
-        $this->authoriseUserAction('create', $this->model());
-
+        $this->authoriseUserAction('create');
 
         $data = $request->all();
 
@@ -215,28 +155,39 @@ abstract class Controller extends BaseController
             return $this->errorWrongArgs('Empty request');
         }
 
-        $validator = Validator::make($data, $this->rulesForCreate());
+        $this->validate($request, $this->rulesForCreate());
 
-        if ($validator->fails()) {
-            return $this->errorWrongArgs($validator->messages());
-        }
-
-        $columns = Schema::getColumnListing($this->model->getTable());
+        $columns = $this->getTableColumns();
 
         $data = $this->qualifyStoreQuery($data);
 
         $insert = array_intersect_key($data, array_flip($columns));
 
+        $diff = array_diff(array_keys($data), array_keys($insert));
+
         $this->unguardIfNeeded();
 
-        try {
-            $item = $this->model->create($insert);
-            event(new Created($item, $request));
-        } catch (\Exception $e) {
-            return $this->errorWrongArgs($e->getMessage());
-        }
+        DB::beginTransaction();
 
-        return $this->respondItemCreated($this->repository->getById($item->id));
+        try {
+            $item = self::$model->create($insert);
+
+            $this->storeRelated($item, $diff, $data);
+
+            event(new Created($item, $request));
+
+            DB::commit();
+
+            return $this->respondItemCreated($this->repository->getById($item->id));
+        } catch (\Illuminate\Database\QueryException $exception) {
+            $message = config('app.debug') ? $exception->getMessage() : 'Failed to create Record';
+
+            throw new ApiException($message);
+        } catch (\Exception $exception) {
+            DB::rollback();
+
+            return $this->errorWrongArgs($exception->getMessage());
+        }
     }
 
     /**
@@ -244,20 +195,17 @@ abstract class Controller extends BaseController
      * GET /api/{resource}/{id}.
      *
      * @param int $id
+     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      *
-     * @return Response
+     * @return ApiResponse
      */
     public function handleShowAction($id, $request)
     {
-        if (! is_a($request, Request::class)) {
-            throw new ApiException("Request should be an instance of Illuminate\Http\Request");
-        }
+        $this->validateRequestType($request);
 
-        $this->authoriseUserAction('view', $this->model::find($id));
+        $this->authoriseUserAction('view', self::$model::find($id));
 
-
-        $this->request = $request;
-        $this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
+        $this->getUriParser($request);
 
         $this->parseIncludeParams();
         $fields = $this->parseFieldParams();
@@ -266,7 +214,7 @@ abstract class Controller extends BaseController
 
         try {
             $item = $this->repository->getById($id, $fields);
-        } catch (\Exception $e) {
+        } catch (\Exception $exception) {
             return $this->errorNotFound('Record not found');
         }
 
@@ -278,16 +226,17 @@ abstract class Controller extends BaseController
      * PUT /api/{resource}/{id}.
      *
      * @param int $id
+     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      *
-     * @return Response
+     * @return ApiResponse
      */
     public function handleUpdateAction($id, $request)
     {
-        if (! is_a($request, Request::class)) {
-            throw new ApiException("Request should be an instance of Illuminate\Http\Request");
-        }
+        $this->validateRequestType($request);
 
-        $this->authoriseUserAction('update', $this->model::find($id));
+        $this->authoriseUserAction('update', self::$model::find($id));
+
+        $this->validate($request, $this->rulesForCreate());
 
         $data = $request->all();
 
@@ -297,7 +246,7 @@ abstract class Controller extends BaseController
 
         try {
             $item = $this->repository->getById($id);
-        } catch (ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record does not exist');
         }
 
@@ -309,7 +258,7 @@ abstract class Controller extends BaseController
 
         $data = $this->qualifyUpdateQuery($data);
 
-        $columns = Schema::getColumnListing($this->model->getTable());
+        $columns = $this->getTableColumns();
 
         $fields = array_intersect_key($data, array_flip($columns));
 
@@ -327,115 +276,26 @@ abstract class Controller extends BaseController
      * DELETE /api/{resource}/{id}.
      *
      * @param int $id
+     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      *
-     * @return Response
+     * @return ApiResponse
      */
     public function handleDestroyAction($id, $request)
     {
-        if (! is_a($request, Request::class)) {
-            throw new ApiException("Request should be an instance of Illuminate\Http\Request");
-        }
+        $this->validateRequestType($request);
 
-        $this->authoriseUserAction('delete', $this->model::find($id));
+        $this->authoriseUserAction('delete', self::$model::find($id));
 
         try {
             $item = $this->repository->getById($id);
             $this->repository->deleteById($id);
             event(new Deleted($item, $request));
-        } catch (ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $exeption) {
             return $this->errorNotFound('Record does not exist');
         }
 
         return $this->respondNoContent();
-	}
-
-
-
-    /**
-     * Show the form for creating the specified resource.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        return $this->errorNotImplemented();
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     *
-     * @return Response
-     */
-    public function edit(/* @scrutinizer ignore-unused */$id)
-    {
-        return $this->errorNotImplemented();
-    }
 
-    /**
-     * Eloquent model.
-     *
-     * @return string (model classname)
-     */
-    abstract protected function model();
-
-    /**
-     * Get the validation rules for create.
-     *
-     * @return array
-     */
-    protected function rulesForCreate()
-    {
-        return [];
-    }
-
-    /**
-     * Get the validation rules for update.
-     *
-     * @param int $id
-     *
-     * @return array
-     */
-    protected function rulesForUpdate(/* @scrutinizer ignore-unused */$id)
-    {
-        return [];
-    }
-
-    /**
-     * Unguard eloquent model if needed.
-     */
-    protected function unguardIfNeeded()
-    {
-        if ($this->unguard) {
-            $this->model->unguard();
-        }
-    }
-
-    /**
-     * Check if the user has one or more roles.
-     *
-     * @param mixed $role role name or array of role names
-     *
-     * @return bool
-     *
-     * @deprecated 0.5.0
-     */
-    protected function hasRole($role)
-    {
-        return $this->user && $this->user->hasRole($role);
-    }
-
-    /**
-     * Checks if user has all the passed roles.
-     *
-     * @param array $roles
-     *
-     * @return bool
-     * @deprecated 0.5.0
-     */
-    protected function hasAllRoles($roles)
-    {
-        return $this->user && $this->user->hasRole($roles, true);
-    }
 }
