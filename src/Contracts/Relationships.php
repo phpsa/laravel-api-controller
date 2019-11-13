@@ -69,11 +69,18 @@ trait Relationships
             $this->repository->with($with);
             $type = class_basename(get_class($relation));
 
+            $foreignKey = $relation->getForeignKeyName();
+            $localKey = $relation->getLocalKeyName();
+            dd($foreignKey, $localKey, $item, $data[$with]);
+
+
+
             switch ($type) {
                 case 'HasMany':
                     $relation->createMany($data[$with]);
                     break;
                 case 'HasOne':
+                    if(isset($data[$with]));
                     $relation->create($data[$with]);
                     break;
                 default:

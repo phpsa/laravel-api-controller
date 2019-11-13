@@ -37,13 +37,6 @@ abstract class Controller extends BaseController
     use Validation;
 
     /**
-     * \Illuminate\Http\Request instance.
-     *
-     * @var mixed|\Illuminate\Http\Request | Illuminate\Foundation\Http\FormRequest;
-     */
-    protected $request;
-
-    /**
      * Do we need to unguard the model before create/update?
      *
      * @var bool
@@ -249,11 +242,7 @@ abstract class Controller extends BaseController
             return $this->errorNotFound('Record does not exist');
         }
 
-        $validator = Validator::make($data, $this->rulesForUpdate($item->id));
-
-        if ($validator->fails()) {
-            return $this->errorWrongArgs($validator->messages());
-        }
+        $this->validate($request, $this->rulesForUpdate($item->id));
 
         $data = $this->qualifyUpdateQuery($data);
 

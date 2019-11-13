@@ -36,7 +36,7 @@ trait Response
      *
      * @param $item
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function respondWithOne($item, $code = null, $headers = [])
     {
@@ -53,7 +53,7 @@ trait Response
      * @param mixed $code
      * @param array $headers
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function respondWithMany($items, $code = null, $headers = [])
     {
@@ -70,7 +70,7 @@ trait Response
      * @param mixed $code
      * @param array $headers
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function respondItemCreated($item, $code = 201, $headers = [])
     {
@@ -84,7 +84,7 @@ trait Response
      * @param mixed $code
      * @param array $headers
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function respond($data, $code = null, $headers = [])
     {
@@ -98,7 +98,7 @@ trait Response
     /**
      * Respond with a no content reponse.
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function respondNoContent()
     {
@@ -111,7 +111,7 @@ trait Response
      * @param string $message
      * @param array  $errors
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function respondWithError($message, array $errors = [])
     {
@@ -132,7 +132,7 @@ trait Response
      * @param $message
      * @param array  $errors
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function errorForbidden($message = 'Forbidden', array $errors = [])
     {
@@ -145,7 +145,7 @@ trait Response
      * @param string $message
      * @param array  $errors
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function errorInternalError($message = 'Internal Error', array $errors = [])
     {
@@ -158,7 +158,7 @@ trait Response
      * @param string $message
      * @param array  $errors
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function errorNotFound($message = 'Resource Not Found', array $errors = [])
     {
@@ -171,7 +171,7 @@ trait Response
      * @param string $message
      * @param array  $errors
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function errorUnauthorized($message = 'Unauthorized', array $errors = [])
     {
@@ -184,7 +184,7 @@ trait Response
      * @param string $message
      * @param array  $errors
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function errorWrongArgs($message = 'Wrong Arguments', array $errors = [])
     {
@@ -197,7 +197,7 @@ trait Response
      * @param string $message
      * @param array  $errors
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function errorNotImplemented($message = 'Not implemented', array $errors = [])
     {

@@ -42,6 +42,7 @@ trait Parser
 
         $withs = explode(',', $includes);
 
+        /** @scrutinizer ignore-call */
         $withs = $this->filterAllowedIncludes($withs);
 
         foreach ($withs as $idx => $with) {
@@ -68,7 +69,9 @@ trait Parser
             $sortP = explode(' ', $sort);
             $sortF = $sortP[0];
 
-            if (empty($sortF) || ! in_array($sortF, $this->getTableColumns())) {
+            /** @scrutinizer ignore-call */
+            $tableColumns = $this->getTableColumns();
+            if (empty($sortF) || ! in_array($sortF, $tableColumns)) {
                 continue;
             }
 

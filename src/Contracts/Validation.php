@@ -7,6 +7,14 @@ use Phpsa\LaravelApiController\Exceptions\ApiException;
 
 trait Validation
 {
+
+    /**
+     * \Illuminate\Http\Request instance.
+     *
+     * @var mixed|\Illuminate\Http\Request | \Illuminate\Foundation\Http\FormRequest;
+     */
+    protected $request;
+
     /**
      * validates that the request is of a request type.
      *
