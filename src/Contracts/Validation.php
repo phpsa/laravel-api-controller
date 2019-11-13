@@ -2,14 +2,11 @@
 
 namespace Phpsa\LaravelApiController\Contracts;
 
-
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 
 trait Validation
 {
-
     /**
      * validates that the request is of a request type.
      *
