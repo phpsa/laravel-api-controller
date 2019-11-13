@@ -97,6 +97,8 @@ trait Parser
         return is_array($sort) ? $sort : explode(',', $sort);
     }
 
+
+
     /**
      * parses our filter parameters.
      */
@@ -108,11 +110,14 @@ trait Parser
             return;
         }
 
+        /** @scrutinizer ignore-call */
+        $tableColumns = $this->getTableColumns();
+
         foreach ($where as $whr) {
             if (strpos($whr['key'], '.') > 0) {
                 //@TODO: test if exists in the withs, if not continue out to exclude from the qbuild
                 //continue;
-            } elseif (! in_array($whr['key'], $this->getTableColumns())) {
+            } elseif (! in_array($whr['key'], $tableColumns)) {
                 continue;
             }
 

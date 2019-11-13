@@ -105,8 +105,6 @@ abstract class Controller extends BaseController
      * GET /api/{resource}.
      *
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
-     *
-     * @return ApiResponse
      */
     public function handleIndexAction($request)
     {
@@ -132,8 +130,6 @@ abstract class Controller extends BaseController
      * POST /api/{resource}.
      *
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
-     *
-     * @return ApiResponse
      */
     public function handleStoreAction($request)
     {
@@ -188,8 +184,6 @@ abstract class Controller extends BaseController
      *
      * @param int $id
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
-     *
-     * @return ApiResponse
      */
     public function handleShowAction($id, $request)
     {
@@ -219,8 +213,6 @@ abstract class Controller extends BaseController
      *
      * @param int $id
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
-     *
-     * @return ApiResponse
      */
     public function handleUpdateAction($id, $request)
     {
@@ -265,8 +257,6 @@ abstract class Controller extends BaseController
      *
      * @param int $id
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
-     *
-     * @return ApiResponse
      */
     public function handleDestroyAction($id, $request)
     {
