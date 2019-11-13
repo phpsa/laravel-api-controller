@@ -71,17 +71,26 @@ trait Relationships
 
             $foreignKey = $relation->getForeignKeyName();
             $localKey = $relation->getLocalKeyName();
-            dd($foreignKey, $localKey, $item, $data[$with]);
-
-
+            $parentKeyValue = $relation->getParentKey();
+            $existanceCheck = [$foreignKey => $parentKeyValue];
 
             switch ($type) {
                 case 'HasMany':
-                    $relation->createMany($data[$with]);
+                    foreach($data[$with] as $relatedRecord){
+                        if(isset($relatedRecord[$localKey])){
+                            $relation->updateOrCreate($existanceCheck, $relatedRecord);
+                        }else{
+                            $relation->create($relatedRecord);
+                        }
+                    }
+
                     break;
                 case 'HasOne':
-                    if(isset($data[$with]));
-                    $relation->create($data[$with]);
+                    if(isset($data[$with][$localKey])){
+                        $relation->updateOrCreate($existanceCheck, $data[$with]);
+                    }else{
+                        $relation->create($data[$with]);
+                    }
                     break;
                 default:
                     throw new ApiException("$type mapping not implemented yet");
