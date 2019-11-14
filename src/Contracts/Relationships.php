@@ -16,6 +16,7 @@ trait Relationships
     /**
      * parses the whitelist and blacklist of includes if set
      * and mapps to the allowedIncludes static param.
+     * @todo make sure that whitelist and balcklist are not interdependant -- try make work more like laravel guard on model
      */
     protected function parseIncludesMap(): void
     {
@@ -65,33 +66,34 @@ trait Relationships
         $filteredRelateds = $this->filterAllowedIncludes($relateds);
 
         foreach ($filteredRelateds as $with) {
-            $relation = $item->$with($data[$with]);
+            $relation = $item->$with();
             $this->repository->with($with);
             $type = class_basename(get_class($relation));
 
-            $foreignKey = $relation->getForeignKeyName();
-            $localKey = $relation->getLocalKeyName();
-            $parentKeyValue = $relation->getParentKey();
-            $existanceCheck = [$foreignKey => $parentKeyValue];
 
             switch ($type) {
                 case 'HasMany':
+                    $localKey = $relation->getLocalKeyName();
                     foreach($data[$with] as $relatedRecord){
                         if(isset($relatedRecord[$localKey])){
-                            $relation->updateOrCreate($existanceCheck, $relatedRecord);
+                            $existanceCheck = [$localKey => $relatedRecord[$localKey]];
+                            $item->$with()->updateOrCreate($existanceCheck, $relatedRecord);
                         }else{
-                            $relation->create($relatedRecord);
+                            $item->$with()->create($relatedRecord);
                         }
                     }
 
-                    break;
+                break;
                 case 'HasOne':
+                    $localKey = $relation->getLocalKeyName();
                     if(isset($data[$with][$localKey])){
-                        $relation->updateOrCreate($existanceCheck, $data[$with]);
+                        $existanceCheck = [$localKey => $data[$with][$localKey]];
+                        $item->$with()->updateOrCreate($existanceCheck, $data[$with]);
                     }else{
-                        $relation->create($data[$with]);
+                        $item->$with()->create($data[$with]);
                     }
                     break;
+                case 'BelongsTo': //@TODO -- should we do anyting here - allow to continue or throw the exception -- discuss
                 default:
                     throw new ApiException("$type mapping not implemented yet");
             }

@@ -238,17 +238,38 @@ abstract class Controller extends BaseController
 
         $data = $this->qualifyUpdateQuery($data);
 
+
         $columns = $this->getTableColumns();
 
-        $fields = array_intersect_key($data, array_flip($columns));
+        $updates = array_intersect_key($data, array_flip($columns));
+
+        $diff = array_diff(array_keys($data), array_keys($updates));
 
         $this->unguardIfNeeded();
-        $item->fill($fields);
-        $item->save();
 
-        event(new Updated($item, $request));
+        DB::beginTransaction();
 
-        return $this->respondWithOne($item);
+        try {
+            $item->fill($updates);
+            $item->save();
+
+            $this->storeRelated($item, $diff, $data);
+
+            event(new Updated($item, $request));
+
+            DB::commit();
+
+            return $this->respondWithOne($this->repository->getById($item->id));
+        } catch (\Illuminate\Database\QueryException $exception) {
+            $message = config('app.debug') ? $exception->getMessage() : 'Failed to update Record';
+
+            throw new ApiException($message);
+        } catch (\Exception $exception) {
+            DB::rollback();
+
+            return $this->errorWrongArgs($exception->getMessage());
+        }
+
     }
 
     /**

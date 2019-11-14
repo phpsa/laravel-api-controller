@@ -104,9 +104,23 @@ class ApiMakeCommand extends Command
 
     protected function createOptionals()
     {
+        //dd($this->stubVariables);
         if ($this->option('model') || $this->option('all')) {
-            $this->call('make:model', ['name' => $this->stubVariables['model']['fullNameWithoutRoot']]);
-            if ($this->anticipate('Would you like to create a Migration for this resource?', ['yes', 'no']) == 'yes') {
+
+            $params = ['name' => $this->stubVariables['model']['fullName']];
+            if ($this->confirm('Would you like to create a Migration for this resource?') ){
+                $params['--migration'] = true;
+                if($this->confirm('Would you like to create a Seeder for this resource?')){
+                    $seederName = $this->stubVariables['model']['fullNameWithoutRoot'].'Seeder';
+                    $this->call('make:seeder', ['name' => $seederName]);
+                    $this->line('Please add the following to your DatabaseSeeder.php file', 'important');
+                    $this->line('$this->call('.$seederName.'::class);', 'code');
+                    $this->line(PHP_EOL);
+                }
+            }
+            $this->call('make:model', $params);
+
+            /*if ($this->anticipate('Would you like to create a Migration for this resource?', ['yes', 'no']) == 'yes') {
                 $migrationName = $this->stubVariables['model']['migration'];
                 $this->call('make:migration', ['name' => "create_{$migrationName}_table"]);
 
@@ -117,11 +131,11 @@ class ApiMakeCommand extends Command
                     $this->line('$this->call('.$seederName.'::class);', 'code');
                     $this->line(PHP_EOL);
                 }
-            }
+            }*/
         }
 
         if ($this->option('all') || $this->option('policy')) {
-            $this->call('make:policy', ['name' => $this->stubVariables['model']['name'].'Policy', '--model' => $this->stubVariables['model']['fullNameWithoutRoot']]);
+            $this->call('make:policy', ['name' => $this->stubVariables['model']['name'].'Policy', '--model' => $this->stubVariables['model']['fullName']]);
         }
 
         if ($this->option('all') || $this->option('resource')) {
