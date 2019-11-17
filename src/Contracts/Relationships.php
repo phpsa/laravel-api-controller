@@ -2,14 +2,13 @@
 
 namespace Phpsa\LaravelApiController\Contracts;
 
-use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Illuminate\Support\Str;
+use Phpsa\LaravelApiController\Exceptions\ApiException;
 
 trait Relationships
 {
-
     /**
-     * Gets whitelisted methods
+     * Gets whitelisted methods.
      *
      * @return array
      */
@@ -19,7 +18,7 @@ trait Relationships
     }
 
     /**
-     * Gets blacklisted methods
+     * Gets blacklisted methods.
      *
      * @return array
      */
@@ -29,7 +28,7 @@ trait Relationships
     }
 
     /**
-     * is method blacklisted
+     * is method blacklisted.
      *
      * @param string $item
      *
@@ -49,7 +48,7 @@ trait Relationships
      */
     protected function filterAllowedIncludes(array $includes): array
     {
-        return array_filter($includes,  function ($item) {
+        return array_filter($includes, function ($item) {
             $callable = method_exists(self::$model, $item);
 
             if (! $callable) {
@@ -65,7 +64,7 @@ trait Relationships
                 return false;
             }
 
-            return empty($this->getIncludesWhitelist())  && ! Str::startsWith($item, '_');;
+            return empty($this->getIncludesWhitelist()) && ! Str::startsWith($item, '_');
         });
     }
 
@@ -81,19 +80,19 @@ trait Relationships
             $relation = $item->$with();
             $type = class_basename(get_class($relation));
 
-            if(!in_array($type, ['HasOne','HasMany'])){
+            if (! in_array($type, ['HasOne', 'HasMany'])) {
                 throw new ApiException("$type mapping not implemented yet");
             }
 
-            $collection = $type === 'HasOne' ? [$data [$with]]: $data[$with];
+            $collection = $type === 'HasOne' ? [$data [$with]] : $data[$with];
             $this->repository->with($with);
             $localKey = $relation->getLocalKeyName();
 
-            foreach($collection as $relatedRecord){
-                if(isset($relatedRecord[$localKey])){
+            foreach ($collection as $relatedRecord) {
+                if (isset($relatedRecord[$localKey])) {
                     $existanceCheck = [$localKey => $relatedRecord[$localKey]];
                     $item->$with()->updateOrCreate($existanceCheck, $relatedRecord);
-                }else{
+                } else {
                     $item->$with()->create($relatedRecord);
                 }
             }

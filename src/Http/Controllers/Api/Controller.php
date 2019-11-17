@@ -237,7 +237,6 @@ abstract class Controller extends BaseController
 
         $data = $this->qualifyUpdateQuery($data);
 
-
         $columns = $this->getTableColumns();
 
         $updates = array_intersect_key($data, array_flip($columns));
@@ -268,7 +267,6 @@ abstract class Controller extends BaseController
 
             return $this->errorWrongArgs($exception->getMessage());
         }
-
     }
 
     /**
