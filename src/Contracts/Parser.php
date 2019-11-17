@@ -97,8 +97,6 @@ trait Parser
         return is_array($sort) ? $sort : explode(',', $sort);
     }
 
-
-
     /**
      * parses our filter parameters.
      */

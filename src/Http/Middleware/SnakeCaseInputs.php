@@ -44,7 +44,7 @@ class SnakeCaseInputs
             $this->processParamBag($request->request);
 
             if ($request->isJson()) {
-                $this->processParamBag(/** @scrutinizer ignore-type */$request->json());
+                $this->processParamBag(/* @scrutinizer ignore-type */$request->json());
             }
         }
 
