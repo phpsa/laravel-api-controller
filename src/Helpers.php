@@ -37,7 +37,7 @@ class Helpers
                 $value = self::snakeCaseArrayKeys($value);
             }
 
-            $newKey = self::camel($key);
+            $newKey = self::snake($key);
             $array[$newKey] = $value;
             unset($value); //cleanup
         }

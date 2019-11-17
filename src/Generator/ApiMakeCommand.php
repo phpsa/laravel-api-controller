@@ -120,18 +120,6 @@ class ApiMakeCommand extends Command
             }
             $this->call('make:model', $params);
 
-            /*if ($this->anticipate('Would you like to create a Migration for this resource?', ['yes', 'no']) == 'yes') {
-                $migrationName = $this->stubVariables['model']['migration'];
-                $this->call('make:migration', ['name' => "create_{$migrationName}_table"]);
-
-                if ($this->anticipate('Would you like to create a Seeder for this resource?', ['yes', 'no']) == 'yes') {
-                    $seederName = $this->stubVariables['model']['fullNameWithoutRoot'].'Seeder';
-                    $this->call('make:seeder', ['name' => $seederName]);
-                    $this->line('Please add the following to your DatabaseSeeder.php file', 'important');
-                    $this->line('$this->call('.$seederName.'::class);', 'code');
-                    $this->line(PHP_EOL);
-                }
-            }*/
         }
 
         if ($this->option('all') || $this->option('policy')) {
@@ -140,6 +128,7 @@ class ApiMakeCommand extends Command
 
         if ($this->option('all') || $this->option('resource')) {
             $this->call('make:resource', ['name' => $this->stubVariables['model']['name']]);
+            $this->call('make:resource', ['name' => $this->stubVariables['model']['name'] . 'Collection']);
         }
     }
 
@@ -292,8 +281,51 @@ class ApiMakeCommand extends Command
             return;
         }
         $this->makeDirectoryIfNeeded($path);
-        $this->files->put($path, $this->constructStub(base_path(config('laravel-api-controller.'.$type.'_stub'))));
+        $fileContent =  $this->constructStub(base_path(config('laravel-api-controller.'.$type.'_stub')));
+
+        if($type === 'controller' &&  ($this->option('all') || $this->option('resource')) ) {
+            $resourceName = $this->stubVariables['model']['fullName'];
+            $resourceCollection = $resourceName . 'Collection';
+
+            $fileContent = str_replace('protected $includesBlacklist = [];', 'protected $includesBlacklist = [];
+            /**
+     * Resource for item.
+     *
+     * @var mixed instance of \Illuminate\Http\Resources\Json\JsonResource
+     *
+    protected $resourceSingle = \\' . $resourceName . ';
+
+    /**
+     * Resource for collection.
+     *
+     * @var mixed instance of \Illuminate\Http\Resources\Json\ResourceCollection
+     *
+    protected $resourceCollection = \\' . $resourceCollection . ';
+
+            ', $fileContent);
+        }
+
+        $this->files->put($path, $fileContent);
         $this->info(ucfirst($type).' created successfully.');
+
+
+
+        /*
+        /**
+     * Resource for item.
+     *
+     * @var mixed instance of \Illuminate\Http\Resources\Json\JsonResource
+     *
+    protected $resourceSingle = TenantReviewResource::class;
+
+    /**
+     * Resource for collection.
+     *
+     * @var mixed instance of \Illuminate\Http\Resources\Json\ResourceCollection
+     *
+    protected $resourceCollection = TenantReviewCollection::class;
+
+    */
     }
 
     /**
