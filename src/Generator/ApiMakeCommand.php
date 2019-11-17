@@ -106,11 +106,10 @@ class ApiMakeCommand extends Command
     {
         //dd($this->stubVariables);
         if ($this->option('model') || $this->option('all')) {
-
             $params = ['name' => $this->stubVariables['model']['fullName']];
-            if ($this->confirm('Would you like to create a Migration for this resource?') ){
+            if ($this->confirm('Would you like to create a Migration for this resource?')) {
                 $params['--migration'] = true;
-                if($this->confirm('Would you like to create a Seeder for this resource?')){
+                if ($this->confirm('Would you like to create a Seeder for this resource?')) {
                     $seederName = $this->stubVariables['model']['fullNameWithoutRoot'].'Seeder';
                     $this->call('make:seeder', ['name' => $seederName]);
                     $this->line('Please add the following to your DatabaseSeeder.php file', 'important');

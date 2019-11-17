@@ -7,7 +7,6 @@ use Phpsa\LaravelApiController\Exceptions\ApiException;
 
 trait Validation
 {
-
     /**
      * \Illuminate\Http\Request instance.
      *
