@@ -3,7 +3,7 @@
 namespace Phpsa\LaravelApiController\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Str;
+use Phpsa\LaravelApiController\Helpers;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
@@ -61,43 +61,8 @@ class SnakeCaseInputs
         $parameters = $bag->all();
 
         if (! empty($parameters) && count($parameters) > 0) {
-            $parameters = $this->snakeCaseArrayKeys($parameters);
+            $parameters = Helpers::snakeCaseArrayKeys($parameters);
             $bag->replace($parameters);
         }
-    }
-
-    protected function snakeCaseArrayKeys(array $array, $levels = null)
-    {
-        foreach (array_keys($array) as $key) {
-            // Get a reference to the value of the key (avoid copy)
-            // Then remove that array element
-            $value = &$array[$key];
-            unset($array[$key]);
-            // Transform key
-            $transformedKey = $this->snake($key);
-            // Recurse
-            if (is_array($value) && (is_null($levels) || --$levels > 0)) {
-                $value = $this->snakeCaseArrayKeys($value, $levels);
-            }
-            // Store the transformed key with the referenced value
-            $array[$transformedKey] = $value;
-            // We'll be dealing with some large values, so memory cleanup is important
-            unset($value);
-        }
-
-        return $array;
-    }
-
-    protected function snake($value)
-    {
-        if (strtoupper($value) === $value) {
-            return $value;
-        }
-        $value = Str::snake($value);
-        // Extra things which Str::snake doesn't do, but maybe should
-        $value = str_replace('-', '_', $value);
-        $value = preg_replace('/__+/', '_', $value);
-
-        return $value;
     }
 }
