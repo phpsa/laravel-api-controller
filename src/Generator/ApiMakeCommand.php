@@ -292,6 +292,8 @@ class ApiMakeCommand extends Command
      *
      * @var mixed instance of \Illuminate\Http\Resources\Json\JsonResource
      *
+     *
+     */
     protected $resourceSingle = \\' . $resourceName . ';
 
     /**
@@ -299,6 +301,7 @@ class ApiMakeCommand extends Command
      *
      * @var mixed instance of \Illuminate\Http\Resources\Json\ResourceCollection
      *
+     */
     protected $resourceCollection = \\' . $resourceCollection . ';
 
             ', $fileContent);
