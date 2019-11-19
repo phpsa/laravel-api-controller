@@ -101,7 +101,7 @@ trait ModelRepository
     protected function unguardIfNeeded()
     {
         if ($this->unguard) {
-            $this->model->unguard();
+            self::$model->unguard();
         }
     }
 }
