@@ -54,6 +54,13 @@ Generate with `php artisan make:policy PostPolicy --model=Post`
 * Put Update - calls the `update` policy
 * Delete item - calls the `delete` policy
 
+Query/Data modifiers in policies for the api endpoints
+
+* `qualifyCollectionQueryWithUser($user, $repository)` -> return void - add any queries to the repository (ie ->where('x','))
+* `qualifyItemQueryWithUser($user, $repository)`-> return void - add any queries to the repository (ie ->where('x','))
+* `qualifyStoreDataWithUser($data)` - return the updated data array
+* `qualifyUpdateDataWithUser($data)` - return the updated data array
+
 ## Resources / Collections (Transforming)
  Resources: https://laravel.com/docs/6.x/eloquent-resources
 

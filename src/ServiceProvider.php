@@ -6,7 +6,7 @@ use Phpsa\LaravelApiController\Generator\ApiMakeCommand;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
-    const CONFIG_PATH = __DIR__.'/../config/laravel-api-controller.php';
+    protected const CONFIG_PATH = __DIR__.'/../config/laravel-api-controller.php';
 
     public function boot()
     {
@@ -22,7 +22,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             'laravel-api-controller'
         );
 
-        $this->app->singleton('command.api.make', function ($app) {
+        $this->app->singleton('command.api.make', static function ($app) {
             return new ApiMakeCommand($app['files']);
         });
 

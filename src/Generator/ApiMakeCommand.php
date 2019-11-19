@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Console\DetectsApplicationNamespace;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputArgument;
 
 class ApiMakeCommand extends Command
@@ -25,6 +26,13 @@ class ApiMakeCommand extends Command
      * @var string
      */
     protected $name = 'make:api';
+
+    protected $signature = 'make:api
+                        {name : The name of the model}
+                        {--M|model : create the model}
+                        {--R|resource : create a resource}
+                        {--P|policy : create a policy}
+                        {--A|all : create all requirements}';
 
     /**
      * The console command description.
@@ -63,9 +71,63 @@ class ApiMakeCommand extends Command
      */
     public function handle()
     {
+
+      /*  $name = ucfirst($this->argument('name'));
+        $options = $this->options();
+
+        dd($name);
+
+        if($options['model'] === true || $options['all'] === true){
+            $this->call('make:model', ['name' => $name]);
+
+            if ($this->anticipate('Would you like to create a Migration for this resource?', ['yes', 'no']) == 'yes') {
+                $migrationName = Str::snake(Str::pluralStudly($name));
+                $this->call('make:migration', ['name' => "create_{$migrationName}_table"]);
+
+                if ($this->anticipate('Would you like to create a Seeder for this resource?', ['yes', 'no']) == 'yes') {
+                    $seederName = Str::plural($name) . 'Seeder';
+                    $this->call('make:seeder', ['name' => $seederName]);
+                    $this->line('Please add the following to your DatabaseSeeder.php file', 'important');
+                    $this->line('$this->call('. $seederName .'::class);', 'code');
+                    $this->line(PHP_EOL);
+                }
+            }
+        }
+
+        dd($this->argument('name'), $this->options()); */
+
         $this->prepareVariablesForStubs($this->argument('name'));
+        $this->createOptionals();
         $this->createController();
         $this->addRoutes();
+    }
+
+    protected function createOptionals()
+    {
+        //dd($this->stubVariables);
+        if ($this->option('model') || $this->option('all')) {
+            $params = ['name' => $this->stubVariables['model']['fullName']];
+            if ($this->confirm('Would you like to create a Migration for this resource?')) {
+                $params['--migration'] = true;
+                if ($this->confirm('Would you like to create a Seeder for this resource?')) {
+                    $seederName = $this->stubVariables['model']['fullNameWithoutRoot'].'Seeder';
+                    $this->call('make:seeder', ['name' => $seederName]);
+                    $this->line('Please add the following to your DatabaseSeeder.php file', 'important');
+                    $this->line('$this->call('.$seederName.'::class);', 'code');
+                    $this->line(PHP_EOL);
+                }
+            }
+            $this->call('make:model', $params);
+        }
+
+        if ($this->option('all') || $this->option('policy')) {
+            $this->call('make:policy', ['name' => $this->stubVariables['model']['name'].'Policy', '--model' => $this->stubVariables['model']['fullName']]);
+        }
+
+        if ($this->option('all') || $this->option('resource')) {
+            $this->call('make:resource', ['name' => $this->stubVariables['model']['name']]);
+            $this->call('make:resource', ['name' => $this->stubVariables['model']['name'].'Collection']);
+        }
     }
 
     /**
@@ -102,6 +164,10 @@ class ApiMakeCommand extends Command
         $exploded = explode('\\', $this->stubVariables['model']['fullNameWithoutRoot']);
         array_pop($exploded);
         $this->stubVariables['model']['additionalNamespace'] = implode('\\', $exploded);
+
+        $name = str_replace('\\', '', $this->stubVariables['model']['fullNameWithoutRoot']);
+        $name = Str::snake($name);
+        $this->stubVariables['model']['migration'] = Str::singular($name);
 
         return $this;
     }
@@ -185,14 +251,14 @@ class ApiMakeCommand extends Command
             $lines[] = "$stub\r\n";
         }
         // save file
-        $fp = fopen($routesFile, 'w');
+        $fileResource = fopen($routesFile, 'w');
 
-        if (! is_resource($fp)) {
+        if (! is_resource($fileResource)) {
             //@todo - better error handling here
             return false;
         }
-        fwrite($fp, implode('', $lines));
-        fclose($fp);
+        fwrite($fileResource, implode('', $lines));
+        fclose($fileResource);
         $this->info('Routes added successfully.');
     }
 
@@ -213,8 +279,52 @@ class ApiMakeCommand extends Command
             return;
         }
         $this->makeDirectoryIfNeeded($path);
-        $this->files->put($path, $this->constructStub(base_path(config('laravel-api-controller.'.$type.'_stub'))));
+        $fileContent = $this->constructStub(base_path(config('laravel-api-controller.'.$type.'_stub')));
+
+        if ($type === 'controller' && ($this->option('all') || $this->option('resource'))) {
+            $resourceName = $this->stubVariables['model']['fullName'];
+            $resourceCollection = $resourceName.'Collection';
+
+            $fileContent = str_replace('protected $includesBlacklist = [];', 'protected $includesBlacklist = [];
+            /**
+     * Resource for item.
+     *
+     * @var mixed instance of \Illuminate\Http\Resources\Json\JsonResource
+     *
+     *
+     */
+    protected $resourceSingle = \\'.$resourceName.';
+
+    /**
+     * Resource for collection.
+     *
+     * @var mixed instance of \Illuminate\Http\Resources\Json\ResourceCollection
+     *
+     */
+    protected $resourceCollection = \\'.$resourceCollection.';
+
+            ', $fileContent);
+        }
+
+        $this->files->put($path, $fileContent);
         $this->info(ucfirst($type).' created successfully.');
+
+        /*
+        /**
+     * Resource for item.
+     *
+     * @var mixed instance of \Illuminate\Http\Resources\Json\JsonResource
+     *
+    protected $resourceSingle = TenantReviewResource::class;
+
+    /**
+     * Resource for collection.
+     *
+     * @var mixed instance of \Illuminate\Http\Resources\Json\ResourceCollection
+     *
+    protected $resourceCollection = TenantReviewCollection::class;
+
+    */
     }
 
     /**
@@ -287,5 +397,16 @@ class ApiMakeCommand extends Command
     protected function convertSlashes($string)
     {
         return str_replace('/', '\\', $string);
+    }
+
+    /**
+     * Setup styles for command.
+     */
+    protected function setupStyles()
+    {
+        $style = new OutputFormatterStyle('yellow', 'black', ['bold']);
+        $this->output->getFormatter()->setStyle('important', $style);
+        $style = new OutputFormatterStyle('cyan', 'black', ['bold']);
+        $this->output->getFormatter()->setStyle('code', $style);
     }
 }

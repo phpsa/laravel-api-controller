@@ -1,16 +1,13 @@
 <?php
 
-namespace Phpsa\LaravelApiController\Traits;
+namespace Phpsa\LaravelApiController\Contracts;
 
-use Illuminate\Pagination\LengthAwarePaginator;
 use Symfony\Component\HttpFoundation\Response as Res;
 
 trait Response
 {
     /**
      * HTTP header status code.
-     *
-     * @var int
      */
     protected $statusCode = Res::HTTP_OK;
 
@@ -24,9 +21,10 @@ trait Response
 
     /**
      * @param $message
+     *
      * @return self
      */
-    public function setStatusCode($statusCode)
+    public function setStatusCode($statusCode): self
     {
         $this->statusCode = $statusCode;
 
@@ -38,7 +36,7 @@ trait Response
      *
      * @param $item
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function respondWithOne($item, $code = null, $headers = [])
     {
@@ -51,11 +49,11 @@ trait Response
     /**
      * Respond with a given collection of items.
      *
-     * @param $items
-     * @param int $skip
-     * @param int $limit
+     * @param mixed $items
+     * @param mixed $code
+     * @param array $headers
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function respondWithMany($items, $code = null, $headers = [])
     {
@@ -68,10 +66,11 @@ trait Response
     /**
      * Created Response.
      *
-     * @param mixed  $id      id of insterted data
-     * @param string $message message to respond with
+     * @param mixed $item
+     * @param mixed $code
+     * @param array $headers
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function respondItemCreated($item, $code = 201, $headers = [])
     {
@@ -79,53 +78,13 @@ trait Response
     }
 
     /**
-     * Created Response.
-     *
-     * @param mixed  $id      id of insterted data
-     * @param string $message message to respond with
-     *
-     * @deprecated 0.4.0 - to be removed by 0.5.0 @see self::respond() || self::respondItemCreated ||
-     *
-     * @return Res
-     */
-    public function respondCreated($id = null, $message = null)
-    {
-        $response = [];
-
-        if ($message !== null) {
-            $response['message'] = $message;
-        }
-
-        if ($id !== null) {
-            if (is_scalar($id)) {
-                $response[$this->resourceKeySingular] = $id;
-            } else {
-                $response[$this->resourceKeyPlural] = $id;
-            }
-        }
-
-        return $this->respond($response);
-    }
-
-    /**
-     * @param LengthAwarePaginator $paginate
-     * @param $data
-     * @return Res
-     *
-     * @deprecated 0.5.0 - to be removed by 0.6.0
-     */
-    protected function respondWithPagination(LengthAwarePaginator $paginator)
-    {
-        return $this->resourceCollection::make($paginator);
-    }
-
-    /**
      * Respond with a given response.
      *
      * @param mixed $data
+     * @param mixed $code
      * @param array $headers
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function respond($data, $code = null, $headers = [])
     {
@@ -137,12 +96,9 @@ trait Response
     }
 
     /**
-     * Respond with a given response.
+     * Respond with a no content reponse.
      *
-     * @param mixed $data
-     * @param array $headers
-     *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function respondNoContent()
     {
@@ -155,7 +111,7 @@ trait Response
      * @param string $message
      * @param array  $errors
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function respondWithError($message, array $errors = [])
     {
@@ -176,7 +132,7 @@ trait Response
      * @param $message
      * @param array  $errors
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function errorForbidden($message = 'Forbidden', array $errors = [])
     {
@@ -189,7 +145,7 @@ trait Response
      * @param string $message
      * @param array  $errors
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function errorInternalError($message = 'Internal Error', array $errors = [])
     {
@@ -202,7 +158,7 @@ trait Response
      * @param string $message
      * @param array  $errors
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function errorNotFound($message = 'Resource Not Found', array $errors = [])
     {
@@ -215,7 +171,7 @@ trait Response
      * @param string $message
      * @param array  $errors
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function errorUnauthorized($message = 'Unauthorized', array $errors = [])
     {
@@ -228,7 +184,7 @@ trait Response
      * @param string $message
      * @param array  $errors
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function errorWrongArgs($message = 'Wrong Arguments', array $errors = [])
     {
@@ -241,7 +197,7 @@ trait Response
      * @param string $message
      * @param array  $errors
      *
-     * @return Res
+     * @return mixed Response|jsonResponse
      */
     protected function errorNotImplemented($message = 'Not implemented', array $errors = [])
     {

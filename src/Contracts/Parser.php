@@ -1,10 +1,9 @@
 <?php
 
-namespace Phpsa\LaravelApiController\Traits;
+namespace Phpsa\LaravelApiController\Contracts;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema;
 use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
+use Phpsa\LaravelApiController\UriParser;
 
 trait Parser
 {
@@ -13,55 +12,21 @@ trait Parser
      *
      * @var \Phpsa\LaravelApiController\UriParser
      */
-    protected $uriParser;
+    protected static $uriParser;
 
-    /**
-     * Holds the available table columns.
-     *
-     * @var array
-     */
-    protected $tableColumns = [];
-
-    /**
-     * Set which columns area available in the model.
-     *
-     * @param Model $model
-     */
-    protected function setTableColumns(Model $model = null) : void
+    protected function getUriParser($request)
     {
-        if (null === $model) {
-            $model = $this->model;
-        }
-        $table = $model->getTable();
-        $this->tableColumns[$table] = Schema::getColumnListing($table);
-    }
-
-    /**
-     * gets avaialble columns for the table.
-     *
-     * @param Model $model
-     *
-     * @return array
-     */
-    protected function getTableColumns(Model $model = null) : array
-    {
-        if (null === $model) {
-            $model = $this->model;
+        if (is_null(self::$uriParser)) {
+            self::$uriParser = new UriParser($request, config('laravel-api-controller.parameters.filter'));
         }
 
-        $table = $model->getTable();
-
-        if (! isset($this->tableColumns[$table])) {
-            $this->setTableColumns($model);
-        }
-
-        return $this->tableColumns[$table];
+        return self::$uriParser;
     }
 
     /**
      * Parses our include joins.
      */
-    protected function parseIncludeParams() : void
+    protected function parseIncludeParams(): void
     {
         $field = config('laravel-api-controller.parameters.include');
 
@@ -77,8 +42,11 @@ trait Parser
 
         $withs = explode(',', $includes);
 
+        /** @scrutinizer ignore-call */
+        $withs = $this->filterAllowedIncludes($withs);
+
         foreach ($withs as $idx => $with) {
-            $sub = $this->model->{$with}()->getRelated();
+            $sub = self::$model->{$with}()->getRelated();
             $fields = $this->getIncludesFields($with);
 
             if (! empty($fields)) {
@@ -93,7 +61,7 @@ trait Parser
     /**
      * Parses our sort parameters.
      */
-    protected function parseSortParams() : void
+    protected function parseSortParams(): void
     {
         $sorts = $this->getSortValue();
 
@@ -101,11 +69,13 @@ trait Parser
             $sortP = explode(' ', $sort);
             $sortF = $sortP[0];
 
-            if (empty($sortF) || ! in_array($sortF, $this->getTableColumns())) {
+            /** @scrutinizer ignore-call */
+            $tableColumns = $this->getTableColumns();
+            if (empty($sortF) || ! in_array($sortF, $tableColumns)) {
                 continue;
             }
 
-            $sortD = ! empty($sortP[1]) && strtolower($sortP[1]) == 'desc' ? 'desc' : 'asc';
+            $sortD = ! empty($sortP[1]) && strtolower($sortP[1]) === 'desc' ? 'desc' : 'asc';
             $this->repository->orderBy($sortF, $sortD);
         }
     }
@@ -115,7 +85,7 @@ trait Parser
      *
      * @returns array
      */
-    protected function getSortValue() : array
+    protected function getSortValue(): array
     {
         $field = config('laravel-api-controller.parameters.sort');
         $sort = $field && $this->request->has($field) ? $this->request->input($field) : $this->defaultSort;
@@ -130,19 +100,22 @@ trait Parser
     /**
      * parses our filter parameters.
      */
-    protected function parseFilterParams() : void
+    protected function parseFilterParams(): void
     {
-        $where = $this->uriParser->whereParameters();
+        $where = self::$uriParser->whereParameters();
 
         if (empty($where)) {
             return;
         }
 
+        /** @scrutinizer ignore-call */
+        $tableColumns = $this->getTableColumns();
+
         foreach ($where as $whr) {
             if (strpos($whr['key'], '.') > 0) {
                 //@TODO: test if exists in the withs, if not continue out to exclude from the qbuild
                 //continue;
-            } elseif (! in_array($whr['key'], $this->getTableColumns())) {
+            } elseif (! in_array($whr['key'], $tableColumns)) {
                 continue;
             }
 
@@ -155,7 +128,7 @@ trait Parser
      *
      * @param array $where the where clause
      */
-    protected function setWhereClause($where) : void
+    protected function setWhereClause($where): void
     {
         switch ($where['type']) {
             case 'In':
@@ -178,19 +151,19 @@ trait Parser
      * parses the fields to return.
      *
      * @throws UnknownColumnException
+     *
      * @return array
      */
-    protected function parseFieldParams() : array
+    protected function parseFieldParams(): array
     {
         $fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
-        foreach ($fields as $k => $field) {
-            if (
-                $field === '*' ||
-                in_array($field, $this->getTableColumns())
-            ) {
+        /** @scrutinizer ignore-call */
+        $tableColumns = $this->getTableColumns();
+        foreach ($fields as $key => $field) {
+            if ($field === '*' || in_array($field, $tableColumns)) {
                 continue;
             }
-            unset($fields[$k]);
+            unset($fields[$key]);
         }
 
         return $fields;
@@ -198,20 +171,21 @@ trait Parser
 
     /**
      * Parses an includes fields and returns as an array.
+     *
      * @param string $include - the table definer
      *
      * @return array
      */
-    protected function getIncludesFields(string $include) : array
+    protected function getIncludesFields(string $include): array
     {
         $fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
-        foreach ($fields as $k => $field) {
+        foreach ($fields as $key => $field) {
             if (strpos($field, $include.'.') === false) {
-                unset($fields[$k]);
+                unset($fields[$key]);
 
                 continue;
             }
-            $fields[$k] = str_replace($include.'.', '', $field);
+            $fields[$key] = str_replace($include.'.', '', $field);
         }
 
         return $fields;
@@ -222,7 +196,7 @@ trait Parser
      *
      * @return int
      */
-    protected function parseLimitParams() : int
+    protected function parseLimitParams(): int
     {
         $limit = $this->request->has('limit') ? intval($this->request->input('limit')) : $this->defaultLimit;
 
