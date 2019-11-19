@@ -19,12 +19,11 @@ trait CaseFormat
             case "camel":
             case "camel-case":
                 return Helpers::camelCaseArrayKeys($data);
-            break;
+
 
             case "snake":
             case "snake-case":
-                    return Helpers::snakeCaseArrayKeys($data);
-            break;
+                return Helpers::snakeCaseArrayKeys($data);
 
         }
 
@@ -33,5 +32,3 @@ trait CaseFormat
 
 
 }
-
-?>
