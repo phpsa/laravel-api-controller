@@ -49,9 +49,9 @@ trait Parser
             $sub = self::$model->{$with}()->getRelated();
             $fields = $this->getIncludesFields($with);
 
-            if (!empty($fields)) {
+            if (! empty($fields)) {
                 $fields[] = $sub->getKeyName();
-                $withs[$idx] = $with . ':' . implode(',', array_unique($fields));
+                $withs[$idx] = $with.':'.implode(',', array_unique($fields));
             }
         }
 
@@ -71,11 +71,11 @@ trait Parser
 
             /** @scrutinizer ignore-call */
             $tableColumns = $this->getTableColumns();
-            if (empty($sortF) || !in_array($sortF, $tableColumns)) {
+            if (empty($sortF) || ! in_array($sortF, $tableColumns)) {
                 continue;
             }
 
-            $sortD = !empty($sortP[1]) && strtolower($sortP[1]) === 'desc' ? 'desc' : 'asc';
+            $sortD = ! empty($sortP[1]) && strtolower($sortP[1]) === 'desc' ? 'desc' : 'asc';
             $this->repository->orderBy($sortF, $sortD);
         }
     }
@@ -90,7 +90,7 @@ trait Parser
         $field = config('laravel-api-controller.parameters.sort');
         $sort = $field && $this->request->has($field) ? $this->request->input($field) : $this->defaultSort;
 
-        if (!$sort) {
+        if (! $sort) {
             return [];
         }
 
@@ -115,7 +115,7 @@ trait Parser
             if (strpos($whr['key'], '.') > 0) {
                 //@TODO: test if exists in the withs, if not continue out to exclude from the qbuild
                 //continue;
-            } elseif (!in_array($whr['key'], $tableColumns)) {
+            } elseif (! in_array($whr['key'], $tableColumns)) {
                 continue;
             }
 
@@ -132,12 +132,12 @@ trait Parser
     {
         switch ($where['type']) {
             case 'In':
-                if (!empty($where['values'])) {
+                if (! empty($where['values'])) {
                     $this->repository->whereIn($where['key'], $where['values']);
                 }
                 break;
             case 'NotIn':
-                if (!empty($where['values'])) {
+                if (! empty($where['values'])) {
                     $this->repository->whereNotIn($where['key'], $where['values']);
                 }
                 break;
@@ -156,11 +156,11 @@ trait Parser
      */
     protected function parseFieldParams(): array
     {
-        $fields = $this->request->has('fields') && !empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
+        $fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
         /** @scrutinizer ignore-call */
         $tableColumns = $this->getTableColumns();
         foreach ($fields as $key => $field) {
-            if ($field === '*' ||  in_array($field, $tableColumns)) {
+            if ($field === '*' || in_array($field, $tableColumns)) {
                 continue;
             }
             unset($fields[$key]);
@@ -178,14 +178,14 @@ trait Parser
      */
     protected function getIncludesFields(string $include): array
     {
-        $fields = $this->request->has('fields') && !empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
+        $fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
         foreach ($fields as $key => $field) {
-            if (strpos($field, $include . '.') === false) {
+            if (strpos($field, $include.'.') === false) {
                 unset($fields[$key]);
 
                 continue;
             }
-            $fields[$key] = str_replace($include . '.', '', $field);
+            $fields[$key] = str_replace($include.'.', '', $field);
         }
 
         return $fields;
@@ -200,7 +200,7 @@ trait Parser
     {
         $limit = $this->request->has('limit') ? intval($this->request->input('limit')) : $this->defaultLimit;
 
-        if ($this->maximumLimit && ($limit > $this->maximumLimit || !$limit)) {
+        if ($this->maximumLimit && ($limit > $this->maximumLimit || ! $limit)) {
             $limit = $this->maximumLimit;
         }
 
