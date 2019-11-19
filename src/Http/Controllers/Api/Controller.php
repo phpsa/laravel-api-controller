@@ -111,7 +111,6 @@ abstract class Controller extends BaseController
         $this->authoriseUserAction('viewAny');
         $this->getUriParser($request);
 
-
         $this->parseIncludeParams();
         $this->parseSortParams();
         $this->parseFilterParams();
@@ -133,7 +132,6 @@ abstract class Controller extends BaseController
      */
     public function handleStoreAction($request)
     {
-
         $this->validateRequestType($request);
         $this->authoriseUserAction('create');
 
@@ -158,7 +156,6 @@ abstract class Controller extends BaseController
         DB::beginTransaction();
 
         try {
-
             $item = self::$model->create($insert);
 
             $this->storeRelated($item, $diff, $data);
@@ -174,6 +171,7 @@ abstract class Controller extends BaseController
             throw new ApiException($message);
         } catch (\Exception $exception) {
             DB::rollback();
+
             return $this->errorWrongArgs($exception->getMessage());
         }
     }
@@ -222,7 +220,6 @@ abstract class Controller extends BaseController
 
         $this->validate($request, $this->rulesForCreate());
 
-
         $data = $request->all();
 
         if (empty($data)) {
@@ -246,7 +243,6 @@ abstract class Controller extends BaseController
         $diff = array_diff(array_keys($data), array_keys($updates));
 
         $this->unguardIfNeeded();
-
 
         DB::beginTransaction();
 
