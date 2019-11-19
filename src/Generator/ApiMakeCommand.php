@@ -118,7 +118,6 @@ class ApiMakeCommand extends Command
                 }
             }
             $this->call('make:model', $params);
-
         }
 
         if ($this->option('all') || $this->option('policy')) {
@@ -127,7 +126,7 @@ class ApiMakeCommand extends Command
 
         if ($this->option('all') || $this->option('resource')) {
             $this->call('make:resource', ['name' => $this->stubVariables['model']['name']]);
-            $this->call('make:resource', ['name' => $this->stubVariables['model']['name'] . 'Collection']);
+            $this->call('make:resource', ['name' => $this->stubVariables['model']['name'].'Collection']);
         }
     }
 
@@ -280,11 +279,11 @@ class ApiMakeCommand extends Command
             return;
         }
         $this->makeDirectoryIfNeeded($path);
-        $fileContent =  $this->constructStub(base_path(config('laravel-api-controller.'.$type.'_stub')));
+        $fileContent = $this->constructStub(base_path(config('laravel-api-controller.'.$type.'_stub')));
 
-        if($type === 'controller' &&  ($this->option('all') || $this->option('resource')) ) {
+        if ($type === 'controller' && ($this->option('all') || $this->option('resource'))) {
             $resourceName = $this->stubVariables['model']['fullName'];
-            $resourceCollection = $resourceName . 'Collection';
+            $resourceCollection = $resourceName.'Collection';
 
             $fileContent = str_replace('protected $includesBlacklist = [];', 'protected $includesBlacklist = [];
             /**
@@ -294,7 +293,7 @@ class ApiMakeCommand extends Command
      *
      *
      */
-    protected $resourceSingle = \\' . $resourceName . ';
+    protected $resourceSingle = \\'.$resourceName.';
 
     /**
      * Resource for collection.
@@ -302,15 +301,13 @@ class ApiMakeCommand extends Command
      * @var mixed instance of \Illuminate\Http\Resources\Json\ResourceCollection
      *
      */
-    protected $resourceCollection = \\' . $resourceCollection . ';
+    protected $resourceCollection = \\'.$resourceCollection.';
 
             ', $fileContent);
         }
 
         $this->files->put($path, $fileContent);
         $this->info(ucfirst($type).' created successfully.');
-
-
 
         /*
         /**
