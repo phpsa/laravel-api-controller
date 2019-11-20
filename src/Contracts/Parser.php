@@ -2,8 +2,8 @@
 
 namespace Phpsa\LaravelApiController\Contracts;
 
-use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
 use Phpsa\LaravelApiController\UriParser;
+use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
 
 trait Parser
 {
@@ -51,7 +51,7 @@ trait Parser
 
             if (! empty($fields)) {
                 $fields[] = $sub->getKeyName();
-                $withs[$idx] = $with.':'.implode(',', array_unique($fields));
+                $withs[$idx] = $with . ':' . implode(',', array_unique($fields));
             }
         }
 
@@ -71,6 +71,7 @@ trait Parser
 
             /** @scrutinizer ignore-call */
             $tableColumns = $this->getTableColumns();
+
             if (empty($sortF) || ! in_array($sortF, $tableColumns)) {
                 continue;
             }
@@ -180,12 +181,12 @@ trait Parser
     {
         $fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
         foreach ($fields as $key => $field) {
-            if (strpos($field, $include.'.') === false) {
+            if (strpos($field, $include . '.') === false) {
                 unset($fields[$key]);
 
                 continue;
             }
-            $fields[$key] = str_replace($include.'.', '', $field);
+            $fields[$key] = str_replace($include . '.', '', $field);
         }
 
         return $fields;

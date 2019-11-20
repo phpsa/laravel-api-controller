@@ -90,6 +90,16 @@ trait Policies
         return true;
     }
 
+    /**
+     * checks if the user can access via gate policies,
+     *
+     * @param string $ability
+     * @param mixed $arguments
+     *
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     *
+     * @return bool
+     */
     protected function testUserPolicyAction(string $ability, $arguments = null): bool
     {
         $user = auth()->user();
@@ -112,11 +122,8 @@ trait Policies
             return true;
         }
 
-        // Check if the authenticated user has the required ability for the model
-        if ($user->can($ability, $arguments)) {
-            return true;
-        }
+        $this->authorize($ability, $model);
 
-        return false;
+        return true;
     }
 }

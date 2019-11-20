@@ -2,8 +2,8 @@
 
 namespace Phpsa\LaravelApiController\Contracts;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Eloquent\Model;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Repository\BaseRepository;
 
@@ -38,7 +38,7 @@ trait ModelRepository
         $model = resolve($this->model());
 
         if (! $model instanceof Model) {
-            throw new ApiException("Class {$this->model()} must be an instance of ".Model::class);
+            throw new ApiException("Class {$this->model()} must be an instance of " . Model::class);
         }
 
         self::$model = $model;

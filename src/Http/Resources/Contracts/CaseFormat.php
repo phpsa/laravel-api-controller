@@ -23,7 +23,6 @@ trait CaseFormat
             case 'snake':
             case 'snake-case':
                 return Helpers::snakeCaseArrayKeys($data);
-
         }
 
         return $data;
