@@ -102,8 +102,6 @@ trait Policies
      */
     protected function testUserPolicyAction(string $ability, $arguments = null): bool
     {
-        $user = auth()->user();
-
         // If no arguments are specified, set it to the controller's model (default)
         if ($arguments === null) {
             $arguments = self::$model;
@@ -122,6 +120,7 @@ trait Policies
             return true;
         }
 
+        /** @scrutinizer ignore-call */
         $this->authorize($ability, $model);
 
         return true;
