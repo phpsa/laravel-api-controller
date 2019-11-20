@@ -2,24 +2,24 @@
 
 namespace Phpsa\LaravelApiController\Http\Api;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
-use Phpsa\LaravelApiController\Contracts\ModelRepository;
-use Phpsa\LaravelApiController\Contracts\Parser;
-use Phpsa\LaravelApiController\Contracts\Policies;
-use Phpsa\LaravelApiController\Contracts\Relationships;
-use Phpsa\LaravelApiController\Contracts\Response as ApiResponse;
-use Phpsa\LaravelApiController\Contracts\Validation;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Phpsa\LaravelApiController\Events\Created;
 use Phpsa\LaravelApiController\Events\Deleted;
 use Phpsa\LaravelApiController\Events\Updated;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Phpsa\LaravelApiController\Contracts\Parser;
+use Phpsa\LaravelApiController\Contracts\Policies;
+use Illuminate\Routing\Controller as BaseController;
+use Phpsa\LaravelApiController\Contracts\Validation;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Phpsa\LaravelApiController\Contracts\Relationships;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Phpsa\LaravelApiController\Contracts\ModelRepository;
+use Phpsa\LaravelApiController\Contracts\Response as ApiResponse;
 
 /**
  * Class Controller.

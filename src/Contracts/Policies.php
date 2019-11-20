@@ -112,11 +112,8 @@ trait Policies
             return true;
         }
 
-        // Check if the authenticated user has the required ability for the model
-        if ($user->can($ability, $arguments)) {
-            return true;
-        }
+        $this->authorize($ability, $model);
 
-        return false;
+        return true;
     }
 }

@@ -36,7 +36,7 @@ trait Relationships
      */
     public function isBlacklisted($item)
     {
-        return in_array($item, $this->getIncludesBlacklist()) || $this->getIncludesBlacklist() == ['*'];
+        return in_array($item, $this->getIncludesBlacklist()) || $this->getIncludesBlacklist() === ['*'];
     }
 
     /**
@@ -84,7 +84,7 @@ trait Relationships
                 throw new ApiException("$type mapping not implemented yet");
             }
 
-            $collection = $type === 'HasOne' ? [$data [$with]] : $data[$with];
+            $collection = $type === 'HasOne' ? [$data[$with]] : $data[$with];
             $this->repository->with($with);
             $localKey = $relation->getLocalKeyName();
 
