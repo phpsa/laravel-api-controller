@@ -146,12 +146,12 @@ class UriParser
      *
      * @param mixed $parameter
      *
-     * @return void
+     * @return string
      */
-    protected function getParameterOperator($parameter)
+    protected function getParameterOperator($parameter): ?string
     {
         preg_match(self::PATTERN, $parameter, $matches);
-        return $matches[0] ?? null;
+        return isset($matches[0]) ? $matches[0] : null;
     }
 
     /**
@@ -173,9 +173,17 @@ class UriParser
         return $value;
     }
 
-    private function appendQueryParameterAsBasicWhere($parameter)
+    /**
+     * Undocumented function
+     *
+     * @param string $parameter
+     *
+     * @return void
+     */
+    private function appendQueryParameterAsBasicWhere(string $parameter): void
     {
         $operator = $this->getParameterOperator($parameter);
+
         if(is_null($operator)){
             return;
         }
@@ -185,7 +193,8 @@ class UriParser
         //check if we are comparing an array of in / not in!
         if(Str::contains($parameter, '||'))
         {
-            return $this->setInQueryParameters($key, $value, $parameter);
+            $this->setInQueryParameters($key, $value, $parameter);
+            return;
         }
 
         // Is this a like query?
@@ -230,8 +239,8 @@ class UriParser
     /**
      * appends as a where in parameter
      *
-     * @param [type] $parameter
-     * @param [type] $key
+     * @param string $parameter
+     * @param string $key
      *
      * @return void
      */
