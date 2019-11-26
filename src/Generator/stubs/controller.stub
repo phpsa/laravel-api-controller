@@ -6,6 +6,47 @@ use {{model.fullName}};
 
 class {{controller.name}} extends Controller
 {
+
+    /**
+     * Default Fields to response with.
+     *
+     * @var array
+     */
+    protected $defaultFields = ['*'];
+
+    /**
+     * Set the default sorting for queries.
+     *
+     * @var string
+     */
+    protected $defaultSort = null;
+
+    /**
+     * Number of items displayed at once if not specified.
+     * There is no limit if it is 0 or false.
+     *
+     * @var int
+     */
+    protected $defaultLimit = 25;
+
+    /**
+     * Maximum limit that can be set via $_GET['limit'].
+     *
+     * @var int
+     */
+    protected $maximumLimit = 100;
+
+    /**
+     * WhiteList of includable methods (HasOne / HasMany)
+     */
+    protected $includesWhitelist = [];
+
+    /**
+     * Blacklist of blockable methods (HasOne / HasMany)
+     */
+    protected $includesBlacklist = [];
+
+
     /**
      * Eloquent model.
      *
@@ -14,6 +55,28 @@ class {{controller.name}} extends Controller
     protected function model()
     {
         return {{model.name}}::class;
+    }
+
+     /**
+     * Get the validation rules for create.
+     *
+     * @return array
+     */
+    protected function rulesForCreate(): array
+    {
+        return [];
+    }
+
+    /**
+     * Get the validation rules for update.
+     *
+     * @param int $id
+     *
+     * @return array
+     */
+    protected function rulesForUpdate(/* @scrutinizer ignore-unused */$id): array
+    {
+        return [];
     }
 
 

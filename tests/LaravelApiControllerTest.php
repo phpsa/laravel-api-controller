@@ -24,109 +24,112 @@ class LaravelApiControllerTest extends TestCase
 
     public function testQueryParsers()
     {
-        $myRequest = $this->createRequest('GET', '/test',
-        [
-            'ignore' => 'ignored',
-            'sort' => 'sorted column',
-            'limit' => '5',
-            'filter' => [
-                'equal' => 5,
-                'greaterThan>' => '1',
-                'lessThan<' => '10',
-                'greaterEqual>=' => '11',
-                'lessEqual<=' => '20',
-                'not<>' => '15',
-                'notAgain!' => '15',
-                'contains~' => 'raig',
-                'starts^' => 'craig',
-                'ends$' => 'smith',
-                'ids' => '1||2||3||4',
-                'notin!' => '1||2||3||4',
-                'notstart!^' => 'fake',
-                'notend!$' => 'notend',
-                'notcontain!~' => 'notin',
-                'new[]' => 1,
-                'new[]!' => 2,
-            ],
-        ]);
+        $myRequest = $this->createRequest(
+            'GET',
+            '/test',
+            [
+                'ignore' => 'ignored',
+                'sort' => 'sorted column',
+                'limit' => '5',
+                'filter' => [
+                    'equal' => 5,
+                    'greaterThan>' => '1',
+                    'lessThan<' => '10',
+                    'greaterEqual>=' => '11',
+                    'lessEqual<=' => '20',
+                    'not<>' => '15',
+                    'notAgain!' => '15',
+                    'contains~' => 'raig',
+                    'starts^' => 'craig',
+                    'ends$' => 'smith',
+                    'ids' => '1||2||3||4',
+                    'notin!' => '1||2||3||4',
+                    'notstart!^' => 'fake',
+                    'notend!$' => 'notend',
+                    'notcontain!~' => 'notin',
+                    'new[]' => 1,
+                    'new[]!' => 2,
+                ],
+            ]
+        );
 
         $parser = new UriParser($myRequest, 'filter');
 
         $params = $parser->whereParameters();
 
-        $this->assertEquals(17, count($params));
+        $this->assertSame(17, count($params));
 
-        $this->assertEquals($parser->queryParameter('equal'), [
+        $this->assertSame($parser->queryParameter('equal'), [
             'type' => 'Basic',
             'key' => 'equal',
             'operator' => '=',
             'value' => '5',
         ]);
 
-        $this->assertEquals($parser->queryParameter('greaterThan'), [
+        $this->assertSame($parser->queryParameter('greaterThan'), [
             'type' => 'Basic',
             'key' => 'greaterThan',
             'operator' => '>',
             'value' => '1',
         ]);
 
-        $this->assertEquals($parser->queryParameter('lessThan'), [
+        $this->assertSame($parser->queryParameter('lessThan'), [
             'type' => 'Basic',
             'key' => 'lessThan',
             'operator' => '<',
             'value' => '10',
         ]);
 
-        $this->assertEquals($parser->queryParameter('greaterEqual'), [
+        $this->assertSame($parser->queryParameter('greaterEqual'), [
             'type' => 'Basic',
             'key' => 'greaterEqual',
             'operator' => '>=',
             'value' => '11',
         ]);
 
-        $this->assertEquals($parser->queryParameter('lessEqual'), [
+        $this->assertSame($parser->queryParameter('lessEqual'), [
             'type' => 'Basic',
             'key' => 'lessEqual',
             'operator' => '<=',
             'value' => '20',
         ]);
 
-        $this->assertEquals($parser->queryParameter('not'), [
+        $this->assertSame($parser->queryParameter('not'), [
             'type' => 'Basic',
             'key' => 'not',
             'operator' => '!=',
             'value' => '15',
         ]);
 
-        $this->assertEquals($parser->queryParameter('notAgain'), [
+        $this->assertSame($parser->queryParameter('notAgain'), [
             'type' => 'Basic',
             'key' => 'notAgain',
             'operator' => '!=',
             'value' => '15',
         ]);
 
-        $this->assertEquals($parser->queryParameter('contains'), [
+        $this->assertSame($parser->queryParameter('contains'), [
             'type' => 'Basic',
             'key' => 'contains',
             'operator' => 'like',
             'value' => '%raig%',
         ]);
 
-        $this->assertEquals($parser->queryParameter('starts'), [
+        $this->assertSame($parser->queryParameter('starts'), [
             'type' => 'Basic',
             'key' => 'starts',
             'operator' => 'like',
             'value' => 'craig%',
         ]);
 
-        $this->assertEquals($parser->queryParameter('ends'), [
+        $this->assertSame($parser->queryParameter('ends'), [
             'type' => 'Basic',
             'key' => 'ends',
             'operator' => 'like',
             'value' => '%smith',
         ]);
 
-        $this->assertEquals($parser->queryParameter('ids'), [
+        $this->assertSame($parser->queryParameter('ids'), [
             'type' => 'In',
             'key' => 'ids',
             'values' => [
@@ -137,7 +140,7 @@ class LaravelApiControllerTest extends TestCase
             ],
         ]);
 
-        $this->assertEquals($parser->queryParameter('notin'), [
+        $this->assertSame($parser->queryParameter('notin'), [
             'type' => 'NotIn',
             'key' => 'notin',
             'values' => [
@@ -148,38 +151,38 @@ class LaravelApiControllerTest extends TestCase
             ],
         ]);
 
-        $this->assertEquals($parser->queryParameter('new'), [
+        $this->assertSame($parser->queryParameter('new'), [
             [
                 'type' => 'In',
                 'key' => 'new',
-                'values' =>  [
-                        '1',
+                'values' => [
+                    '1',
                 ],
             ],
             [
                 'type' => 'NotIn',
                 'key' => 'new',
                 'values' => [
-                        '2',
+                    '2',
                 ],
             ],
         ]);
 
-        $this->assertEquals($parser->queryParameter('notstart'), [
+        $this->assertSame($parser->queryParameter('notstart'), [
             'type' => 'Basic',
             'key' => 'notstart',
             'operator' => 'not like',
             'value' => 'fake%',
         ]);
 
-        $this->assertEquals($parser->queryParameter('notend'), [
+        $this->assertSame($parser->queryParameter('notend'), [
             'type' => 'Basic',
             'key' => 'notend',
             'operator' => 'not like',
             'value' => '%notend',
         ]);
 
-        $this->assertEquals($parser->queryParameter('notcontain'), [
+        $this->assertSame($parser->queryParameter('notcontain'), [
             'type' => 'Basic',
             'key' => 'notcontain',
             'operator' => 'not like',
