@@ -141,66 +141,101 @@ class UriParser
         $this->appendQueryParameterAsBasicWhere($parameter);
     }
 
-    private function appendQueryParameterAsBasicWhere($parameter)
+    /**
+     * filter out the comparison operator!
+     *
+     * @param mixed $parameter
+     *
+     * @return void
+     */
+    protected function getParameterOperator($parameter)
     {
         preg_match(self::PATTERN, $parameter, $matches);
+        return $matches[0] ?? null;
+    }
 
-        if (! isset($matches[0])) {
+    /**
+     * replaces starting and ending chars of string for the like query
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    protected function replaceForLikeValue(string $value): string
+    {
+        if($value[0] === '*'){
+            $value[0] = '%';
+        }
+        if($value[-1] === '*'){
+            $value[-1] = '%';
+        }
+
+        return $value;
+    }
+
+    private function appendQueryParameterAsBasicWhere($parameter)
+    {
+        $operator = $this->getParameterOperator($parameter);
+        if(is_null($operator)){
             return;
         }
-        $operator = $matches[0];
+
         [$key, $value] = explode($operator, $parameter);
 
-        $isAnIn = strpos($value, '||');
-
-        if ($isAnIn) {
-            $values = explode('||', $value);
-
-            if (Str::contains($parameter, '!=') || Str::contains($parameter, '<>')) {
-                $type = 'NotIn';
-            } else {
-                $type = 'In';
-            }
-            $this->queryParameters[] = [
-                'type' => $type,
-                'key' => $key,
-                'values' => $values,
-            ];
-
-            return;
+        //check if we are comparing an array of in / not in!
+        if(Str::contains($parameter, '||'))
+        {
+            return $this->setInQueryParameters($key, $value, $parameter);
         }
 
+        // Is this a like query?
         if ($this->isLikeQuery($value)) {
             $operator = 'like';
-            $value = str_replace('*', '%', $value);
-        }
-
-        if ($operator === '<>') {
-            $operator = '!=';
+            $value = $this->replaceForLikeValue($value);
         }
 
         if (in_array($operator, ['$', '^', '~'])) {
-            $pre = in_array($operator, ['$', '~']) ? '%' : '';
-            $post = in_array($operator, ['^', '~']) ? '%' : '';
             $operator = 'like';
-            $value = $pre . $value . $post;
+            $value = $this->parseLikeValueSurrounders($value, $operator);
         }
 
         if (in_array($operator, ['!$', '!^', '!~'])) {
-            $pre = in_array($operator, ['!$', '!~']) ? '%' : '';
-            $post = in_array($operator, ['!^', '!~']) ? '%' : '';
             $operator = 'not like';
-            $value = $pre . $value . $post;
+            $value = $this->parseLikeValueSurrounders($value, $operator);
         }
+
         $this->queryParameters[] = [
             'type' => 'Basic',
             'key' => $key,
-            'operator' => $operator,
+            'operator' => $operator === '<>' ? '!=' : $operator,
             'value' => $value,
         ];
     }
 
-    private function appendQueryParameterAsWhereIn($parameter, $key)
+    /**
+     * PArses and sets the surrounding signs for like query parsed
+     *
+     * @param string $value
+     * @param string $operator
+     *
+     * @return string
+     */
+    protected function parseLikeValueSurrounders(string $value, string $operator):string
+    {
+        $pre =   Str::contains($operator, ['$', '^', '~'])? '%' : '';
+        $post =  Str::contains($operator, ['^', '~']) ? '%' : '';
+        return $pre . $value . $post;
+    }
+
+    /**
+     * appends as a where in parameter
+     *
+     * @param [type] $parameter
+     * @param [type] $key
+     *
+     * @return void
+     */
+    private function appendQueryParameterAsWhereIn(string $parameter,string $key): void
     {
         if (Str::contains($parameter, '!=')) {
             $type = 'NotIn';
@@ -226,6 +261,28 @@ class UriParser
                 'values' => [explode($seperator, $parameter)[1]],
             ];
         }
+    }
+
+    /**
+     * Sets an in question where statement
+     *
+     * @param string $key
+     * @param string $value
+     * @param string $parameter
+     *
+     * @return void
+     */
+    protected function setInQueryParameters(string $key, string $value, string $parameter): void
+    {
+        $values = explode('||', $value);
+
+        $type = Str::contains($parameter, ['!=', '<>']) ? 'NotIn' : 'In';
+
+        $this->queryParameters[] = [
+            'type' => $type,
+            'key' => $key,
+            'values' => $values,
+        ];
     }
 
     public function hasQueryUri(): bool
