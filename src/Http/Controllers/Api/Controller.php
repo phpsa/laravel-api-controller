@@ -218,7 +218,7 @@ abstract class Controller extends BaseController
 
         $this->authoriseUserAction('update', self::$model::find($id));
 
-        $this->validate($request, $this->rulesForCreate());
+        $this->validate($request, $this->rulesForUpdate($id));
 
         $data = $request->all();
 
