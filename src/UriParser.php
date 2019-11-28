@@ -2,9 +2,9 @@
 
 namespace Phpsa\LaravelApiController;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 
 class UriParser
 {

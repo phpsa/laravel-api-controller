@@ -2,8 +2,8 @@
 
 namespace Phpsa\LaravelApiController\Contracts;
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Repository\BaseRepository;
 
