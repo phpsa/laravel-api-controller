@@ -91,7 +91,7 @@ trait Policies
     }
 
     /**
-     * checks if the user can access via gate policies,.
+     * checks if the user can access via gate policies.
      *
      * @param string $ability
      * @param mixed $arguments
