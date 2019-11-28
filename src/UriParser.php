@@ -121,7 +121,7 @@ class UriParser
         foreach ($queryUri as $key => $value) {
             preg_match(self::PATTERN, urldecode($key), $matches);
             $operator = empty($matches[0]) ? '=' : '';
-            $this->appendQueryParameter($key . $operator . $value);
+            $this->appendQueryParameter($key.$operator.$value);
         }
 
         return $this;
@@ -183,14 +183,14 @@ class UriParser
             $pre = in_array($operator, ['$', '~']) ? '%' : '';
             $post = in_array($operator, ['^', '~']) ? '%' : '';
             $operator = 'like';
-            $value = $pre . $value . $post;
+            $value = $pre.$value.$post;
         }
 
         if (in_array($operator, ['!$', '!^', '!~'])) {
             $pre = in_array($operator, ['!$', '!~']) ? '%' : '';
             $post = in_array($operator, ['!^', '!~']) ? '%' : '';
             $operator = 'not like';
-            $value = $pre . $value . $post;
+            $value = $pre.$value.$post;
         }
         $this->queryParameters[] = [
             'type' => 'Basic',

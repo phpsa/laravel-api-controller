@@ -91,7 +91,7 @@ class BaseRepository
         $obj = resolve($model);
 
         if (! $obj instanceof Model) {
-            throw new ApiException("Class {$model} must be an instance of " . Model::class);
+            throw new ApiException("Class {$model} must be an instance of ".Model::class);
         }
 
         $this->model = $obj;

@@ -38,7 +38,7 @@ trait ModelRepository
         $model = resolve($this->model());
 
         if (! $model instanceof Model) {
-            throw new ApiException("Class {$this->model()} must be an instance of " . Model::class);
+            throw new ApiException("Class {$this->model()} must be an instance of ".Model::class);
         }
 
         self::$model = $model;
