@@ -53,7 +53,9 @@ class Helpers
         $value = Str::snake($value);
         // Extra things which Str::snake doesn't do, but maybe should
         $value = str_replace('-', '_', $value);
-        return preg_replace('/__+/', '_', $value);
+        $value = preg_replace('/__+/', '_', $value);
+
+        return $value;
     }
 
     /**

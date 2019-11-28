@@ -39,7 +39,7 @@ trait AllowableFields
     }
 
     /**
-     * gets the resource fields as an array
+     * gets the resource fields as an array.
      *
      * @return array
      */
