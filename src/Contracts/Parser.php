@@ -51,7 +51,7 @@ trait Parser
 
             if (! empty($fields)) {
                 $fields[] = $sub->getKeyName();
-                $withs[$idx] = $with . ':' . implode(',', array_unique($fields));
+                $withs[$idx] = $with.':'.implode(',', array_unique($fields));
             }
         }
 
@@ -181,12 +181,12 @@ trait Parser
         $fields = Helpers::filterFieldsFromRequest($this->request, $this->defaultFields);
 
         foreach ($fields as $key => $field) {
-            if (strpos($field, $include . '.') === false) {
+            if (strpos($field, $include.'.') === false) {
                 unset($fields[$key]);
 
                 continue;
             }
-            $fields[$key] = str_replace($include . '.', '', $field);
+            $fields[$key] = str_replace($include.'.', '', $field);
         }
 
         return $fields;
