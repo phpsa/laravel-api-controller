@@ -40,10 +40,7 @@ trait Response
      */
     protected function respondWithOne($item, $code = null, $headers = [])
     {
-        return $this->resourceSingle::make($item)
-            ->response()
-            ->setStatusCode($code ?? $this->getStatusCode())
-            ->withHeaders($headers);
+        return $this->respondWithResource($this->resourceSingle, $item, $code, $headers);
     }
 
     /**
@@ -57,7 +54,20 @@ trait Response
      */
     protected function respondWithMany($items, $code = null, $headers = [])
     {
-        return $this->resourceCollection::make($items)
+        return $this->respondWithResource($this->resourceCollection, $items, $code, $headers);
+    }
+
+    /**
+     * Sends the response through a resource Object.
+     *
+     * @param mixed $resource Phpsa\LaravelApiController\Http\Resources\ApiResponse|\Phpsa\LaravelApiController\Http\Resources\ApiCollection
+     * @param mixed $data
+     * @param mixed $code
+     * @param array $headers
+     */
+    protected function respondWithResource($resource, $data, $code = null, $headers = [])
+    {
+        return $resource::make($data)
             ->response()
             ->setStatusCode($code ?? $this->getStatusCode())
             ->withHeaders($headers);

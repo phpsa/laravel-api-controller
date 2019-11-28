@@ -36,7 +36,7 @@ trait Relationships
      */
     public function isBlacklisted($item)
     {
-        return in_array($item, $this->getIncludesBlacklist()) || $this->getIncludesBlacklist() == ['*'];
+        return in_array($item, $this->getIncludesBlacklist()) || $this->getIncludesBlacklist() === ['*'];
     }
 
     /**
@@ -68,13 +68,20 @@ trait Relationships
         });
     }
 
-    protected function storeRelated($item, $relateds, $data): void
+    /**
+     * Method used to store related.
+     *
+     * @param mixed $item newly created \Illuminate\Database\Eloquent\Model instance
+     * @param array $includes
+     * @param array $data
+     */
+    protected function storeRelated($item, array $includes, array $data): void
     {
-        if (empty($relateds)) {
+        if (empty($includes)) {
             return;
         }
 
-        $filteredRelateds = $this->filterAllowedIncludes($relateds);
+        $filteredRelateds = $this->filterAllowedIncludes($includes);
 
         foreach ($filteredRelateds as $with) {
             $relation = $item->$with();
@@ -84,7 +91,7 @@ trait Relationships
                 throw new ApiException("$type mapping not implemented yet");
             }
 
-            $collection = $type === 'HasOne' ? [$data [$with]] : $data[$with];
+            $collection = $type === 'HasOne' ? [$data[$with]] : $data[$with];
             $this->repository->with($with);
             $localKey = $relation->getLocalKeyName();
 
