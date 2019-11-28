@@ -53,7 +53,6 @@ class Helpers
         $value = Str::snake($value);
         // Extra things which Str::snake doesn't do, but maybe should
         $value = str_replace('-', '_', $value);
-
         return preg_replace('/__+/', '_', $value);
     }
 
@@ -79,7 +78,7 @@ class Helpers
      *
      * @return array
      */
-    public static function filterFieldsFromRequest($request, ?array $defaultFields): array
+    public static function filterFieldsFromRequest($request, ?array $defaultFields, ?array $extraFields = []): array
     {
         $config = config('laravel-api-controller.parameters');
         $fieldParam = $config['fields'];
@@ -89,12 +88,13 @@ class Helpers
         $defaults = $defaultFields ?? [];
 
         $fields = $request->has($fieldParam) ? explode(',', $request->input($fieldParam)) : $defaults;
+
         //extra fields
         $extra = $request->has($addFieldParam) ? explode(',', $request->input($addFieldParam)) : [];
         $fields = array_merge($fields, $extra);
 
         $excludes = $request->has($removeFieldParam) ? explode(',', $request->input($removeFieldParam)) : [];
-        $remaining = self::excludeArrayValues($fields, $excludes);
+        $remaining = self::excludeArrayValues($fields, $excludes, $extraFields);
 
         return array_unique($remaining);
     }
@@ -107,10 +107,10 @@ class Helpers
      *
      * @return array
      */
-    public static function excludeArrayValues(array $array, array $excludes): array
+    public static function excludeArrayValues(array $array, array $excludes, ?array $optionals = []): array
     {
-        return Arr::where($array, function ($value) use ($excludes) {
-            return ! in_array($value, $excludes);
+        return Arr::where($array, function ($value) use ($excludes, $optionals) {
+            return ! in_array($value, $excludes) || in_array($value, $optionals);
         });
     }
 }

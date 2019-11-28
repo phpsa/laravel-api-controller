@@ -58,9 +58,9 @@ trait Response
     }
 
     /**
-     * Sends the response through a resource Object.
+     * respond with a specific resource
      *
-     * @param mixed $resource Phpsa\LaravelApiController\Http\Resources\ApiResponse|\Phpsa\LaravelApiController\Http\Resources\ApiCollection
+     * @param mixed $resource
      * @param mixed $data
      * @param mixed $code
      * @param array $headers
