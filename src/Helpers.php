@@ -2,6 +2,7 @@
 
 namespace Phpsa\LaravelApiController;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class Helpers
@@ -70,5 +71,45 @@ class Helpers
         }
 
         return Str::camel($value);
+    }
+
+    /**
+     * Combines,defaults, added, excluded and specifically set field params.
+     *
+     * @return array
+     */
+    public static function filterFieldsFromRequest($request, ?array $defaultFields): array
+    {
+        $config = config('laravel-api-controller.parameters');
+        $fieldParam = $config['fields'];
+        $addFieldParam = $config['addfields'];
+        $removeFieldParam = $config['removefields'];
+
+        $defaults = $defaultFields ?? [];
+
+        $fields = $request->has($fieldParam) ? explode(',', $request->input($fieldParam)) : $defaults;
+        //extra fields
+        $extra = $request->has($addFieldParam) ? explode(',', $request->input($addFieldParam)) : [];
+        $fields = array_merge($fields, $extra);
+
+        $excludes = $request->has($removeFieldParam) ? explode(',', $request->input($removeFieldParam)) : [];
+        $remaining = self::excludeArrayValues($fields, $excludes);
+
+        return array_unique($remaining);
+    }
+
+    /**
+     * method to remove array values.
+     *
+     * @param array $array
+     * @param array $excludes
+     *
+     * @return array
+     */
+    public static function excludeArrayValues(array $array, array $excludes): array
+    {
+        return Arr::where($array, function ($value) use ($excludes) {
+            return ! in_array($value, $excludes);
+        });
     }
 }

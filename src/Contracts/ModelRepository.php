@@ -63,7 +63,7 @@ trait ModelRepository
             $model = self::$model;
         }
         $table = $model->getTable();
-        $this->tableColumns[$table] = Schema::getColumnListing($table);
+        $this->tableColumns[$table] = Schema::connection($model->getConnectionName())->getColumnListing($table);
     }
 
     /**

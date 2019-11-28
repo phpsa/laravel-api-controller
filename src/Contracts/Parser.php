@@ -2,8 +2,8 @@
 
 namespace Phpsa\LaravelApiController\Contracts;
 
+use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\UriParser;
-use Phpsa\LaravelApiController\Exceptions\UnknownColumnException;
 
 trait Parser
 {
@@ -88,8 +88,8 @@ trait Parser
      */
     protected function getSortValue(): array
     {
-        $field = config('laravel-api-controller.parameters.sort');
-        $sort = $field && $this->request->has($field) ? $this->request->input($field) : $this->defaultSort;
+        $sortField = config('laravel-api-controller.parameters.sort');
+        $sort = $this->request->has($sortField) ? $this->request->input($sortField) : $this->defaultSort;
 
         if (! $sort) {
             return [];
@@ -151,13 +151,12 @@ trait Parser
     /**
      * parses the fields to return.
      *
-     * @throws UnknownColumnException
-     *
      * @return array
      */
     protected function parseFieldParams(): array
     {
-        $fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
+        $fields = Helpers::filterFieldsFromRequest($this->request, $this->defaultFields); //$this->getFieldParamSets();
+
         /** @scrutinizer ignore-call */
         $tableColumns = $this->getTableColumns();
         foreach ($fields as $key => $field) {
@@ -179,7 +178,8 @@ trait Parser
      */
     protected function getIncludesFields(string $include): array
     {
-        $fields = $this->request->has('fields') && ! empty($this->request->input('fields')) ? explode(',', $this->request->input('fields')) : $this->defaultFields;
+        $fields = Helpers::filterFieldsFromRequest($this->request, $this->defaultFields);
+
         foreach ($fields as $key => $field) {
             if (strpos($field, $include . '.') === false) {
                 unset($fields[$key]);
@@ -199,7 +199,8 @@ trait Parser
      */
     protected function parseLimitParams(): int
     {
-        $limit = $this->request->has('limit') ? intval($this->request->input('limit')) : $this->defaultLimit;
+        $limitField = config('laravel-api-controller.parameters.limit');
+        $limit = $this->request->has($limitField) ? intval($this->request->input($limitField)) : $this->defaultLimit;
 
         if ($this->maximumLimit && ($limit > $this->maximumLimit || ! $limit)) {
             $limit = $this->maximumLimit;

@@ -7,18 +7,18 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Phpsa\LaravelApiController\Events\Created;
 use Phpsa\LaravelApiController\Events\Deleted;
 use Phpsa\LaravelApiController\Events\Updated;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Phpsa\LaravelApiController\Contracts\Parser;
 use Phpsa\LaravelApiController\Contracts\Policies;
 use Illuminate\Routing\Controller as BaseController;
 use Phpsa\LaravelApiController\Contracts\Validation;
-use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Phpsa\LaravelApiController\Contracts\Relationships;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Phpsa\LaravelApiController\Contracts\ModelRepository;
+use Phpsa\LaravelApiController\Http\Resources\ApiResource;
+use Phpsa\LaravelApiController\Http\Resources\ApiCollection;
 use Phpsa\LaravelApiController\Contracts\Response as ApiResponse;
 
 /**
@@ -48,14 +48,14 @@ abstract class Controller extends BaseController
      *
      * @var mixed instance of \Illuminate\Http\Resources\Json\JsonResource
      */
-    protected $resourceSingle = JsonResource::class;
+    protected $resourceSingle = ApiResource::class;
 
     /**
      * Resource for collection.
      *
      * @var mixed instance of \Illuminate\Http\Resources\Json\ResourceCollection
      */
-    protected $resourceCollection = ResourceCollection::class;
+    protected $resourceCollection = ApiCollection::class;
 
     /**
      * Default Fields to response with.
