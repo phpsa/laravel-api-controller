@@ -71,30 +71,6 @@ class ApiMakeCommand extends Command
      */
     public function handle()
     {
-        /*  $name = ucfirst($this->argument('name'));
-          $options = $this->options();
-
-          dd($name);
-
-          if($options['model'] === true || $options['all'] === true){
-              $this->call('make:model', ['name' => $name]);
-
-              if ($this->anticipate('Would you like to create a Migration for this resource?', ['yes', 'no']) == 'yes') {
-                  $migrationName = Str::snake(Str::pluralStudly($name));
-                  $this->call('make:migration', ['name' => "create_{$migrationName}_table"]);
-
-                  if ($this->anticipate('Would you like to create a Seeder for this resource?', ['yes', 'no']) == 'yes') {
-                      $seederName = Str::plural($name) . 'Seeder';
-                      $this->call('make:seeder', ['name' => $seederName]);
-                      $this->line('Please add the following to your DatabaseSeeder.php file', 'important');
-                      $this->line('$this->call('. $seederName .'::class);', 'code');
-                      $this->line(PHP_EOL);
-                  }
-              }
-          }
-
-          dd($this->argument('name'), $this->options()); */
-
         $this->prepareVariablesForStubs($this->argument('name'));
         $this->createOptionals();
         $this->createController();
@@ -103,7 +79,6 @@ class ApiMakeCommand extends Command
 
     protected function createOptionals()
     {
-        //dd($this->stubVariables);
         if ($this->option('model') || $this->option('all')) {
             $params = ['name' => $this->stubVariables['model']['fullName']];
 

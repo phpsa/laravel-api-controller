@@ -133,7 +133,6 @@ abstract class Controller extends BaseController
     public function handleStoreAction($request)
     {
         $this->validateRequestType($request);
-
         $this->authoriseUserAction('create');
 
         $data = $request->all();
@@ -219,7 +218,7 @@ abstract class Controller extends BaseController
 
         $this->authoriseUserAction('update', self::$model::find($id));
 
-        $this->validate($request, $this->rulesForCreate());
+        $this->validate($request, $this->rulesForUpdate($id));
 
         $data = $request->all();
 
