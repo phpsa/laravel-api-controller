@@ -103,9 +103,9 @@ class Helpers
         $excludes = $request->has($removeFieldParam) ? explode(',', $request->input($removeFieldParam)) : [];
         $remaining = self::excludeArrayValues($fields, $excludes, $extraFields);
 
-
         return array_unique($remaining);
     }
+
     /**
      * method to remove array values.
      *

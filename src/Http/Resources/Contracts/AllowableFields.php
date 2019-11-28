@@ -34,8 +34,9 @@ trait AllowableFields
     protected function mapFields($request): array
     {
         $defaultFields = static::$defaultFields ?? array_keys($this->getResourceFields());
+        $allowedFields = static::$allowedFields ?? [];
 
-        return Helpers::filterFieldsFromRequest($request, $defaultFields, static::$allowedFields);
+        return Helpers::filterFieldsFromRequest($request, $defaultFields, $allowedFields);
     }
 
     /**
