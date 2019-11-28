@@ -31,12 +31,24 @@ trait AllowableFields
      *
      * @return array
      */
+     /**
+     * Checks for allowed fields.
+     *
+     * @param mixed $request
+     *
+     * @return array
+     */
     protected function mapFields($request): array
     {
         $defaultFields = static::$defaultFields ?? array_keys($this->getResourceFields());
         $allowedFields = static::$allowedFields ?? [];
 
-        return Helpers::filterFieldsFromRequest($request, $defaultFields, $allowedFields);
+        $fields = Helpers::filterFieldsFromRequest($request, $defaultFields, $allowedFields);
+
+
+        return array_filter($fields, function($field) use ($allowedFields) {
+            return in_array($field, $allowedFields);
+        });
     }
 
     /**
