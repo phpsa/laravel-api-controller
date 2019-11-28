@@ -58,11 +58,11 @@ trait Response
     }
 
     /**
-     * Undocumented function.
+     * Sends the response through a resource Object
      *
-     * @param [type] $resource
-     * @param [type] $data
-     * @param [type] $code
+     * @param mixed $resource Phpsa\LaravelApiController\Http\Resources\ApiResponse|\Phpsa\LaravelApiController\Http\Resources\ApiCollection
+     * @param mixed $data
+     * @param mixed $code
      * @param array $headers
      */
     protected function respondWithResource($resource, $data, $code = null, $headers = [])

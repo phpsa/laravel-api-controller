@@ -120,7 +120,7 @@ trait Policies
             return true;
         }
 
-        // @scrutinizer ignore-call
+        /** @scrutinizer ignore-call */
         $this->authorize($ability, $model);
 
         return true;
