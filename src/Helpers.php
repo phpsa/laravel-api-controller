@@ -85,6 +85,7 @@ class Helpers
         $config = config('laravel-api-controller.parameters');
         $fieldParam = $config['fields'];
         $addFieldParam = $config['addfields'];
+        $includeFieldParam = $config['include'];
         $removeFieldParam = $config['removefields'];
 
         $defaults = $defaultFields ?? [];
@@ -95,12 +96,16 @@ class Helpers
         $extra = $request->has($addFieldParam) ? explode(',', $request->input($addFieldParam)) : [];
         $fields = array_merge($fields, $extra);
 
+        //include fields
+        $extra = $request->has($includeFieldParam) ? explode(',', $request->input($includeFieldParam)) : [];
+        $fields = array_merge($fields, $extra);
+
         $excludes = $request->has($removeFieldParam) ? explode(',', $request->input($removeFieldParam)) : [];
         $remaining = self::excludeArrayValues($fields, $excludes, $extraFields);
 
+
         return array_unique($remaining);
     }
-
     /**
      * method to remove array values.
      *
