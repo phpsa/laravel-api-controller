@@ -83,10 +83,10 @@ class Helpers
     public static function filterFieldsFromRequest($request, ?array $defaultFields, ?array $extraFields = []): array
     {
         $config = config('laravel-api-controller.parameters');
-        $fieldParam = $config['fields'];
-        $addFieldParam = $config['addfields'];
-        $includeFieldParam = $config['include'];
-        $removeFieldParam = $config['removefields'];
+        $fieldParam = $config['fields'] ?? 'fields';
+        $addFieldParam = $config['addfields'] ?? 'addfields';
+        $removeFieldParam = $config['removefields'] ?? 'removefields';
+        $includeFieldParam = $config['include'] ?? 'include';
 
         $defaults = $defaultFields ?? [];
 

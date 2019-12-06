@@ -31,7 +31,8 @@ trait AllowableFields
      *
      * @return array
      */
-     /**
+
+    /**
      * Checks for allowed fields.
      *
      * @param mixed $request
@@ -45,8 +46,7 @@ trait AllowableFields
 
         $fields = Helpers::filterFieldsFromRequest($request, $defaultFields, $allowedFields);
 
-
-        return array_filter($fields, function($field) use ($allowedFields) {
+        return array_filter($fields, function ($field) use ($allowedFields) {
             return in_array($field, $allowedFields);
         });
     }

@@ -199,7 +199,7 @@ trait Parser
      */
     protected function parseLimitParams(): int
     {
-        $limitField = config('laravel-api-controller.parameters.limit');
+        $limitField = config('laravel-api-controller.parameters.limit') ?? 'limit';
         $limit = $this->request->has($limitField) ? intval($this->request->input($limitField)) : $this->defaultLimit;
 
         if ($this->maximumLimit && ($limit > $this->maximumLimit || ! $limit)) {
