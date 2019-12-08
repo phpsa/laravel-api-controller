@@ -67,11 +67,25 @@ Query/Data modifiers in policies for the api endpoints
  Generate with
  `php artisan make:resource UserResource` and `php artisan make:resource UserCollection`
 
+ Change the Resource to extend from:
+
+use `Phpsa\LaravelApiController\Http\Resources\ApiResource` for your resource
+use `Phpsa\LaravelApiController\Http\Resources\ApiCollection` for your resource collection
+
 in your controller override the following params:
 ```php
 	protected $resourceSingle = UserResource::class;
 	protected $resourceCollection = UserCollection::class;
 ```
+
+
+## Snake vs Camel
+
+* middleware to convert all came to snake: `Phpsa\LaravelApiController\Http\Middleware\SnakeCaseInputs`
+* set request header `X-Accept-Case-Type` to either `snake` or `camel` to alter your data response
+
+
+
 
 ## Filtering
 
@@ -105,6 +119,8 @@ By default all fields are returned, you can limit that to specific fields in the
 
 * Api Controller parameter `$defaultFields` default as `protected $defaultFields = ['*'];` - switch to include an array of fields
 * fields param in url querystring: ie `fields=id,name,age` = will only return those, this will also override the above.
+* in your response resource you can set the static::allowedFields to lock down which fields are returnable
+* addfields and removefields params in url querystring will work with these.
 
 ## Relationships
 

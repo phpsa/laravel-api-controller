@@ -6,13 +6,6 @@ use Phpsa\LaravelApiController\Helpers;
 
 trait CaseFormat
 {
-    public function toArray($request)
-    {
-        $data = parent::toArray($request);
-
-        return $this->caseFormat($request, $data);
-    }
-
     protected function caseFormat($request, $data)
     {
         switch (strtolower($request->header('X-Accept-Case-Type'))) {
