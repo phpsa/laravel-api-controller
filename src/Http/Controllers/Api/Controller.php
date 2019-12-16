@@ -262,7 +262,7 @@ abstract class Controller extends BaseController
         } catch (\Illuminate\Database\QueryException $exception) {
             $message = config('app.debug') ? $exception->getMessage() : 'Failed to update Record';
 
-            throw new ApiException($message);
+            throw new ApiException($message, $exception->getCode(), $exception);
         } catch (\Exception $exception) {
             DB::rollback();
 
