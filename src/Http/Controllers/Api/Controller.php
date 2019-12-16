@@ -105,8 +105,9 @@ abstract class Controller extends BaseController
      *
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      */
-    public function handleIndexAction($request)
+    public function handleIndexAction($request, array $extraParams = [])
     {
+        $this->parseExtraQueryParams($request, $extraParams);
         $this->validateRequestType($request);
         $this->authoriseUserAction('viewAny');
         $this->getUriParser($request);
@@ -183,8 +184,9 @@ abstract class Controller extends BaseController
      * @param int $id
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      */
-    public function handleShowAction($id, $request)
+    public function handleShowAction($id, $request, array $extraParams = [])
     {
+        $this->parseExtraQueryParams($request, $extraParams);
         $this->validateRequestType($request);
 
         $this->authoriseUserAction('view', self::$model::find($id));
