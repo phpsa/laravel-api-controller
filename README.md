@@ -120,7 +120,8 @@ By default all fields are returned, you can limit that to specific fields in the
 * Api Controller parameter `$defaultFields` default as `protected $defaultFields = ['*'];` - switch to include an array of fields
 * fields param in url querystring: ie `fields=id,name,age` = will only return those, this will also override the above.
 * in your response resource you can set the static::allowedFields to lock down which fields are returnable
-* addfields and removefields params in url querystring will work with these.
+* `addfields` and `removefields` params in url querystring will work with these.
+* Use laravel [eloquent model `$appends`](https://laravel.com/docs/6.x/eloquent-serialization#appending-values-to-json) property to automatically include custom attribute accessors.
 
 ## Relationships
 

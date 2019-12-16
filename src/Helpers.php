@@ -117,7 +117,7 @@ class Helpers
     public static function excludeArrayValues(array $array, array $excludes, ?array $optionals = []): array
     {
         return Arr::where($array, function ($value) use ($excludes, $optionals) {
-            return ! in_array($value, $excludes) || in_array($value, $optionals);
+            return ! in_array($value, $excludes) || ! in_array($value, $optionals);
         });
     }
 }

@@ -23,6 +23,13 @@ trait Parser
         return self::$uriParser;
     }
 
+    protected function parseExtraQueryParams($request, array $extraParams = []): void
+    {
+        $all = $request->query->all();
+        $new = array_merge_recursive($all, $extraParams);
+        $request->query->add($new);
+    }
+
     /**
      * Parses our include joins.
      */
