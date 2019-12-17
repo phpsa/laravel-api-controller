@@ -2,11 +2,10 @@
 
 namespace Phpsa\LaravelApiController\Tests;
 
-use Illuminate\Support\Arr;
 use Orchestra\Testbench\TestCase;
+use Phpsa\LaravelApiController\Facades\LaravelApiController;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\ServiceProvider;
-use Phpsa\LaravelApiController\Facades\LaravelApiController;
 
 class LaravelApiHelpersTest extends TestCase
 {
@@ -66,28 +65,27 @@ class LaravelApiHelpersTest extends TestCase
             'field3',
             'field4',
             'field5',
-            'field6'
+            'field6',
         ];
 
         $remaining = Helpers::excludeArrayValues($inputData, $excludeFields, $allowedFields);
 
-        $this->assertEquals([
+
+        $this->assertSame([
             'field1',
             'field3',
             'field4',
             'field5',
-        ],array_values($remaining));
+        ], array_values($remaining));
 
         $remaining = Helpers::excludeArrayValues($inputData, [], $allowedFields);
 
-        $this->assertEquals([
+        $this->assertSame([
             'field1',
             'field2',
             'field3',
             'field4',
-            'field5'
-        ],array_values($remaining));
-
+            'field5',
+        ], array_values($remaining));
     }
-
 }

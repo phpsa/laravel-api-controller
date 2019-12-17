@@ -114,10 +114,18 @@ class Helpers
      *
      * @return array
      */
-    public static function excludeArrayValues(array $array, array $excludes, ?array $optionals = []): array
+    public static function excludeArrayValues(array $array, array $excludes, ?array $acceptable = []): array
     {
-        return Arr::where($array, function ($value) use ($excludes, $optionals) {
-            return ! in_array($value, $excludes) || ! in_array($value, $optionals);
+        return Arr::where($array, function ($value) use ($excludes, $acceptable) {
+            if (in_array($value, $excludes)) {
+                return false;
+            }
+
+            if (! empty($acceptable)) {
+                return in_array($value, $acceptable);
+            }
+
+            return true;
         });
     }
 }

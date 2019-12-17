@@ -24,12 +24,10 @@ trait Parser
     }
 
     /**
-     * Method to add extra request parameters to the request instance
+     * Method to add extra request parameters to the request instance.
      *
      * @param mixed $request
      * @param array $extraParams
-     *
-     * @return void
      */
     protected function addCustomParams($request, array $extraParams = []): void
     {
