@@ -70,7 +70,6 @@ class LaravelApiHelpersTest extends TestCase
 
         $remaining = Helpers::excludeArrayValues($inputData, $excludeFields, $allowedFields);
 
-
         $this->assertSame([
             'field1',
             'field3',
