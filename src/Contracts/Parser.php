@@ -24,6 +24,19 @@ trait Parser
     }
 
     /**
+     * Method to add extra request parameters to the request instance.
+     *
+     * @param mixed $request
+     * @param array $extraParams
+     */
+    protected function addCustomParams($request, array $extraParams = []): void
+    {
+        $all = $request->all();
+        $new = array_merge_recursive($all, $extraParams);
+        $request->replace($new);
+    }
+
+    /**
      * Parses our include joins.
      */
     protected function parseIncludeParams(): void

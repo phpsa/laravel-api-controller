@@ -105,8 +105,9 @@ abstract class Controller extends BaseController
      *
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      */
-    public function handleIndexAction($request)
+    public function handleIndexAction($request, array $extraParams = [])
     {
+        $this->addCustomParams($request, $extraParams);
         $this->validateRequestType($request);
         $this->authoriseUserAction('viewAny');
         $this->getUriParser($request);
@@ -124,14 +125,23 @@ abstract class Controller extends BaseController
         return $this->respondWithMany($items);
     }
 
+    public function handleStoreOrUpdateAction($request, array $extraParams = [])
+    {
+        $key = self::$model->getKeyName();
+        $id = $request->input($key, null) ?? data_get($extraParams, $key, null);
+
+        return $id ? $this->handleUpdateAction($id, $request, $extraParams) : $this->handleStoreAction($request, $extraParams);
+    }
+
     /**
      * Store a newly created resource in storage.
      * POST /api/{resource}.
      *
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      */
-    public function handleStoreAction($request)
+    public function handleStoreAction($request, array $extraParams = [])
     {
+        $this->addCustomParams($request, $extraParams);
         $this->validateRequestType($request);
         $this->authoriseUserAction('create');
 
@@ -168,7 +178,7 @@ abstract class Controller extends BaseController
         } catch (\Illuminate\Database\QueryException $exception) {
             $message = config('app.debug') ? $exception->getMessage() : 'Failed to create Record';
 
-            throw new ApiException($message);
+            throw new ApiException($message, $exception->getCode(), $exception);
         } catch (\Exception $exception) {
             DB::rollback();
 
@@ -183,8 +193,9 @@ abstract class Controller extends BaseController
      * @param int $id
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      */
-    public function handleShowAction($id, $request)
+    public function handleShowAction($id, $request, array $extraParams = [])
     {
+        $this->addCustomParams($request, $extraParams);
         $this->validateRequestType($request);
 
         $this->authoriseUserAction('view', self::$model::find($id));
@@ -212,8 +223,9 @@ abstract class Controller extends BaseController
      * @param int $id
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      */
-    public function handleUpdateAction($id, $request)
+    public function handleUpdateAction($id, $request, array $extraParams = [])
     {
+        $this->addCustomParams($request, $extraParams);
         $this->validateRequestType($request);
 
         $this->authoriseUserAction('update', self::$model::find($id));
@@ -260,7 +272,7 @@ abstract class Controller extends BaseController
         } catch (\Illuminate\Database\QueryException $exception) {
             $message = config('app.debug') ? $exception->getMessage() : 'Failed to update Record';
 
-            throw new ApiException($message);
+            throw new ApiException($message, $exception->getCode(), $exception);
         } catch (\Exception $exception) {
             DB::rollback();
 
