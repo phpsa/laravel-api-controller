@@ -23,6 +23,14 @@ trait Parser
         return self::$uriParser;
     }
 
+    /**
+     * Method to add extra request parameters to the request instance
+     *
+     * @param mixed $request
+     * @param array $extraParams
+     *
+     * @return void
+     */
     protected function addCustomParams($request, array $extraParams = []): void
     {
         $all = $request->all();

@@ -48,8 +48,6 @@ class LaravelApiHelpersTest extends TestCase
 
     public function testArrayExcludes()
     {
-
-
         $allowedFields = [
             'field1',
             'field2',
@@ -73,7 +71,6 @@ class LaravelApiHelpersTest extends TestCase
 
         $remaining = Helpers::excludeArrayValues($inputData, $excludeFields, $allowedFields);
 
-
         $this->assertEquals([
             'field1',
             'field3',
@@ -82,7 +79,6 @@ class LaravelApiHelpersTest extends TestCase
         ],array_values($remaining));
 
         $remaining = Helpers::excludeArrayValues($inputData, [], $allowedFields);
-
 
         $this->assertEquals([
             'field1',
@@ -93,6 +89,5 @@ class LaravelApiHelpersTest extends TestCase
         ],array_values($remaining));
 
     }
-
 
 }

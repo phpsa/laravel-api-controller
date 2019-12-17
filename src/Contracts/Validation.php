@@ -59,6 +59,8 @@ trait Validation
      *
      * @param mixed $role role name or array of role names
      *
+     * @deprecated -- should be rather used in policies / gates
+     *
      * @return bool
      */
     protected function hasRole($role): bool
@@ -72,6 +74,8 @@ trait Validation
      * Checks if user has all the passed roles.
      *
      * @param array $roles
+     *
+     * @deprecated -- should be rather used in policies / gates
      *
      * @return bool
      */
