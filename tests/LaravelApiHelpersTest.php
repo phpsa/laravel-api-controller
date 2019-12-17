@@ -2,10 +2,9 @@
 
 namespace Phpsa\LaravelApiController\Tests;
 
-use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Orchestra\Testbench\TestCase;
 use Phpsa\LaravelApiController\Helpers;
-use Phpsa\LaravelApiController\UriParser;
 use Phpsa\LaravelApiController\ServiceProvider;
 use Phpsa\LaravelApiController\Facades\LaravelApiController;
 
@@ -27,7 +26,7 @@ class LaravelApiHelpersTest extends TestCase
     {
         $array = [
             'test_one' => 'test_one',
-            'testTwo' => 'test_two'
+            'testTwo' => 'test_two',
         ];
 
         $transposed = Helpers::snakeCaseArrayKeys($array);
@@ -39,7 +38,7 @@ class LaravelApiHelpersTest extends TestCase
     {
         $array = [
             'test_one' => 'testOne',
-            'testTwo' => 'testTwo'
+            'testTwo' => 'testTwo',
         ];
 
         $transposed = Helpers::camelCaseArrayKeys($array);
@@ -49,17 +48,51 @@ class LaravelApiHelpersTest extends TestCase
 
     public function testArrayExcludes()
     {
-        $data1 = [];
-        $data2 = [];
-        $this->markTestSkipped('Still to build');
+
+
+        $allowedFields = [
+            'field1',
+            'field2',
+            'field3',
+            'field4',
+            'field5',
+        ];
+
+        $excludeFields = [
+            'field2',
+        ];
+
+        $inputData = [
+            'field1',
+            'field2',
+            'field3',
+            'field4',
+            'field5',
+            'field6'
+        ];
+
+        $remaining = Helpers::excludeArrayValues($inputData, $excludeFields, $allowedFields);
+
+
+        $this->assertEquals([
+            'field1',
+            'field3',
+            'field4',
+            'field5',
+        ],array_values($remaining));
+
+        $remaining = Helpers::excludeArrayValues($inputData, [], $allowedFields);
+
+
+        $this->assertEquals([
+            'field1',
+            'field2',
+            'field3',
+            'field4',
+            'field5'
+        ],array_values($remaining));
+
     }
 
 
-    /**
-     * camelCaseArrayKeys
-snakeCaseArrayKeys
-    public static function snake(string $value): string
-filterFieldsFromRequest
-excludeArrayValues
-     */
 }

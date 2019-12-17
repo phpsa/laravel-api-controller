@@ -96,9 +96,10 @@ class {{controller.name}} extends Controller
    /**
     * Store a newly created resource in storage.
     * POST /api/{resource}.
-	  *
-	  * @param Request $request
+	*
+	* @param Request $request
     *
+    * @see self::handleStoreOrUpdateAction to do magic insert / update
     * @return Response
     */
     public function store(Request $request)
