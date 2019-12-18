@@ -49,7 +49,7 @@ class UriParser
     {
         $this->request = $request;
 
-        $this->queryUri = $request->query($filter);
+        $this->queryUri = $request->input($filter);
 
         if ($this->hasQueryUri()) {
             $this->setQueryParameters($this->queryUri);
