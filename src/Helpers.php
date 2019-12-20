@@ -7,6 +7,41 @@ use Illuminate\Support\Str;
 
 class Helpers
 {
+    /**
+     * CamelCases an array
+     *
+     * @param array $array
+     *
+     * @return array
+     */
+    public static function camelCaseArray(array $array): array
+    {
+        return array_map(function ($value) {
+            return self::camel($value);
+        }, $array);
+    }
+
+    /**
+     * Snake cases an array
+     *
+     * @param array $array
+     *
+     * @return array
+     */
+    public static function snakeCaseArray(array $array): array
+    {
+        return array_map(function ($value) {
+            return self::snake($value);
+        }, $array);
+    }
+
+    /**
+     * camel cases array keys
+     *
+     * @param array $array
+     *
+     * @return array
+     */
     public static function camelCaseArrayKeys(array $array): array
     {
         $keys = array_keys($array);
@@ -26,6 +61,13 @@ class Helpers
         return $array;
     }
 
+    /**
+     * Snake cases array keys
+     *
+     * @param array $array
+     *
+     * @return array
+     */
     public static function snakeCaseArrayKeys(array $array): array
     {
         $keys = array_keys($array);
@@ -45,6 +87,13 @@ class Helpers
         return $array;
     }
 
+    /**
+     * Convert to snake
+     *
+     * @param string $value
+     *
+     * @return string
+     */
     public static function snake(string $value): string
     {
         if (strtoupper($value) === $value) {

@@ -162,13 +162,23 @@ trait Parser
     }
 
     /**
+     * Gets our default fields for our query
+     *
+     * @return array
+     */
+    protected function getDefaultFields(): array
+    {
+        return (method_exists($this->resourceSingle, 'getDefaultFields')) ?  ($this->resourceSingle)::getDefaultFields() : ['*'];
+    }
+
+    /**
      * parses the fields to return.
      *
      * @return array
      */
     protected function parseFieldParams(): array
     {
-        $fields = Helpers::filterFieldsFromRequest($this->request, $this->defaultFields); //$this->getFieldParamSets();
+        $fields = Helpers::filterFieldsFromRequest($this->request, $this->getDefaultFields()); //$this->getFieldParamSets();
 
         /** @scrutinizer ignore-call */
         $tableColumns = $this->getTableColumns();
@@ -191,7 +201,7 @@ trait Parser
      */
     protected function getIncludesFields(string $include): array
     {
-        $fields = Helpers::filterFieldsFromRequest($this->request, $this->defaultFields);
+        $fields = Helpers::filterFieldsFromRequest($this->request, $this->getDefaultFields());
 
         foreach ($fields as $key => $field) {
             if (strpos($field, $include.'.') === false) {
