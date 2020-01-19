@@ -8,13 +8,6 @@ class {{controller.name}} extends Controller
 {
 
     /**
-     * Default Fields to response with.
-     *
-     * @var array
-     */
-    protected $defaultFields = ['*'];
-
-    /**
      * Set the default sorting for queries.
      *
      * @var string

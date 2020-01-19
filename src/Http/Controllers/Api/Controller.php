@@ -58,13 +58,6 @@ abstract class Controller extends BaseController
     protected $resourceCollection = ApiCollection::class;
 
     /**
-     * Default Fields to response with.
-     *
-     * @var array
-     */
-    protected $defaultFields = ['*'];
-
-    /**
      * Set the default sorting for queries.
      *
      * @var string

@@ -7,6 +7,27 @@ use Phpsa\LaravelApiController\Helpers;
 trait AllowableFields
 {
     /**
+     * Resources to be mapped (ie children)
+     *
+     * @var array|null
+     */
+    protected static $mapResources = null;
+
+    /**
+     * Default fields to return on request
+     *
+     * @var array|null
+     */
+    protected static $defaultFields = null;
+
+    /**
+     * Allowable fields to be used
+     *
+     * @var array|null
+     */
+    protected static $allowedFields = null;
+
+    /**
      * Makes sure we only return allowable fields.
      *
      * @param mixed $request
@@ -15,13 +36,27 @@ trait AllowableFields
      */
     protected function onlyAllowed($request): array
     {
-        $fields = $this->mapFields($request);
+        $fields = Helpers::camelCaseArray($this->mapFields($request));
 
         $data = parent::toArray($request);
 
-        return array_filter($data, function ($key) use ($fields) {
-            return in_array($key, $fields);
+        $resources = array_filter($data, function ($key) use ($fields) {
+            return in_array(Helpers::camel($key), $fields);
         }, ARRAY_FILTER_USE_KEY);
+
+        return $this->mapRelatedResources($resources);
+    }
+
+    protected function mapRelatedResources($resources)
+    {
+        if (empty(static::$mapResources)) return $resources;
+
+        foreach ($resources as $key => $value) {
+            if (array_key_exists($key, static::$mapResources)) {
+                $resources[$key] = static::$mapResources[$key]::make($value);
+            }
+        }
+        return $resources;
     }
 
     /**
@@ -41,13 +76,24 @@ trait AllowableFields
      */
     protected function mapFields($request): array
     {
-        $defaultFields = static::$defaultFields ?? array_keys($this->getResourceFields());
+        $map = $this->getDefaultFields();
+        $defaultFields = $map === ['*'] ? array_keys($this->getResourceFields()) : $map;
         $allowedFields = static::$allowedFields ?? [];
-
         $fields = Helpers::filterFieldsFromRequest($request, $defaultFields, $allowedFields);
 
-        return array_filter($fields, function ($field) use ($allowedFields) {
-            return in_array($field, $allowedFields);
+        return $this->filterAllowedFields($fields);
+
+
+    }
+
+    public function filterAllowedFields($fields)
+    {
+        if(empty(static::$allowedFields) || static::$allowedFields === ['*'] ){
+            return $fields;
+        }
+
+        return array_filter($fields, function ($field) {
+            return in_array($field, static::$allowedFields);
         });
     }
 
@@ -59,5 +105,16 @@ trait AllowableFields
     protected function getResourceFields(): array
     {
         return is_array($this->resource) ? $this->resource : $this->resource->getAttributes();
+    }
+
+
+    /**
+     * Return default fields for this collection
+     *
+     * @return array
+     */
+    public static function getDefaultFields(): array
+    {
+        return static::$defaultFields ?? ['*'];
     }
 }

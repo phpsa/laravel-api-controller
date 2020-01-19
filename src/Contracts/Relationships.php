@@ -3,6 +3,7 @@
 namespace Phpsa\LaravelApiController\Contracts;
 
 use Illuminate\Support\Str;
+use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 
 trait Relationships
@@ -48,7 +49,7 @@ trait Relationships
      */
     protected function filterAllowedIncludes(array $includes): array
     {
-        return array_filter($includes, function ($item) {
+        return array_filter(Helpers::camelCaseArray($includes), function ($item) {
             $callable = method_exists(self::$model, $item);
 
             if (! $callable) {
@@ -56,11 +57,11 @@ trait Relationships
             }
 
             //check if in the allowed includes array:
-            if (in_array($item, $this->getIncludesWhitelist())) {
+            if (in_array($item, Helpers::camelCaseArray($this->getIncludesWhitelist()))) {
                 return true;
             }
 
-            if ($this->isBlacklisted($item)) {
+            if ($this->isBlacklisted($item) || $this->isBlacklisted(Helpers::snake($item))) {
                 return false;
             }
 
