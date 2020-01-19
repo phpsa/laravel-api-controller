@@ -283,17 +283,14 @@ abstract class Controller extends BaseController
     public function handleDestroyAction($id, $request)
     {
         $this->validateRequestType($request);
-
-        $this->authoriseUserAction('delete', self::$model::find($id));
-
         try {
-            $item = $this->repository->getById($id);
+            $item = self::$model::findOrFail($id);
+            $this->authoriseUserAction('delete', self::$model::find($id));
             $this->repository->deleteById($id);
             event(new Deleted($item, $request));
         } catch (ModelNotFoundException $exeption) {
             return $this->errorNotFound('Record does not exist');
         }
-
         return $this->respondNoContent();
     }
 }

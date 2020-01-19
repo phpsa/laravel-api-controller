@@ -32,7 +32,7 @@ trait Parser
     protected function addCustomParams($request, array $extraParams = []): void
     {
         $all = $request->all();
-        $new = array_merge_recursive($all, $extraParams);
+        $new = Helpers::array_merge_request($all, $extraParams);
         $request->replace($new);
     }
 

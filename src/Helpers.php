@@ -177,4 +177,27 @@ class Helpers
             return true;
         });
     }
+
+    public static function array_merge_request($main, ...$arrays): array
+    {
+        foreach($arrays as $array){
+            $main = self::array_merge_replace($main, $array);
+        }
+        return $main;
+    }
+
+    public static function array_merge_replace(array $array, array $newValues): array
+    {
+        foreach ($newValues as $key => $value ) {
+            if (is_array($value)) {
+                if (!isset($array[$key])) {
+                    $array[$key] = array();
+                }
+                $array[$key] = self::array_merge_replace($array[$key], $value);
+            } else {
+                $array[$key] = $value;
+            }
+        }
+        return $array;
+    }
 }
