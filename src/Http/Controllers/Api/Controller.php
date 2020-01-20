@@ -291,6 +291,7 @@ abstract class Controller extends BaseController
         } catch (ModelNotFoundException $exeption) {
             return $this->errorNotFound('Record does not exist');
         }
+
         return $this->respondNoContent();
     }
 }
