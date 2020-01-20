@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 class Helpers
 {
     /**
-     * CamelCases an array
+     * CamelCases an array.
      *
      * @param array $array
      *
@@ -22,7 +22,7 @@ class Helpers
     }
 
     /**
-     * Snake cases an array
+     * Snake cases an array.
      *
      * @param array $array
      *
@@ -36,7 +36,7 @@ class Helpers
     }
 
     /**
-     * camel cases array keys
+     * camel cases array keys.
      *
      * @param array $array
      *
@@ -62,7 +62,7 @@ class Helpers
     }
 
     /**
-     * Snake cases array keys
+     * Snake cases array keys.
      *
      * @param array $array
      *
@@ -88,7 +88,7 @@ class Helpers
     }
 
     /**
-     * Convert to snake
+     * Convert to snake.
      *
      * @param string $value
      *
@@ -176,5 +176,30 @@ class Helpers
 
             return true;
         });
+    }
+
+    public static function array_merge_request($main, ...$arrays): array
+    {
+        foreach ($arrays as $array) {
+            $main = self::array_merge_replace($main, $array);
+        }
+
+        return $main;
+    }
+
+    public static function array_merge_replace(array $array, array $newValues): array
+    {
+        foreach ($newValues as $key => $value) {
+            if (is_array($value)) {
+                if (! isset($array[$key])) {
+                    $array[$key] = [];
+                }
+                $array[$key] = self::array_merge_replace($array[$key], $value);
+            } else {
+                $array[$key] = $value;
+            }
+        }
+
+        return $array;
     }
 }

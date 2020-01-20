@@ -3,8 +3,8 @@
 namespace Phpsa\LaravelApiController\Contracts;
 
 use Illuminate\Support\Str;
-use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Phpsa\LaravelApiController\Helpers;
 
 trait Relationships
 {

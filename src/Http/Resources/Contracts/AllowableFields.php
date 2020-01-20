@@ -7,21 +7,21 @@ use Phpsa\LaravelApiController\Helpers;
 trait AllowableFields
 {
     /**
-     * Resources to be mapped (ie children)
+     * Resources to be mapped (ie children).
      *
      * @var array|null
      */
     protected static $mapResources = null;
 
     /**
-     * Default fields to return on request
+     * Default fields to return on request.
      *
      * @var array|null
      */
     protected static $defaultFields = null;
 
     /**
-     * Allowable fields to be used
+     * Allowable fields to be used.
      *
      * @var array|null
      */
@@ -49,13 +49,16 @@ trait AllowableFields
 
     protected function mapRelatedResources($resources)
     {
-        if (empty(static::$mapResources)) return $resources;
+        if (empty(static::$mapResources)) {
+            return $resources;
+        }
 
         foreach ($resources as $key => $value) {
             if (array_key_exists($key, static::$mapResources)) {
                 $resources[$key] = static::$mapResources[$key]::make($value);
             }
         }
+
         return $resources;
     }
 
@@ -82,13 +85,11 @@ trait AllowableFields
         $fields = Helpers::filterFieldsFromRequest($request, $defaultFields, $allowedFields);
 
         return $this->filterAllowedFields($fields);
-
-
     }
 
     public function filterAllowedFields($fields)
     {
-        if(empty(static::$allowedFields) || static::$allowedFields === ['*'] ){
+        if (empty(static::$allowedFields) || static::$allowedFields === ['*']) {
             return $fields;
         }
 
@@ -107,9 +108,8 @@ trait AllowableFields
         return is_array($this->resource) ? $this->resource : $this->resource->getAttributes();
     }
 
-
     /**
-     * Return default fields for this collection
+     * Return default fields for this collection.
      *
      * @return array
      */

@@ -32,7 +32,7 @@ trait Parser
     protected function addCustomParams($request, array $extraParams = []): void
     {
         $all = $request->all();
-        $new = array_merge_recursive($all, $extraParams);
+        $new = Helpers::array_merge_request($all, $extraParams);
         $request->replace($new);
     }
 
@@ -162,13 +162,13 @@ trait Parser
     }
 
     /**
-     * Gets our default fields for our query
+     * Gets our default fields for our query.
      *
      * @return array
      */
     protected function getDefaultFields(): array
     {
-        return (method_exists($this->resourceSingle, 'getDefaultFields')) ?  ($this->resourceSingle)::getDefaultFields() : ['*'];
+        return (method_exists($this->resourceSingle, 'getDefaultFields')) ? ($this->resourceSingle)::getDefaultFields() : ['*'];
     }
 
     /**
