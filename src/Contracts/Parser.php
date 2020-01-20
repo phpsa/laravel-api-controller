@@ -162,13 +162,13 @@ trait Parser
     }
 
     /**
-     * Gets our default fields for our query
+     * Gets our default fields for our query.
      *
      * @return array
      */
     protected function getDefaultFields(): array
     {
-        return (method_exists($this->resourceSingle, 'getDefaultFields')) ?  ($this->resourceSingle)::getDefaultFields() : ['*'];
+        return (method_exists($this->resourceSingle, 'getDefaultFields')) ? ($this->resourceSingle)::getDefaultFields() : ['*'];
     }
 
     /**
