@@ -188,7 +188,8 @@ instead of using the issue tracker.
 ## Credits
 
 - [Craig G Smith](https://github.com/phpsa)
-- [Phil Taylor]()
+- [Sam Sehnert](https://github.com/samatcd
+- [Phil Taylor](https://github.com/codeberry)
 - [All contributors](https://github.com/phpsa/laravel-api-controller/graphs/contributors)
 
 ## Sponsors
