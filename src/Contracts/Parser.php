@@ -138,6 +138,21 @@ trait Parser
     }
 
     /**
+     * parses out custom method filters etc.
+     *
+     * @param mixed $request
+     */
+    protected function parseMethodParams($request): void
+    {
+        foreach($this->getAllowedScopes() as $scope)
+        {
+            if($request->has(Helpers::snake($scope))){
+                call_user_func([$this->repository, $scope], $request->get(Helpers::snake($scope)));
+            }
+        }
+    }
+
+    /**
      * set the Where clause.
      *
      * @param array $where the where clause
@@ -169,6 +184,16 @@ trait Parser
     protected function getDefaultFields(): array
     {
         return (method_exists($this->resourceSingle, 'getDefaultFields')) ? ($this->resourceSingle)::getDefaultFields() : ['*'];
+    }
+
+    /**
+     * Gets the allowed scopes for our query.
+     *
+     * @return array
+     */
+    protected function getAllowedScopes(): array
+    {
+        return (method_exists($this->resourceSingle, 'getAllowedScopes')) ? ($this->resourceSingle)::getAllowedScopes() : [];
     }
 
     /**

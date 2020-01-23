@@ -108,6 +108,7 @@ abstract class Controller extends BaseController
         $this->parseIncludeParams();
         $this->parseSortParams();
         $this->parseFilterParams();
+        $this->parseMethodParams($request);
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
 
