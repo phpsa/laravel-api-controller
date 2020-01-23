@@ -28,6 +28,13 @@ trait AllowableFields
     protected static $allowedFields = null;
 
     /**
+     * Allowable scopes to be used.
+     *
+     * @var array|null
+     */
+    protected static $allowedScopes = null;
+
+    /**
      * Makes sure we only return allowable fields.
      *
      * @param mixed $request
@@ -116,5 +123,16 @@ trait AllowableFields
     public static function getDefaultFields(): array
     {
         return static::$defaultFields ?? ['*'];
+    }
+
+    /**
+     * Return allowed scopes for this collection.
+     *
+     * @return array
+     * @author Sam Sehnert <sam@customd.com>
+     */
+    public static function getAllowedScopes(): array
+    {
+        return static::$allowedScopes ?? [];
     }
 }

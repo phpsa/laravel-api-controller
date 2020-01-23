@@ -111,6 +111,22 @@ For the get command you can filter by using the following url patterns
 You can pass to the filters an array of values
 ie: `filter[user_id]=1||2||||4||7` or `filter[user_id!]=55||33`
 
+## Scopes
+
+In addition to filtering, you can use Laravel's Eloquent [Query Scopes](https://laravel.com/docs/6.x/eloquent#local-scopes) to do more complex searches or filters.
+Simply add an `$allowedScopes` to your `ApiResource`, and that scope will be exposed as a query parameter.
+
+
+Assuming you have a `scopeFullname` defined on your Eloquent Model, you can expose this scope to your API as follows:
+
+```php
+protected static $allowedScopes = [
+  'fullname'
+];
+```
+
+Given the above `$allowedScopes` array, your API consumers will now be able to request `?fullname=John`. The query parameter value will be passed to your scope function in your Eloquent Model.
+
 
 # Fields, Relationships, Sorting & Pagination
 
