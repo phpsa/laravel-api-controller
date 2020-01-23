@@ -144,9 +144,8 @@ trait Parser
      */
     protected function parseMethodParams($request): void
     {
-        foreach($this->getAllowedScopes() as $scope)
-        {
-            if($request->has(Helpers::snake($scope))){
+        foreach ($this->getAllowedScopes() as $scope) {
+            if ($request->has(Helpers::snake($scope))) {
                 call_user_func([$this->repository, $scope], $request->get(Helpers::snake($scope)));
             }
         }
