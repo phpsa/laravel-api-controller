@@ -127,6 +127,10 @@ protected static $allowedScopes = [
 
 Given the above `$allowedScopes` array, your API consumers will now be able to request `?fullname=John`. The query parameter value will be passed to your scope function in your Eloquent Model.
 
+## Filtering on related models
+
+You can easily filter using any related model that is configured for `include`. Simply specify `?filter[model.field]=123` in your query string. The same filter options above apply to related fields.
+
 
 # Fields, Relationships, Sorting & Pagination
 
@@ -141,7 +145,16 @@ By default all fields are returned, you can limit that to specific fields in the
 
 ## Relationships
 
-* Using the relationships defined in your models, you can pass a comma delimited list eg `include=join1,join2` which will return those joins (one or many)
+* Using the relationships defined in your models, you can pass a comma delimited list eg `include=join1,join2` which will return those joins (one or many).
+
+Simply add a `protected static $mapResources` to your `Resource` to define which resources to assign your related data. E.e., for a one to many relationship, you should specify a collection, and a one-to-one relationship specify the related resource directly. This will allow the API to properly format the related record.
+
+```
+    protected static $mapResources = [
+        'notes' => NotesCollection::class,
+        'owner' => OwnerResource::class
+    ];
+```
 
 ## Sorting
 
