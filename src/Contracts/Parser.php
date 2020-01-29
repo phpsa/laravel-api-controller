@@ -153,14 +153,16 @@ trait Parser
 
     protected function setWhereHasClause(array $where): void
     {
-        list($with, $key) = explode('.', $where['key']);
+        [$with, $key] = explode('.', $where['key']);
 
         $sub = self::$model->{$with}()->getRelated();
         $fields = $this->getTableColumns($sub);
 
-        if (!in_array($key, $fields)) return;
+        if (! in_array($key, $fields)) {
+            return;
+        }
 
-         $this->repository->whereHas($with, function($q) use($where, $key){
+        $this->repository->whereHas($with, function ($q) use ($where, $key) {
             switch ($where['type']) {
                 case 'In':
                     if (! empty($where['values'])) {
@@ -176,7 +178,7 @@ trait Parser
                         $q->where($key, $where['value'], $where['operator']);
                     break;
             }
-       });
+        });
     }
 
     /**
