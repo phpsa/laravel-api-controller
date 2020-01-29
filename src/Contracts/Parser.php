@@ -127,8 +127,8 @@ trait Parser
 
         foreach ($where as $whr) {
             if (strpos($whr['key'], '.') > 0) {
-                //@TODO: test if exists in the withs, if not continue out to exclude from the qbuild
-                //continue;
+                $this->setWhereHasClause($whr);
+                continue;
             } elseif (! in_array($whr['key'], $tableColumns)) {
                 continue;
             }
@@ -151,12 +151,40 @@ trait Parser
         }
     }
 
+    protected function setWhereHasClause(array $where): void
+    {
+        list($with, $key) = explode('.', $where['key']);
+
+        $sub = self::$model->{$with}()->getRelated();
+        $fields = $this->getTableColumns($sub);
+
+        if (!in_array($key, $fields)) return;
+
+         $this->repository->whereHas($with, function($q) use($where, $key){
+            switch ($where['type']) {
+                case 'In':
+                    if (! empty($where['values'])) {
+                        $q->whereIn($key, $where['values']);
+                    }
+                    break;
+                case 'NotIn':
+                    if (! empty($where['values'])) {
+                        $q->whereNotIn($key, $where['values']);
+                    }
+                    break;
+                case 'Basic':
+                        $q->where($key, $where['value'], $where['operator']);
+                    break;
+            }
+       });
+    }
+
     /**
      * set the Where clause.
      *
      * @param array $where the where clause
      */
-    protected function setWhereClause($where): void
+    protected function setWhereClause(array $where): void
     {
         switch ($where['type']) {
             case 'In':
