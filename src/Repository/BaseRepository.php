@@ -403,7 +403,7 @@ class BaseRepository
             $relations = func_get_args();
         }
 
-        $this->with = $relations;
+        $this->with = array_unique(array_merge($this->with, $relations));
 
         return $this;
     }
