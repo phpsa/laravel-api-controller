@@ -81,7 +81,7 @@ in your controller override the following params:
 
 ## Snake vs Camel
 
-* middleware to convert all came to snake: `Phpsa\LaravelApiController\Http\Middleware\SnakeCaseInputs`
+* middleware to convert all camel to snake: `Phpsa\LaravelApiController\Http\Middleware\SnakeCaseInputs`
 * set request header `X-Accept-Case-Type` to either `snake` or `camel` to alter your data response
 
 
