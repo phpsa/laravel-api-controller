@@ -3,7 +3,6 @@
 namespace Phpsa\LaravelApiController\Generator;
 
 use Illuminate\Console\Command;
-use Illuminate\Console\DetectsApplicationNamespace;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
@@ -11,7 +10,6 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class ApiMakeCommand extends Command
 {
-    use DetectsApplicationNamespace;
 
     /**
      * The filesystem instance.
@@ -113,7 +111,7 @@ class ApiMakeCommand extends Command
      */
     protected function prepareVariablesForStubs($name)
     {
-        $this->stubVariables['app']['namespace'] = $this->getAppNamespace();
+        $this->stubVariables['app']['namespace'] = $this->laravel->getNamespace();
         $baseDir = config('laravel-api-controller.models_base_dir');
         $this->modelsBaseNamespace = $baseDir ? trim($baseDir, '\\').'\\' : '';
         $this->setModelData($name)
