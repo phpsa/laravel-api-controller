@@ -10,7 +10,6 @@ use Symfony\Component\Console\Input\InputArgument;
 
 class ApiMakeCommand extends Command
 {
-
     /**
      * The filesystem instance.
      *
