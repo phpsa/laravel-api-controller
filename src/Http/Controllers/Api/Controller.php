@@ -286,7 +286,7 @@ abstract class Controller extends BaseController
         $this->validateRequestType($request);
         try {
             $item = self::$model::findOrFail($id);
-            $this->authoriseUserAction('delete', self::$model::find($id));
+            $this->authoriseUserAction('delete', $item);
             $this->repository->deleteById($id);
             event(new Deleted($item, $request));
         } catch (ModelNotFoundException $exeption) {
