@@ -16,9 +16,9 @@ class Created
     public $record;
 
     /**
-     * the request object.
+     * the request params.
      *
-     * @var \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest
+     * @var array
      */
     public $request;
 
@@ -31,6 +31,6 @@ class Created
     public function __construct($record, $request)
     {
         $this->record = $record;
-        $this->request = $request;
+        $this->request = $request->all();
     }
 }

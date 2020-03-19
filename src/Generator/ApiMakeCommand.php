@@ -190,6 +190,13 @@ class ApiMakeCommand extends Command
         $this->stubVariables[$entity]['fullNameWithoutRoot'] = $this->stubVariables[$entity]['namespaceWithoutRoot'].'\\'.$this->stubVariables[$entity]['name'];
         $this->stubVariables[$entity]['fullName'] = $this->stubVariables[$entity]['namespace'].'\\'.$this->stubVariables[$entity]['name'];
 
+
+        $this->stubVariables[$entity]['resource'] = ($this->option('all') || $this->option('resource')) ? '\\App\\Http\Resources\\' . $this->stubVariables[$entity]['name'] : '\Phpsa\LaravelApiController\Http\Resources\ApiResource';
+        $this->stubVariables[$entity]['collection'] = ($this->option('all') || $this->option('resource')) ? '\\App\\Http\Resources\\' . $this->stubVariables[$entity]['name'] . 'Collection' : '\Phpsa\LaravelApiController\Http\Resources\ApiCollection';
+
+
+        $resourceName = $this->stubVariables['model']['fullName'];
+            $resourceCollection = $resourceName.'Collection';
         return $this;
     }
 
@@ -254,30 +261,6 @@ class ApiMakeCommand extends Command
         $this->makeDirectoryIfNeeded($path);
         $fileContent = $this->constructStub(base_path(config('laravel-api-controller.'.$type.'_stub')));
 
-        if ($type === 'controller' && ($this->option('all') || $this->option('resource'))) {
-            $resourceName = $this->stubVariables['model']['fullName'];
-            $resourceCollection = $resourceName.'Collection';
-
-            $fileContent = str_replace('protected $includesBlacklist = [];', 'protected $includesBlacklist = [];
-            /**
-     * Resource for item.
-     *
-     * @var mixed instance of \Illuminate\Http\Resources\Json\JsonResource
-     *
-     *
-     */
-    protected $resourceSingle = \\'.$resourceName.';
-
-    /**
-     * Resource for collection.
-     *
-     * @var mixed instance of \Illuminate\Http\Resources\Json\ResourceCollection
-     *
-     */
-    protected $resourceCollection = \\'.$resourceCollection.';
-
-            ', $fileContent);
-        }
 
         $this->files->put($path, $fileContent);
         $this->info(ucfirst($type).' created successfully.');

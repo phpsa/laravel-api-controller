@@ -39,6 +39,19 @@ class {{controller.name}} extends Controller
      */
     protected $includesBlacklist = [];
 
+    /**
+     * Resource for item.
+     *
+     * @var {{controller.resource}}
+     */
+    protected $resourceSingle = {{controller.resource}}::class;
+
+    /**
+     * Resource for collection.
+     *
+     * @var {{controller.collection}}
+     */
+    protected $resourceCollection = {{controller.collection}}::class;
 
     /**
      * Eloquent model.
@@ -49,29 +62,6 @@ class {{controller.name}} extends Controller
     {
         return {{model.name}}::class;
     }
-
-     /**
-     * Get the validation rules for create.
-     *
-     * @return array
-     */
-    protected function rulesForCreate(): array
-    {
-        return [];
-    }
-
-    /**
-     * Get the validation rules for update.
-     *
-     * @param int $id
-     *
-     * @return array
-     */
-    protected function rulesForUpdate(/* @scrutinizer ignore-unused */$id): array
-    {
-        return [];
-    }
-
 
     /**
      * Display a listing of the resource.
@@ -93,6 +83,7 @@ class {{controller.name}} extends Controller
 	* @param Request $request
     *
     * @see self::handleStoreOrUpdateAction to do magic insert / update
+    *
     * @return Response
     */
     public function store(Request $request)
