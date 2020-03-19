@@ -168,7 +168,7 @@ abstract class Controller extends BaseController
 
             DB::commit();
 
-            return $this->respondItemCreated($this->repository->getById($item->id));
+            return $this->respondItemCreated($this->repository->getById($item->getKey()));
         } catch (\Illuminate\Database\QueryException $exception) {
             $message = config('app.debug') ? $exception->getMessage() : 'Failed to create Record';
 
@@ -238,7 +238,7 @@ abstract class Controller extends BaseController
             return $this->errorNotFound('Record does not exist');
         }
 
-        $this->validate($request, $this->rulesForUpdate($item->id));
+        $this->validate($request, $this->rulesForUpdate($item->getKey()));
 
         $data = $this->qualifyUpdateQuery($data);
 
@@ -262,7 +262,7 @@ abstract class Controller extends BaseController
 
             DB::commit();
 
-            return $this->respondWithOne($this->repository->getById($item->id));
+            return $this->respondWithOne($this->repository->getById($item->getKey()));
         } catch (\Illuminate\Database\QueryException $exception) {
             $message = config('app.debug') ? $exception->getMessage() : 'Failed to update Record';
 
