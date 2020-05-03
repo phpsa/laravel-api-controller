@@ -172,7 +172,7 @@ abstract class Controller extends BaseController
         } catch (\Illuminate\Database\QueryException $exception) {
             $message = config('app.debug') ? $exception->getMessage() : 'Failed to create Record';
 
-            throw new ApiException($message, $exception->getCode(), $exception);
+            throw new ApiException($message, (int)$exception->getCode(), $exception);
         } catch (\Exception $exception) {
             DB::rollback();
 
@@ -266,7 +266,7 @@ abstract class Controller extends BaseController
         } catch (\Illuminate\Database\QueryException $exception) {
             $message = config('app.debug') ? $exception->getMessage() : 'Failed to update Record';
 
-            throw new ApiException($message, $exception->getCode(), $exception);
+            throw new ApiException($message, (int)$exception->getCode(), $exception);
         } catch (\Exception $exception) {
             DB::rollback();
 
