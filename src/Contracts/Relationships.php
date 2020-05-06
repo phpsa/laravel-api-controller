@@ -88,21 +88,43 @@ trait Relationships
             $relation = $item->$with();
             $type = class_basename(get_class($relation));
 
-            if (! in_array($type, ['HasOne', 'HasMany'])) {
+            if (! in_array($type, ['HasOne', 'HasMany', 'BelongsTo', 'BelongsToMany'])) {
                 throw new ApiException("$type mapping not implemented yet");
             }
 
-            $collection = $type === 'HasOne' ? [$data[$with]] : $data[$with];
+            $collection = in_array($type, ['HasOne', 'BelongsTo']) ? [$data[Helpers::snake($with)]] : $data[Helpers::snake($with)];
             $this->repository->with($with);
-            $localKey = $relation->getLocalKeyName();
 
-            foreach ($collection as $relatedRecord) {
-                if (isset($relatedRecord[$localKey])) {
-                    $existanceCheck = [$localKey => $relatedRecord[$localKey]];
-                    $item->$with()->updateOrCreate($existanceCheck, $relatedRecord);
-                } else {
-                    $item->$with()->create($relatedRecord);
-                }
+            switch($type)
+            {
+                case 'HasOne':
+                case 'HasMany':
+                    $localKey = $relation->getLocalKeyName();
+
+                    foreach ($collection as $relatedRecord) {
+                        if (isset($relatedRecord[$localKey])) {
+                            $existanceCheck = [$localKey => $relatedRecord[$localKey]];
+                            $item->$with()->updateOrCreate($existanceCheck, $relatedRecord);
+                        } else {
+                            $item->$with()->create($relatedRecord);
+                        }
+                    }
+                break;
+                case 'BelongsTo':
+                case 'BelongsToMany':
+                    $ownerKey = $relation->getOwnerKeyName();
+                    $localKey = $relation->getForeignKeyName();
+
+                    foreach ($collection as $relatedRecord) {
+                        if (isset($data[$localKey])) {
+                            $existanceCheck = [$ownerKey => $data[$localKey]];
+                            $item->$with()->updateOrCreate($existanceCheck, $relatedRecord);
+                        } else {
+                            $item->$with()->create($relatedRecord);
+                        }
+                    }
+                break;
+
             }
         }
     }
