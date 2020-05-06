@@ -95,8 +95,7 @@ trait Relationships
             $collection = in_array($type, ['HasOne', 'BelongsTo']) ? [$data[Helpers::snake($with)]] : $data[Helpers::snake($with)];
             $this->repository->with($with);
 
-            switch($type)
-            {
+            switch ($type) {
                 case 'HasOne':
                 case 'HasMany':
                     $localKey = $relation->getLocalKeyName();
@@ -121,7 +120,7 @@ trait Relationships
                             $item->$with()->associate(
                                 $item->$with()->updateOrCreate($existanceCheck, $relatedRecord)
                             );
-                        } else if(isset($data[$localKey])){
+                        } elseif (isset($data[$localKey])) {
                             $existanceCheck = [$ownerKey => $data[$localKey]];
                             $item->$with()->associate(
                                 $item->$with()->updateOrCreate($existanceCheck, $relatedRecord)
