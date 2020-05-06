@@ -116,12 +116,22 @@ trait Relationships
                     $localKey = $relation->getForeignKeyName();
 
                     foreach ($collection as $relatedRecord) {
-                        if (isset($data[$localKey])) {
+                        if (isset($relatedRecord[$ownerKey])) {
+                            $existanceCheck = [$ownerKey => $relatedRecord[$ownerKey]];
+                            $item->$with()->associate(
+                                $item->$with()->updateOrCreate($existanceCheck, $relatedRecord)
+                            );
+                        } else if(isset($data[$localKey])){
                             $existanceCheck = [$ownerKey => $data[$localKey]];
-                            $item->$with()->updateOrCreate($existanceCheck, $relatedRecord);
+                            $item->$with()->associate(
+                                $item->$with()->updateOrCreate($existanceCheck, $relatedRecord)
+                            );
                         } else {
-                            $item->$with()->create($relatedRecord);
+                            $item->$with()->associate(
+                                $item->$with()->create($relatedRecord)
+                            );
                         }
+                        $item->save();
                     }
                 break;
 
