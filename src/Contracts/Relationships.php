@@ -92,7 +92,7 @@ trait Relationships
                 throw new ApiException("$type mapping not implemented yet");
             }
 
-            $collection = $type === 'HasOne' ? [$data[$with]] : $data[$with];
+            $collection = $type === 'HasOne' ? [$data[Helpers::snake($with)]] : $data[Helpers::snake($with)];
             $this->repository->with($with);
             $localKey = $relation->getLocalKeyName();
 
