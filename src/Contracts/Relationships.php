@@ -98,43 +98,63 @@ trait Relationships
             switch ($type) {
                 case 'HasOne':
                 case 'HasMany':
-                    $localKey = $relation->getLocalKeyName();
-
-                    foreach ($collection as $relatedRecord) {
-                        if (isset($relatedRecord[$localKey])) {
-                            $existanceCheck = [$localKey => $relatedRecord[$localKey]];
-                            $item->$with()->updateOrCreate($existanceCheck, $relatedRecord);
-                        } else {
-                            $item->$with()->create($relatedRecord);
-                        }
-                    }
+                    $this->processHasRelation($relation, $collection);
                 break;
                 case 'BelongsTo':
                 case 'BelongsToMany':
-                    $ownerKey = $relation->getOwnerKeyName();
-                    $localKey = $relation->getForeignKeyName();
-
-                    foreach ($collection as $relatedRecord) {
-                        if (isset($relatedRecord[$ownerKey])) {
-                            $existanceCheck = [$ownerKey => $relatedRecord[$ownerKey]];
-                            $item->$with()->associate(
-                                $item->$with()->updateOrCreate($existanceCheck, $relatedRecord)
-                            );
-                        } elseif (isset($data[$localKey])) {
-                            $existanceCheck = [$ownerKey => $data[$localKey]];
-                            $item->$with()->associate(
-                                $item->$with()->updateOrCreate($existanceCheck, $relatedRecord)
-                            );
-                        } else {
-                            $item->$with()->associate(
-                                $item->$with()->create($relatedRecord)
-                            );
-                        }
-                        $item->save();
-                    }
+                    $this->processBelongsRelation($relation, $collection, $data, $item);
                 break;
 
             }
+        }
+    }
+
+    protected function storeRelatedChild($relatedItem, $data):void
+    {
+        //$columns = $this->getTableColumns($relatedItem);
+        //$insert = array_intersect_key($data, array_flip($columns));
+        //$diff = array_diff(array_keys($data), array_keys($insert));
+        // then similar to the main methodology
+        //@todo
+    }
+
+    protected function processHasRelation($relation, array $collection): void
+    {
+        $localKey = $relation->getLocalKeyName();
+
+        foreach ($collection as $relatedRecord) {
+            if (isset($relatedRecord[$localKey])) {
+                $existanceCheck = [$localKey => $relatedRecord[$localKey]];
+                $relatedItem = $relation->updateOrCreate($existanceCheck, $relatedRecord);
+            } else {
+                $relatedItem = $relation->create($relatedRecord);
+            }
+            $this->storeRelatedChild($relatedItem, $relatedRecord);
+        }
+    }
+
+    protected function processBelongsRelation($relation, array $collection, array $parent, $item): void
+    {
+        $ownerKey = $relation->getOwnerKeyName();
+        $localKey = $relation->getForeignKeyName();
+
+        foreach ($collection as $relatedRecord) {
+            if (isset($relatedRecord[$ownerKey])) {
+                $existanceCheck = [$ownerKey => $relatedRecord[$ownerKey]];
+                $relation->associate(
+                    $relation->updateOrCreate($existanceCheck, $relatedRecord)
+                );
+            } elseif (isset($parent[$localKey])) {
+                $existanceCheck = [$ownerKey => $parent[$localKey]];
+                $relation->associate(
+                    $relation->updateOrCreate($existanceCheck, $relatedRecord)
+                );
+            } else {
+                $relation->associate(
+                    $relation->create($relatedRecord)
+                );
+            }
+            $item->save();
         }
     }
 }
