@@ -9,6 +9,6 @@ class ApiCollection extends ResourceCollection
 {
     protected function collects()
     {
-         return parent::collects() ?? Route::current()->controller->getResourceSingle();
+        return parent::collects() ?? Route::current()->controller->getResourceSingle();
     }
 }

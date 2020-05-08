@@ -110,7 +110,7 @@ trait Relationships
         }
     }
 
-    protected function storeRelatedChild($relatedItem, $data):void
+    protected function storeRelatedChild($relatedItem, $data): void
     {
         //$columns = $this->getTableColumns($relatedItem);
         //$insert = array_intersect_key($data, array_flip($columns));
