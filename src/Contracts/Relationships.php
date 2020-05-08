@@ -92,14 +92,16 @@ trait Relationships
                 throw new ApiException("$type mapping not implemented yet");
             }
 
-            $collection = in_array($type, ['HasOne', 'BelongsTo']) ? [$data[Helpers::snake($with)]] : $data[Helpers::snake($with)];
+            $collection = in_array($type, ['BelongsTo']) ? [$data[Helpers::snake($with)]] : $data[Helpers::snake($with)];
 
             $this->repository->with($with);
 
             switch ($type) {
                 case 'HasOne':
+                    $this->processHasOneRelation($relation, $collection, $item);
+                break;
                 case 'HasMany':
-                    $this->processHasRelation($relation, $collection);
+                    $this->processHasManyRelation($relation, $collection, $item);
                 break;
                 case 'BelongsTo':
                 case 'BelongsToMany':
@@ -119,19 +121,31 @@ trait Relationships
         //@todo
     }
 
-    protected function processHasRelation($relation, array $collection): void
+    protected function processHasManyRelation($relation, array $collection, $item): void
     {
         $localKey = $relation->getLocalKeyName();
+        $foreignKey = $relation->getForeignKeyName();
+        $collection[$foreignKey] = $item->getAttribute($localKey);
 
         foreach ($collection as $relatedRecord) {
             if (isset($relatedRecord[$localKey])) {
                 $existanceCheck = [$localKey => $relatedRecord[$localKey]];
-                $relatedItem = $relation->updateOrCreate($existanceCheck, $relatedRecord);
+                $relation->updateOrCreate($existanceCheck, $relatedRecord);
             } else {
-                $relatedItem = $relation->create($relatedRecord);
+                $relation->create($relatedRecord);
             }
-            $this->storeRelatedChild($relatedItem, $relatedRecord);
         }
+    }
+
+    protected function processHasOneRelation($relation, array $collection, $item): void
+    {
+        $foreignKey = $relation->getForeignKeyName();
+        $localKey = $relation->getLocalKeyName();
+
+        $collection[$foreignKey] = $item->getAttribute($localKey);
+
+        $existanceCheck = [$foreignKey => $item->getAttribute($localKey)];
+        $relation->updateOrCreate($existanceCheck, $collection);
     }
 
     protected function processBelongsRelation($relation, array $collection, array $parent, $item): void
