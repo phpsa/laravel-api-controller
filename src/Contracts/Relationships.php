@@ -93,6 +93,7 @@ trait Relationships
             }
 
             $collection = in_array($type, ['HasOne', 'BelongsTo']) ? [$data[Helpers::snake($with)]] : $data[Helpers::snake($with)];
+
             $this->repository->with($with);
 
             switch ($type) {
