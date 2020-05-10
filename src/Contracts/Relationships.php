@@ -108,7 +108,7 @@ trait Relationships
                 break;
                 case 'BelongsToMany':
                     //This one is most likely in a glue mapping
-                    $this->processBelongsToManyRelation($relation, $collection, $item, $data );
+                    $this->processBelongsToManyRelation($relation, $collection, $item, $data);
                 break;
 
             }
@@ -158,22 +158,19 @@ trait Relationships
 
         $current = $item->getAttribute($localKey);
 
-        if($current)
-        {
+        if ($current) {
             //relation mapping already exists
             $existanceCheck = [$ownerKey => $current];
             $relation->associate(
                 $relation->updateOrCreate($existanceCheck, $collection)
             );
-        }else{
+        } else {
             $relation->associate(
                 $relation->create($item)
             );
             $item->save();
         }
-
     }
-
 
     // This one still needs a bit of work i believe
     protected function processBelongsToManyRelation($relation, array $collection, $item, array $parent): void
