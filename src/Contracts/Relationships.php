@@ -92,7 +92,7 @@ trait Relationships
                 throw new ApiException("$type mapping not implemented yet");
             }
 
-            $collection = in_array($type, ['BelongsTo']) ? [$data[Helpers::snake($with)]] : $data[Helpers::snake($with)];
+            $collection = $data[Helpers::snake($with)];
 
             $this->repository->with($with);
 
@@ -104,8 +104,11 @@ trait Relationships
                     $this->processHasManyRelation($relation, $collection, $item);
                 break;
                 case 'BelongsTo':
+                    $this->processBelongsToRelation($relation, $collection, $item);
+                break;
                 case 'BelongsToMany':
-                    $this->processBelongsRelation($relation, $collection, $data, $item);
+                    //This one is most likely in a glue mapping
+                    $this->processBelongsToManyRelation($relation, $collection, $item, $data );
                 break;
 
             }
@@ -148,7 +151,32 @@ trait Relationships
         $relation->updateOrCreate($existanceCheck, $collection);
     }
 
-    protected function processBelongsRelation($relation, array $collection, array $parent, $item): void
+    protected function processBelongsToRelation($relation, array $collection, $item): void
+    {
+        $ownerKey = $relation->getOwnerKeyName();
+        $localKey = $relation->getForeignKeyName();
+
+        $current = $item->getAttribute($localKey);
+
+        if($current)
+        {
+            //relation mapping already exists
+            $existanceCheck = [$ownerKey => $current];
+            $relation->associate(
+                $relation->updateOrCreate($existanceCheck, $collection)
+            );
+        }else{
+            $relation->associate(
+                $relation->create($item)
+            );
+            $item->save();
+        }
+
+    }
+
+
+    // This one still needs a bit of work i believe
+    protected function processBelongsToManyRelation($relation, array $collection, $item, array $parent): void
     {
         $ownerKey = $relation->getOwnerKeyName();
         $localKey = $relation->getForeignKeyName();
