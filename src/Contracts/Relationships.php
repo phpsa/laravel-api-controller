@@ -128,9 +128,9 @@ trait Relationships
     {
         $localKey = $relation->getLocalKeyName();
         $foreignKey = $relation->getForeignKeyName();
-        $collection[$foreignKey] = $item->getAttribute($localKey);
 
         foreach ($collection as $relatedRecord) {
+            $relatedRecord[$foreignKey] = $item->getAttribute($localKey);
             if (isset($relatedRecord[$localKey])) {
                 $existanceCheck = [$localKey => $relatedRecord[$localKey]];
                 $relation->updateOrCreate($existanceCheck, $relatedRecord);
