@@ -101,7 +101,9 @@ trait Relationships
             $this->repository->with($with);
 
             switch ($type) {
-                case 'HasOne':
+                 case 'HasOne':
+                    $this->processHasOneRelation($relation, $relatedRecords, $item);
+                break;
                 case 'HasMany':
                     $this->processHasRelation($relation, $relatedRecords, $item);
                 break;
@@ -124,16 +126,31 @@ trait Relationships
         //@todo
     }
 
+      protected function processHasOneRelation($relation, array $collection, $item): void
+    {
+        $foreignKey = $relation->getForeignKeyName();
+        $localKey = $relation->getLocalKeyName();
+
+        $collection[$foreignKey] = $item->getAttribute($localKey);
+
+        $existanceCheck = [$foreignKey => $item->getAttribute($localKey)];
+
+        $relation->updateOrCreate($existanceCheck, $collection);
+    }
+
     protected function processHasRelation($relation, array $relatedRecords, $item): void
     {
         $localKey = $relation->getLocalKeyName();
         $foreignKey = $relation->getForeignKeyName();
 
         foreach ($relatedRecords as $relatedRecord) {
-            $model = clone $relation;
+            $model = $relation->getRelated();
+
             $relatedRecord[$foreignKey] = $item->getAttribute($localKey);
+
             if (isset($relatedRecord[$localKey])) {
                 $existanceCheck = [$localKey => $relatedRecord[$localKey]];
+
                 $model->updateOrCreate($existanceCheck, $relatedRecord);
             } else {
                 $model->create($relatedRecord);
