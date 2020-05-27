@@ -94,10 +94,6 @@ trait Relationships
 
             $relatedRecords = $data[Helpers::snake($with)];
 
-            if (in_array($type, ['HasOne', 'BelongsTo'])) {
-                $relatedRecords = [$relatedRecords];
-            }
-
             $this->repository->with($with);
 
             switch ($type) {
@@ -107,8 +103,9 @@ trait Relationships
                 case 'HasMany':
                     $this->processHasRelation($relation, $relatedRecords, $item);
                 break;
-
                 case 'BelongsTo':
+                    $this->processBelongsToRelation($relation, [$relatedRecords], $item, $data);
+                    break;
                 case 'BelongsToMany':
                     $this->processBelongsToRelation($relation, $relatedRecords, $item, $data);
                 break;
