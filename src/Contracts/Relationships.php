@@ -123,7 +123,6 @@ trait Relationships
         //@todo
     }
 
-
     protected function processHasOneRelation($relation, array $collection, $item): void
     {
         $foreignKey = $relation->getForeignKeyName();
