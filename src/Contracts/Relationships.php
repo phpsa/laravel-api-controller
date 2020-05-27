@@ -126,15 +126,17 @@ trait Relationships
         //@todo
     }
 
-      protected function processHasOneRelation($relation, array $collection, $item): void
+
+    protected function processHasOneRelation($relation, array $collection, $item): void
     {
         $foreignKey = $relation->getForeignKeyName();
         $localKey = $relation->getLocalKeyName();
-
-        $collection[$foreignKey] = $item->getAttribute($localKey);
-
-        $existanceCheck = [$foreignKey => $item->getAttribute($localKey)];
-
+        if (isset($collection[$foreignKey])) {
+            $existanceCheck = [$foreignKey => $collection[$foreignKey]];
+        } else {
+            $collection[$foreignKey] = $item->getAttribute($localKey);
+            $existanceCheck = [$foreignKey => $item->getAttribute($localKey)];
+        }
         $relation->updateOrCreate($existanceCheck, $collection);
     }
 
