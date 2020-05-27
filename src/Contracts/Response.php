@@ -213,4 +213,14 @@ trait Response
     {
         return $this->setStatusCode(501)->respondWithError($message, $errors);
     }
+
+    public function getResourceSingle()
+    {
+        return $this->resourceSingle ?? \Phpsa\LaravelApiController\Http\Resources\ApiResource::class;
+    }
+
+    public function getResourceCollection()
+    {
+        return $this->resourceCollection ?? \Phpsa\LaravelApiController\Http\Resources\ApiCollection::class;
+    }
 }

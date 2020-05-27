@@ -190,13 +190,12 @@ class ApiMakeCommand extends Command
         $this->stubVariables[$entity]['fullNameWithoutRoot'] = $this->stubVariables[$entity]['namespaceWithoutRoot'].'\\'.$this->stubVariables[$entity]['name'];
         $this->stubVariables[$entity]['fullName'] = $this->stubVariables[$entity]['namespace'].'\\'.$this->stubVariables[$entity]['name'];
 
-
-        $this->stubVariables[$entity]['resource'] = ($this->option('all') || $this->option('resource')) ? '\\App\\Http\Resources\\' . $this->stubVariables[$entity]['name'] : '\Phpsa\LaravelApiController\Http\Resources\ApiResource';
-        $this->stubVariables[$entity]['collection'] = ($this->option('all') || $this->option('resource')) ? '\\App\\Http\Resources\\' . $this->stubVariables[$entity]['name'] . 'Collection' : '\Phpsa\LaravelApiController\Http\Resources\ApiCollection';
-
+        $this->stubVariables[$entity]['resource'] = ($this->option('all') || $this->option('resource')) ? '\\App\\Http\Resources\\'.$this->stubVariables[$entity]['name'] : '\Phpsa\LaravelApiController\Http\Resources\ApiResource';
+        $this->stubVariables[$entity]['collection'] = ($this->option('all') || $this->option('resource')) ? '\\App\\Http\Resources\\'.$this->stubVariables[$entity]['name'].'Collection' : '\Phpsa\LaravelApiController\Http\Resources\ApiCollection';
 
         $resourceName = $this->stubVariables['model']['fullName'];
-            $resourceCollection = $resourceName.'Collection';
+        $resourceCollection = $resourceName.'Collection';
+
         return $this;
     }
 
@@ -260,7 +259,6 @@ class ApiMakeCommand extends Command
         }
         $this->makeDirectoryIfNeeded($path);
         $fileContent = $this->constructStub(base_path(config('laravel-api-controller.'.$type.'_stub')));
-
 
         $this->files->put($path, $fileContent);
         $this->info(ucfirst($type).' created successfully.');

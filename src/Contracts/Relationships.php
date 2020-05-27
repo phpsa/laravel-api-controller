@@ -88,22 +88,101 @@ trait Relationships
             $relation = $item->$with();
             $type = class_basename(get_class($relation));
 
-            if (! in_array($type, ['HasOne', 'HasMany'])) {
+            if (! in_array($type, ['HasOne', 'HasMany', 'BelongsTo', 'BelongsToMany'])) {
                 throw new ApiException("$type mapping not implemented yet");
             }
 
-            $collection = $type === 'HasOne' ? [$data[Helpers::snake($with)]] : $data[Helpers::snake($with)];
-            $this->repository->with($with);
-            $localKey = $relation->getLocalKeyName();
+            $relatedRecords = $data[Helpers::snake($with)];
 
-            foreach ($collection as $relatedRecord) {
-                if (isset($relatedRecord[$localKey])) {
-                    $existanceCheck = [$localKey => $relatedRecord[$localKey]];
-                    $item->$with()->updateOrCreate($existanceCheck, $relatedRecord);
-                } else {
-                    $item->$with()->create($relatedRecord);
-                }
+            $this->repository->with($with);
+
+            switch ($type) {
+                 case 'HasOne':
+                    $this->processHasOneRelation($relation, $relatedRecords, $item);
+                break;
+                case 'HasMany':
+                    $this->processHasRelation($relation, $relatedRecords, $item);
+                break;
+                case 'BelongsTo':
+                    $this->processBelongsToRelation($relation, [$relatedRecords], $item, $data);
+                    break;
+                case 'BelongsToMany':
+                    $this->processBelongsToRelation($relation, $relatedRecords, $item, $data);
+                break;
+
             }
+        }
+    }
+
+    protected function storeRelatedChild($relatedItem, $data): void
+    {
+        //$columns = $this->getTableColumns($relatedItem);
+        //$insert = array_intersect_key($data, array_flip($columns));
+        //$diff = array_diff(array_keys($data), array_keys($insert));
+        // then similar to the main methodology
+        //@todo
+    }
+
+    protected function processHasOneRelation($relation, array $collection, $item): void
+    {
+        $foreignKey = $relation->getForeignKeyName();
+        $localKey = $relation->getLocalKeyName();
+        if (isset($collection[$foreignKey])) {
+            $existanceCheck = [$foreignKey => $collection[$foreignKey]];
+        } else {
+            $collection[$foreignKey] = $item->getAttribute($localKey);
+            $existanceCheck = [$foreignKey => $item->getAttribute($localKey)];
+        }
+        $relation->updateOrCreate($existanceCheck, $collection);
+    }
+
+    protected function processHasRelation($relation, array $relatedRecords, $item): void
+    {
+        $localKey = $relation->getLocalKeyName();
+        $foreignKey = $relation->getForeignKeyName();
+
+        foreach ($relatedRecords as $relatedRecord) {
+            $model = $relation->getRelated();
+
+            $relatedRecord[$foreignKey] = $item->getAttribute($localKey);
+
+            if (isset($relatedRecord[$localKey])) {
+                $existanceCheck = [$localKey => $relatedRecord[$localKey]];
+
+                $model->updateOrCreate($existanceCheck, $relatedRecord);
+            } else {
+                $model->create($relatedRecord);
+            }
+        }
+    }
+
+    protected function processBelongsToRelation($relation, array $relatedRecords, $item, array $data): void
+    {
+        $ownerKey = $relation->getOwnerKeyName();
+        $localKey = $relation->getForeignKeyName();
+
+        $model = $relation->getRelated();
+
+        foreach ($relatedRecords as $relatedRecord) {
+            if (! isset($relatedRecord[$ownerKey])) {
+                $relatedRecord[$ownerKey] = $item->getAttribute($localKey);
+            }
+            if ($relatedRecord[$ownerKey]) {
+                $existanceCheck = [$ownerKey => $relatedRecord[$ownerKey]];
+                $relation->associate(
+                    $model->updateOrCreate($existanceCheck, $relatedRecord)
+                );
+            } elseif (isset($data[$localKey])) {
+                $existanceCheck = [$ownerKey => $data[$localKey]];
+                $relation->associate(
+                    $model->updateOrCreate($existanceCheck, $relatedRecord)
+                );
+            } else {
+                $relation->associate(
+                    $model->create($relatedRecord)
+                );
+            }
+            $item->save();
         }
     }
 }
