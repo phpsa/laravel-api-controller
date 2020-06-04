@@ -3,6 +3,7 @@
 namespace Phpsa\LaravelApiController;
 
 use Phpsa\LaravelApiController\Generator\ApiMakeCommand;
+use Phpsa\LaravelApiController\Generator\ApiResourceMakeCommand;
 
 class ServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -22,10 +23,14 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             'laravel-api-controller'
         );
 
-        $this->app->singleton('command.api.make', static function ($app) {
+        $this->app->singleton('command.api.make.controller', static function ($app) {
             return new ApiMakeCommand($app['files']);
         });
+        $this->app->singleton('command.api.make.resource', static function ($app) {
+            return new ApiResourceMakeCommand($app['files']);
+        });
 
-        $this->commands('command.api.make');
+        $this->commands('command.api.make.controller');
+        $this->commands('command.api.make.resource');
     }
 }

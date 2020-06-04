@@ -68,7 +68,7 @@ Query/Data modifiers in policies for the api endpoints
 Resources: https://laravel.com/docs/6.x/eloquent-resources
 
 Generate with
-`php artisan make:resource UserResource` and `php artisan make:resource UserCollection`
+`php artisan make:apiresource UserResource` and `php artisan make:resource UserCollection`
 
 Change the Resource to extend from:
 
