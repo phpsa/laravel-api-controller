@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 trait WithSoftDeletes
 {
     /**
-     * Adding this scope will allow you to include deleted items in your search
+     * Adding this scope will allow you to include deleted items in your search.
      *
      * @param  \Illuminate\Database\Eloquent\Builder $query query builder passed by laravel
      * @param string|null $enabled value passed in the url / scope caller
@@ -22,7 +22,7 @@ trait WithSoftDeletes
     }
 
     /**
-     * adding this scope will return only deleted items for your search
+     * adding this scope will return only deleted items for your search.
      *
      * @param  \Illuminate\Database\Eloquent\Builder $query query builder passed by laravel
      * @param string|null $enabled value passed in the url / scope caller
