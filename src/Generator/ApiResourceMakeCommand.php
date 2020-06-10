@@ -6,7 +6,6 @@ use Illuminate\Foundation\Console\ResourceMakeCommand as Command;
 
 class ApiResourceMakeCommand extends Command
 {
-
     protected $name = 'make:apiresource';
 
     protected $description = 'Create a new api resource (phpsa/laravel-api-controller)';
@@ -22,5 +21,4 @@ class ApiResourceMakeCommand extends Command
                     ? __DIR__.'/stubs/resource-collection.stub'
                     : __DIR__.'/stubs/resource.stub';
     }
-
 }
