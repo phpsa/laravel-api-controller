@@ -232,5 +232,5 @@ instead of using the issue tracker.
 
 -   [Custom D](https://customd.com)
 
-[badge_laravel]: https://img.shields.io/badge/Laravel-5.8%20to%206-orange.svg?style=flat-square
+[badge_laravel]: https://img.shields.io/badge/Laravel-5.8%20to%207-orange.svg?style=flat-square
 [badge_issues]: https://img.shields.io/github/issues/ARCANEDEV/Support.svg?style=flat-square
