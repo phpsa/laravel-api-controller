@@ -27,8 +27,9 @@ class ApiMakeCommand extends Command
     protected $signature = 'make:api
                         {name : The name of the model}
                         {--M|model : create the model}
-                        {--R|resource : create a resource}
+                        {--C|resource : create a resource}
                         {--P|policy : create a policy}
+                        {--R|request : create a request}
                         {--A|all : create all requirements}';
 
     /**
@@ -94,14 +95,19 @@ class ApiMakeCommand extends Command
         }
 
         if ($this->option('all') || $this->option('policy')) {
-            $this->call('make:policy', ['name' => $this->stubVariables['model']['name'].'Policy', '--model' => $this->stubVariables['model']['fullName']]);
+            $this->call('make:policy', ['name' => $this->stubVariables['model']['name'].'Policy', '--model' => $this->stubVariables['model']['name']]);
         }
 
         if ($this->option('all') || $this->option('resource')) {
-            $this->call('make:resource', ['name' => $this->stubVariables['model']['name']]);
-            $this->call('make:resource', ['name' => $this->stubVariables['model']['name'].'Collection']);
+            $this->call('make:apiresource', ['name' => $this->stubVariables['model']['name']. 'Resource']);
+            $this->call('make:apiresource', ['name' => $this->stubVariables['model']['name'].'Collection']);
+        }
+
+        if ($this->option('all') || $this->option('request')) {
+            $this->call('make:request', ['name' => $this->stubVariables['model']['name']. 'Request']);
         }
     }
+
 
     /**
      * Prepare names, paths and namespaces for stubs.
@@ -190,11 +196,16 @@ class ApiMakeCommand extends Command
         $this->stubVariables[$entity]['fullNameWithoutRoot'] = $this->stubVariables[$entity]['namespaceWithoutRoot'].'\\'.$this->stubVariables[$entity]['name'];
         $this->stubVariables[$entity]['fullName'] = $this->stubVariables[$entity]['namespace'].'\\'.$this->stubVariables[$entity]['name'];
 
-        $this->stubVariables[$entity]['resource'] = ($this->option('all') || $this->option('resource')) ? '\\App\\Http\Resources\\'.$this->stubVariables[$entity]['name'] : '\Phpsa\LaravelApiController\Http\Resources\ApiResource';
-        $this->stubVariables[$entity]['collection'] = ($this->option('all') || $this->option('resource')) ? '\\App\\Http\Resources\\'.$this->stubVariables[$entity]['name'].'Collection' : '\Phpsa\LaravelApiController\Http\Resources\ApiCollection';
+        $resourceName = $this->stubVariables['model']['name'].'Resource';
+        $resourceCollection = $this->stubVariables['model']['name'].'Collection';
 
-        $resourceName = $this->stubVariables['model']['fullName'];
-        $resourceCollection = $resourceName.'Collection';
+        $requestName = $this->stubVariables['model']['name'].'Request';
+
+        $this->stubVariables[$entity]['request'] = ($this->option('all') || $this->option('request')) ? $requestName : 'Request';
+        $this->stubVariables[$entity]['useRequest'] = ($this->option('all') || $this->option('request')) ? 'use \\App\\Http\\Requests\\' . $requestName . ';' : null;
+
+        $this->stubVariables[$entity]['resource'] = ($this->option('all') || $this->option('resource')) ? '\\App\\Http\Resources\\'.$resourceName : '\Phpsa\LaravelApiController\Http\Resources\ApiResource';
+        $this->stubVariables[$entity]['collection'] = ($this->option('all') || $this->option('resource')) ? '\\App\\Http\Resources\\'.$resourceCollection : '\Phpsa\LaravelApiController\Http\Resources\ApiCollection';
 
         return $this;
     }
