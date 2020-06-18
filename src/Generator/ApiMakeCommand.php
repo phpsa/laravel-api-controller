@@ -95,7 +95,7 @@ class ApiMakeCommand extends Command
         }
 
         if ($this->option('all') || $this->option('policy')) {
-            $this->call('make:policy', ['name' => $this->stubVariables['model']['name'].'Policy', '--model' => $this->stubVariables['model']['name']]);
+            $this->call('make:policy', ['name' => $this->stubVariables['model']['name'].'Policy', '--model' => $this->stubVariables['model']['fullNameWithoutRoot']]);
         }
 
         if ($this->option('all') || $this->option('resource')) {
