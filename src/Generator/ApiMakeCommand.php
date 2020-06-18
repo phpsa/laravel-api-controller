@@ -30,6 +30,7 @@ class ApiMakeCommand extends Command
                         {--C|resource : create a resource}
                         {--P|policy : create a policy}
                         {--R|request : create a request}
+                        {--T|test : create a Feature Test}
                         {--A|all : create all requirements}';
 
     /**
@@ -95,7 +96,7 @@ class ApiMakeCommand extends Command
         }
 
         if ($this->option('all') || $this->option('policy')) {
-            $this->call('make:policy', ['name' => $this->stubVariables['model']['name'].'Policy', '--model' => $this->stubVariables['model']['fullNameWithoutRoot']]);
+            $this->call('make:policy', ['name' => $this->stubVariables['model']['fullNameWithoutRoot'].'Policy', '--model' => $this->stubVariables['model']['fullNameWithoutRoot']]);
         }
 
         if ($this->option('all') || $this->option('resource')) {
@@ -105,6 +106,10 @@ class ApiMakeCommand extends Command
 
         if ($this->option('all') || $this->option('request')) {
             $this->call('make:request', ['name' => $this->stubVariables['model']['name']. 'Request']);
+        }
+
+        if ($this->option('all') || $this->option('test')) {
+            $this->call('make:test', ['name' => $this->stubVariables['model']['fullNameWithoutRoot']. 'Test']);
         }
     }
 
