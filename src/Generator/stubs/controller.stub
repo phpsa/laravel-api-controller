@@ -3,6 +3,7 @@
 use Phpsa\LaravelApiController\Http\Api\Controller;
 use Illuminate\Http\Request;
 use {{model.fullName}};
+{{controller.useRequest}}
 
 class {{controller.name}} extends Controller
 {
@@ -86,7 +87,7 @@ class {{controller.name}} extends Controller
     *
     * @return Response
     */
-    public function store(Request $request)
+    public function store({{controller.request}} $request)
     {
         return $this->handleStoreAction($request);
     }
@@ -114,7 +115,7 @@ class {{controller.name}} extends Controller
      *
      * @return Response
      */
-    public function update($id, Request $request)
+    public function update($id, {{controller.request}} $request)
     {
         return $this->handleUpdateAction($id, $request);
     }
