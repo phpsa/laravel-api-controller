@@ -62,7 +62,7 @@ trait AllowableFields
 
         foreach ($resources as $key => $value) {
             if (array_key_exists($key, static::$mapResources)) {
-                $resources[$key] = static::$mapResources[$key]::make($this->{$key});
+                $resources[$key] = static::$mapResources[$key]::make($this->{Helpers::camel($key)});
             }
         }
 
