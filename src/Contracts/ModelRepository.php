@@ -53,7 +53,7 @@ trait ModelRepository
     }
 
     /**
-     * Checks if attribute has a custom cast
+     * Checks if attribute has a mutator
      *
      * @param array                                    $data
      * @param \Illuminate\Database\Eloquent\Model|null $model
@@ -69,8 +69,8 @@ trait ModelRepository
         $columns = $this->getTableColumns($model);
         $diff = array_diff(array_keys($data), $columns);
 
-        foreach($diff as $key){
-            if($model->hasSetMutator($key)) {
+        foreach ($diff as $key) {
+            if ($model->hasSetMutator($key)) {
                 $columns[] = $key;
             }
         }

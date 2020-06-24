@@ -175,7 +175,7 @@ trait Parser
                     }
                     break;
                 case 'Basic':
-                        $q->where($key, $where['value'], $where['operator']);
+                        $q->where($key, $where['operator'], $where['value']);
                     break;
             }
         });
