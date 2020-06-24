@@ -97,9 +97,9 @@ For the get command you can filter by using the following url patterns
 | _`!=`_    | Not Equals                                      | ?filter[field!]=hello  | select ... where field != 'hello'         |
 | _`<>`_    | Not Equals (alt)                                | ?filter[field<>]=hello | select ... where field != 'hello'         |
 | _`>`_     | Greater Than                                    | ?filter[field>]=5      | select ... where field > 5                |
-| _`>=`_    | Greater Or Equal to                             | ?filter[field=>]=5     | select ... where field >= 5               |
+| _`>=`_    | Greater Or Equal to                             | ?filter[field>=]=5     | select ... where field >= 5               |
 | _`<`_     | Less Than                                       | ?filter[field<]=5      | select ... where field <> 5               |
-| _`<=`_    | Less Or Equal to                                | ?filter[field=<]=5     | select ... where field <= 5               |
+| _`<=`_    | Less Or Equal to                                | ?filter[field<=]=5     | select ... where field <= 5               |
 | _`~`_     | Contains (LIKE with wildcard on both sides)     | ?filter[field~]=hello  | select ... where field like '%hello%'     |
 | _`^`_     | Starts with (LIKE with wildcard on end)         | ?filter[field^]=hello  | select ... where field like 'hello%'      |
 | _`$`_     | Ends with (LIKE with wildcard on start)         | ?filter[field$]=hello  | select ... where field like 'hello%'      |
