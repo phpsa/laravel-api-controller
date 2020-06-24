@@ -53,7 +53,7 @@ trait ModelRepository
     }
 
     /**
-     * Checks if attribute has a mutator
+     * Checks if attribute has a mutator.
      *
      * @param array                                    $data
      * @param \Illuminate\Database\Eloquent\Model|null $model
