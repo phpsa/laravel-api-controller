@@ -100,19 +100,18 @@ class ApiMakeCommand extends Command
         }
 
         if ($this->option('all') || $this->option('resource')) {
-            $this->call('make:apiresource', ['name' => $this->stubVariables['model']['name']. 'Resource']);
+            $this->call('make:apiresource', ['name' => $this->stubVariables['model']['name'].'Resource']);
             $this->call('make:apiresource', ['name' => $this->stubVariables['model']['name'].'Collection']);
         }
 
         if ($this->option('all') || $this->option('request')) {
-            $this->call('make:request', ['name' => $this->stubVariables['model']['name']. 'Request']);
+            $this->call('make:request', ['name' => $this->stubVariables['model']['name'].'Request']);
         }
 
         if ($this->option('all') || $this->option('test')) {
-            $this->call('make:test', ['name' => $this->stubVariables['model']['fullNameWithoutRoot']. 'Test']);
+            $this->call('make:test', ['name' => $this->stubVariables['model']['fullNameWithoutRoot'].'Test']);
         }
     }
-
 
     /**
      * Prepare names, paths and namespaces for stubs.
@@ -207,7 +206,7 @@ class ApiMakeCommand extends Command
         $requestName = $this->stubVariables['model']['name'].'Request';
 
         $this->stubVariables[$entity]['request'] = ($this->option('all') || $this->option('request')) ? $requestName : 'Request';
-        $this->stubVariables[$entity]['useRequest'] = ($this->option('all') || $this->option('request')) ? 'use \\App\\Http\\Requests\\' . $requestName . ';' : null;
+        $this->stubVariables[$entity]['useRequest'] = ($this->option('all') || $this->option('request')) ? 'use \\App\\Http\\Requests\\'.$requestName.';' : null;
 
         $this->stubVariables[$entity]['resource'] = ($this->option('all') || $this->option('resource')) ? '\\App\\Http\Resources\\'.$resourceName : '\Phpsa\LaravelApiController\Http\Resources\ApiResource';
         $this->stubVariables[$entity]['collection'] = ($this->option('all') || $this->option('resource')) ? '\\App\\Http\Resources\\'.$resourceCollection : '\Phpsa\LaravelApiController\Http\Resources\ApiCollection';

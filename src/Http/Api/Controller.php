@@ -147,11 +147,9 @@ abstract class Controller extends BaseController
 
         $this->validate($request, $this->rulesForCreate());
 
-        $columns = $this->getTableColumns();
-
         $data = $this->qualifyStoreQuery($data);
 
-        $insert = array_intersect_key($data, array_flip($columns));
+        $insert = $this->addTableData($data);
 
         $diff = array_diff(array_keys($data), array_keys($insert));
 
@@ -184,7 +182,7 @@ abstract class Controller extends BaseController
      * Display the specified resource.
      * GET /api/{resource}/{id}.
      *
-     * @param int $id
+     * @param int                                                              $id
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      */
     public function handleShowAction($id, $request, array $extraParams = [])
@@ -214,7 +212,7 @@ abstract class Controller extends BaseController
      * Update the specified resource in storage.
      * PUT /api/{resource}/{id}.
      *
-     * @param int $id
+     * @param int                                                              $id
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      */
     public function handleUpdateAction($id, $request, array $extraParams = [])
@@ -242,9 +240,9 @@ abstract class Controller extends BaseController
 
         $data = $this->qualifyUpdateQuery($data);
 
-        $columns = $this->getTableColumns();
+        $data = $this->qualifyUpdateQuery($data);
 
-        $updates = array_intersect_key($data, array_flip($columns));
+        $updates = $this->addTableData($data);
 
         $diff = array_diff(array_keys($data), array_keys($updates));
 
@@ -278,7 +276,7 @@ abstract class Controller extends BaseController
      * Remove the specified resource from storage.
      * DELETE /api/{resource}/{id}.
      *
-     * @param int $id
+     * @param int                                                              $id
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      */
     public function handleDestroyAction($id, $request)
