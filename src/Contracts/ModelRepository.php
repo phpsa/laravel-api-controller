@@ -53,6 +53,32 @@ trait ModelRepository
     }
 
     /**
+     * Checks if attribute has a custom cast
+     *
+     * @param array                                    $data
+     * @param \Illuminate\Database\Eloquent\Model|null $model
+     *
+     * @return array
+     */
+    protected function addTableData(array $data = [], ?Model $model = null): array
+    {
+        if (is_null($model)) {
+            $model = self::$model;
+        }
+
+        $columns = $this->getTableColumns($model);
+        $diff = array_diff(array_keys($data), $columns);
+
+        foreach($diff as $key){
+            if($model->hasSetMutator($key)) {
+                $columns[] = $key;
+            }
+        }
+
+        return array_intersect_key($data, array_flip(array_unique($columns)));
+    }
+
+    /**
      * Set which columns area available in the model.
      *
      * @param Model $model
