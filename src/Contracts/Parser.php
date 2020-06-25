@@ -77,31 +77,7 @@ trait Parser
                 }, $where);
             }
 
-            $withs[$with] = function ($query) use ($fields, $where) {
-                if (! empty($fields)) {
-                    $query->select(implode(',', array_unique($fields)));
-                }
-
-                if (! empty($where)) {
-                    foreach ($where as $whr) {
-                        switch ($whr['type']) {
-                            case 'In':
-                                if (! empty($where['values'])) {
-                                    $query->whereIn($whr['key'], $whr['values']);
-                                }
-                                break;
-                            case 'NotIn':
-                                if (! empty($whr['values'])) {
-                                    $query->whereNotIn($whr['key'], $whr['values']);
-                                }
-                                break;
-                            case 'Basic':
-                                $query->where($whr['key'], $whr['operator'], $whr['value']);
-                                break;
-                        }
-                    }
-                }
-            };
+            $withs[$with] = $this->setWithQuery($where, $fields);
         }
         $this->repository->with($withs);
     }
@@ -168,7 +144,7 @@ trait Parser
                 continue;
             }
 
-            $this->setWhereClause($whr);
+            $this->setQueryBuilderWhereStatement($this->repository, $whr['key'], $whr);
         }
     }
 
@@ -198,45 +174,42 @@ trait Parser
         }
 
         $this->repository->whereHas($with, function ($q) use ($where, $key) {
-            switch ($where['type']) {
-                case 'In':
-                    if (! empty($where['values'])) {
-                        $q->whereIn($key, $where['values']);
-                    }
-                    break;
-                case 'NotIn':
-                    if (! empty($where['values'])) {
-                        $q->whereNotIn($key, $where['values']);
-                    }
-                    break;
-                case 'Basic':
-                        $q->where($key, $where['operator'], $where['value']);
-                    break;
-            }
+               $this->setQueryBuilderWhereStatement($q, $key, $where);
         });
     }
 
-    /**
-     * set the Where clause.
-     *
-     * @param array $where the where clause
-     */
-    protected function setWhereClause(array $where): void
+
+    protected function setWithQuery(?array $where = null, ?array $fields = null): callable
+    {
+        //dd($fields);
+        return function ($query) use ($where, $fields) {
+            if ($fields !== null && count($fields) > 0) {
+                $query->select(array_unique($fields));
+            }
+
+            if ($where !== null && count($where) > 0) {
+                foreach ($where as $whr) {
+                    $this->setQueryBuilderWhereStatement($query, $whr['key'], $whr);
+                }
+            }
+        };
+    }
+
+    protected function setQueryBuilderWhereStatement($query, $key, $where): void
     {
         switch ($where['type']) {
             case 'In':
                 if (! empty($where['values'])) {
-                    $this->repository->whereIn($where['key'], $where['values']);
+                    $query->whereIn($key, $where['values']);
                 }
-                break;
+                return;
             case 'NotIn':
                 if (! empty($where['values'])) {
-                    $this->repository->whereNotIn($where['key'], $where['values']);
+                    $query->whereNotIn($key, $where['values']);
                 }
-                break;
+                return;
             case 'Basic':
-                $this->repository->where($where['key'], $where['value'], $where['operator']);
-                break;
+                $query->where($key, $where['operator'], $where['value']);
         }
     }
 

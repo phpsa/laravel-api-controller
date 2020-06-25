@@ -2,10 +2,11 @@
 
 namespace Phpsa\LaravelApiController\Repository;
 
-use Illuminate\Database\Eloquent\Collection;
+use Closure;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Collection;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
  * Class BaseRepository.
@@ -349,12 +350,13 @@ class BaseRepository
      *
      * @return $this
      */
-    public function where($column, $value, $operator = '=')
+    public function where(string $column, ?string $operator = null, ?string $value = null)
     {
-        $this->wheres[] = compact('column', 'value', 'operator');
+        $this->wheres[] = func_get_args();//compact('column', 'operator', 'value');
 
         return $this;
     }
+
 
     /**
      * Add a simple where in clause to the query.
@@ -446,7 +448,7 @@ class BaseRepository
     protected function setClauses()
     {
         foreach ($this->wheres as $where) {
-            $this->query->where($where['column'], $where['operator'], $where['value']);
+            $this->query->where(...$where);
         }
 
         foreach ($this->whereIns as $whereIn) {
