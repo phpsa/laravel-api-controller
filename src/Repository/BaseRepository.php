@@ -427,8 +427,12 @@ class BaseRepository
      */
     protected function eagerLoad()
     {
-        foreach ($this->with as $relation) {
-            $this->query->with($relation);
+        foreach ($this->with as $key => $relation) {
+            if (is_numeric($key)) {
+                $this->query->with($relation);
+            } else {
+                $this->query->with([$key => $relation]);
+            }
         }
 
         return $this;

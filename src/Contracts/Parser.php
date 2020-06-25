@@ -56,18 +56,53 @@ trait Parser
         $withs = explode(',', $includes);
 
         /** @scrutinizer ignore-call */
-        $withs = $this->filterAllowedIncludes($withs);
+        $withs = array_flip($this->filterAllowedIncludes($withs));
 
-        foreach ($withs as $idx => $with) {
+        foreach ($withs as $with => $idx) {
             $sub = self::$model->{$with}()->getRelated();
             $fields = $this->getIncludesFields($with);
+            $where = array_filter(self::$uriParser->whereParameters(), function ($where) use ($with) {
+                return strpos($where['key'], $with . '.') !== false;
+            });
 
             if (! empty($fields)) {
                 $fields[] = $sub->getKeyName();
-                $withs[$idx] = $with.':'.implode(',', array_unique($fields));
             }
-        }
 
+            if (! empty($where)) {
+                $where = array_map(function ($whr) use ($with) {
+                    $whr['key'] = str_replace($with . '.', '', $whr['key']);
+                    return $whr;
+                }, $where);
+            }
+
+            $withs[$with] = function ($query) use ($fields, $where) {
+
+                if (! empty($fields)) {
+                    $query->select(implode(',', array_unique($fields)));
+                }
+
+                if (! empty($where)) {
+                    foreach ($where as $whr) {
+                        switch ($whr['type']) {
+                            case 'In':
+                                if (! empty($where['values'])) {
+                                    $query->whereIn($whr['key'], $whr['values']);
+                                }
+                                break;
+                            case 'NotIn':
+                                if (! empty($whr['values'])) {
+                                    $query->whereNotIn($whr['key'], $whr['values']);
+                                }
+                                break;
+                            case 'Basic':
+                                $query->where($whr['key'], $whr['operator'], $whr['value']);
+                                break;
+                        }
+                    }
+                }
+            };
+        }
         $this->repository->with($withs);
     }
 
