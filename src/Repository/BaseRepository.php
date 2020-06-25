@@ -2,10 +2,11 @@
 
 namespace Phpsa\LaravelApiController\Repository;
 
-use Illuminate\Database\Eloquent\Collection;
+use Closure;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Collection;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
  * Class BaseRepository.
@@ -349,12 +350,13 @@ class BaseRepository
      *
      * @return $this
      */
-    public function where($column, $value, $operator = '=')
+    public function where(string $column, ?string $operator = null, ?string $value = null)
     {
-        $this->wheres[] = compact('column', 'value', 'operator');
+        $this->wheres[] = func_get_args();//compact('column', 'operator', 'value');
 
         return $this;
     }
+
 
     /**
      * Add a simple where in clause to the query.
@@ -403,7 +405,7 @@ class BaseRepository
             $relations = func_get_args();
         }
 
-        $this->with = array_unique(array_merge($this->with, $relations));
+        $this->with = array_merge($this->with, $relations);
 
         return $this;
     }
@@ -427,8 +429,12 @@ class BaseRepository
      */
     protected function eagerLoad()
     {
-        foreach ($this->with as $relation) {
-            $this->query->with($relation);
+        foreach ($this->with as $key => $relation) {
+            if (is_numeric($key)) {
+                $this->query->with($relation);
+            } else {
+                $this->query->with([$key => $relation]);
+            }
         }
 
         return $this;
@@ -442,7 +448,7 @@ class BaseRepository
     protected function setClauses()
     {
         foreach ($this->wheres as $where) {
-            $this->query->where($where['column'], $where['operator'], $where['value']);
+            $this->query->where(...$where);
         }
 
         foreach ($this->whereIns as $whereIn) {
