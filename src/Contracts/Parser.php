@@ -62,7 +62,7 @@ trait Parser
             $sub = self::$model->{$with}()->getRelated();
             $fields = $this->getIncludesFields($with);
             $where = array_filter(self::$uriParser->whereParameters(), function ($where) use ($with) {
-                return strpos($where['key'], $with . '.') !== false;
+                return strpos($where['key'], $with.'.') !== false;
             });
 
             if (! empty($fields)) {
@@ -71,13 +71,13 @@ trait Parser
 
             if (! empty($where)) {
                 $where = array_map(function ($whr) use ($with) {
-                    $whr['key'] = str_replace($with . '.', '', $whr['key']);
+                    $whr['key'] = str_replace($with.'.', '', $whr['key']);
+
                     return $whr;
                 }, $where);
             }
 
             $withs[$with] = function ($query) use ($fields, $where) {
-
                 if (! empty($fields)) {
                     $query->select(implode(',', array_unique($fields)));
                 }
