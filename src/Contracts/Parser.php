@@ -2,8 +2,10 @@
 
 namespace Phpsa\LaravelApiController\Contracts;
 
+use Illuminate\Support\Facades\DB;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\UriParser;
+use Phpsa\LaravelApiController\Exceptions\ApiException;
 
 trait Parser
 {
@@ -92,7 +94,12 @@ trait Parser
         foreach ($sorts as $sort) {
             $sortP = explode(' ', $sort);
             $sortF = $sortP[0];
+            $sortD = ! empty($sortP[1]) && strtolower($sortP[1]) === 'desc' ? 'desc' : 'asc';
 
+            if (strpos($sortF, '.') > 0) {
+                $this->parseJoinSort($sortF, $sortD);
+                continue;
+            }
             /** @scrutinizer ignore-call */
             $tableColumns = $this->getTableColumns();
 
@@ -100,9 +107,28 @@ trait Parser
                 continue;
             }
 
-            $sortD = ! empty($sortP[1]) && strtolower($sortP[1]) === 'desc' ? 'desc' : 'asc';
             $this->repository->orderBy($sortF, $sortD);
         }
+    }
+
+    protected function parseJoinSort($sortF, $sortD)
+    {
+        [$with, $key] = explode('.', $sortF);
+        $relation = self::$model->{$with}();
+        $type = class_basename(get_class($relation));
+        if (! in_array($type, ['HasOne',  'BelongsTo' /*, 'BelongsToMany', 'HasMany'*/])) {
+            throw new ApiException("$type mapping not implemented yet");
+        }
+        $foreignKey = $relation->getForeignKeyName();
+        $localKey = $relation->getLocalKeyName();
+        $withTable = $relation->getRelated()->getTable();
+        $currentTable= self::$model->getTable();
+
+        $fields = array_map(function ($field) use ($currentTable) {
+            return $currentTable . "." . $field;
+        }, $this->parseFieldParams());
+
+        $this->repository->join($withTable, "{$withTable}.{$foreignKey}", "{$currentTable}.{$localKey}")->orderBy("{$withTable}.{$key}", $sortD)->select($fields);
     }
 
     /**
