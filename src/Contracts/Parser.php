@@ -6,6 +6,7 @@ use Illuminate\Support\Collection;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\UriParser;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Str;
 
 trait Parser
 {
@@ -72,8 +73,9 @@ trait Parser
             }
 
             if (! empty($where)) {
-                $where = array_map(function ($whr) use ($with) {
-                    $whr['key'] = str_replace($with.'.', '', $whr['key']);
+                $where = array_map(function ($whr) use ($with, $sub) {
+                    $key = str_replace($with.'.', '', $whr['key']);
+                    $whr['key'] =  $sub->qualifyColumn($key);
 
                     return $whr;
                 }, $where);
@@ -81,6 +83,7 @@ trait Parser
 
             $withs[$with] = $this->setWithQuery($where, $fields);
         }
+
         $this->repository->with($withs);
     }
 
@@ -216,9 +219,12 @@ trait Parser
         if (! in_array($key, $fields)) {
             return;
         }
+        $subKey = $sub->qualifyColumn($key);
 
-        $this->repository->whereHas($with, function ($q) use ($where, $key) {
-               $this->setQueryBuilderWhereStatement($q, $key, $where);
+        $this->repository->whereHas($with, function ($q) use ($where, $key, $subKey) {
+
+               // $q->select("$key as $subKey");
+               $this->setQueryBuilderWhereStatement($q, $subKey, $where);
         });
     }
 

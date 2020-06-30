@@ -70,13 +70,6 @@ class BaseRepository
     protected $orderBys = [];
 
     /**
-     * allow joins
-     *
-     * @var array
-     */
-    protected $joins = [];
-
-    /**
      * Array of scope methods to call on the model.
      *
      * @var array
@@ -473,10 +466,6 @@ class BaseRepository
         if (isset($this->take) and ! is_null($this->take)) {
             $this->query->take($this->take);
         }
-        foreach ($this->joins as $join) {
-            $type = key($join);
-            $this->query->{$type}(...$join[$type]);
-        }
 
         return $this;
     }
@@ -488,8 +477,10 @@ class BaseRepository
      */
     protected function setScopes()
     {
-        foreach ($this->scopes as $method => $args) {
-            $this->query->$method(...$args);
+        foreach ($this->scopes as $scope) {
+            foreach ($scope as $method => $args) {
+                $this->query->$method(...$args);
+            }
         }
 
         return $this;
@@ -522,25 +513,8 @@ class BaseRepository
     public function __call($scope, $args)
     {
 
-        $this->isJoin($scope) ? $this->joins[][$scope] = $args : $this->scopes[$scope] = $args;
+        $this->scopes[][$scope] = $args;
 
         return $this;
-    }
-
-    protected function isJoin($key)
-    {
-        return in_array($key, [
-            'join',
-            'joinWhere',
-            'joinSub',
-            'leftJoin',
-            'leftJoinWhere',
-            'leftJoinSub',
-            'rightJoin',
-            'rightJoinWhere',
-            'rightJoinSub',
-            'crossJoin',
-            'newJoinClause'
-        ]);
     }
 }
