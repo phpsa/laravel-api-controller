@@ -2,7 +2,7 @@
 
 namespace Phpsa\LaravelApiController\Contracts;
 
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\UriParser;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
@@ -90,6 +90,7 @@ trait Parser
     protected function parseSortParams(): void
     {
         $sorts = $this->getSortValue();
+        $withSorts = collect([]);
 
         foreach ($sorts as $sort) {
             $sortP = explode(' ', $sort);
@@ -97,7 +98,8 @@ trait Parser
             $sortD = ! empty($sortP[1]) && strtolower($sortP[1]) === 'desc' ? 'desc' : 'asc';
 
             if (strpos($sortF, '.') > 0) {
-                $this->parseJoinSort($sortF, $sortD);
+                //$this->parseJoinSort($sortF, $sortD);
+                $withSorts[$sortF]=$sortD;
                 continue;
             }
             /** @scrutinizer ignore-call */
@@ -109,26 +111,42 @@ trait Parser
 
             $this->repository->orderBy($sortF, $sortD);
         }
+
+        if ($withSorts->count() > 0) {
+            $this->parseJoinSorts($withSorts);
+        }
     }
 
-    protected function parseJoinSort($sortF, $sortD)
+    protected function parseJoinSorts(Collection $sorts)
     {
-        [$with, $key] = explode('.', $sortF);
-        $relation = self::$model->{$with}();
-        $type = class_basename(get_class($relation));
-        if (! in_array($type, ['HasOne',  'BelongsTo' /*, 'BelongsToMany', 'HasMany'*/])) {
-            throw new ApiException("$type mapping not implemented yet");
-        }
-        $foreignKey = $relation->getForeignKeyName();
-        $localKey = $relation->getLocalKeyName();
-        $withTable = $relation->getRelated()->getTable();
         $currentTable= self::$model->getTable();
 
         $fields = array_map(function ($field) use ($currentTable) {
             return $currentTable . "." . $field;
         }, $this->parseFieldParams());
 
-        $this->repository->join($withTable, "{$withTable}.{$foreignKey}", "{$currentTable}.{$localKey}")->orderBy("{$withTable}.{$key}", $sortD)->select($fields);
+        $this->repository->select($fields);
+
+        foreach ($sorts as $sortF => $sortD) {
+            [$with, $key] = explode('.', $sortF);
+            $relation = self::$model->{$with}();
+            $type = class_basename(get_class($relation));
+
+            if ($type === 'HasOne') {
+                $foreignKey = $relation->getForeignKeyName();
+                $localKey = $relation->getLocalKeyName();
+            } elseif ($type === 'BelongsTo') {
+                $foreignKey = $relation->getOwnerKeyName();
+                $localKey = $relation->getForeignKeyName();
+            } else {
+                continue;
+            }
+
+            $withTable = $relation->getRelated()->getTable();
+
+            $this->repository->join($withTable, "{$withTable}.{$foreignKey}", "{$currentTable}.{$localKey}");
+            $this->repository->orderBy("{$withTable}.{$key}", $sortD);
+        }
     }
 
     /**
@@ -203,7 +221,6 @@ trait Parser
                $this->setQueryBuilderWhereStatement($q, $key, $where);
         });
     }
-
 
     protected function setWithQuery(?array $where = null, ?array $fields = null): callable
     {
