@@ -2,8 +2,11 @@
 
 namespace Phpsa\LaravelApiController\Contracts;
 
+use Illuminate\Support\Collection;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\UriParser;
+use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Str;
 
 trait Parser
 {
@@ -70,8 +73,9 @@ trait Parser
             }
 
             if (! empty($where)) {
-                $where = array_map(function ($whr) use ($with) {
-                    $whr['key'] = str_replace($with.'.', '', $whr['key']);
+                $where = array_map(function ($whr) use ($with, $sub) {
+                    $key = str_replace($with.'.', '', $whr['key']);
+                    $whr['key'] =  $sub->qualifyColumn($key);
 
                     return $whr;
                 }, $where);
@@ -79,6 +83,7 @@ trait Parser
 
             $withs[$with] = $this->setWithQuery($where, $fields);
         }
+
         $this->repository->with($withs);
     }
 
@@ -88,11 +93,18 @@ trait Parser
     protected function parseSortParams(): void
     {
         $sorts = $this->getSortValue();
+        $withSorts = collect([]);
 
         foreach ($sorts as $sort) {
             $sortP = explode(' ', $sort);
             $sortF = $sortP[0];
+            $sortD = ! empty($sortP[1]) && strtolower($sortP[1]) === 'desc' ? 'desc' : 'asc';
 
+            if (strpos($sortF, '.') > 0) {
+                //$this->parseJoinSort($sortF, $sortD);
+                $withSorts[$sortF]=$sortD;
+                continue;
+            }
             /** @scrutinizer ignore-call */
             $tableColumns = $this->getTableColumns();
 
@@ -100,8 +112,43 @@ trait Parser
                 continue;
             }
 
-            $sortD = ! empty($sortP[1]) && strtolower($sortP[1]) === 'desc' ? 'desc' : 'asc';
             $this->repository->orderBy($sortF, $sortD);
+        }
+
+        if ($withSorts->count() > 0) {
+            $this->parseJoinSorts($withSorts);
+        }
+    }
+
+    protected function parseJoinSorts(Collection $sorts)
+    {
+        $currentTable= self::$model->getTable();
+
+        $fields = array_map(function ($field) use ($currentTable) {
+            return $currentTable . "." . $field;
+        }, $this->parseFieldParams());
+
+        $this->repository->select($fields);
+
+        foreach ($sorts as $sortF => $sortD) {
+            [$with, $key] = explode('.', $sortF);
+            $relation = self::$model->{$with}();
+            $type = class_basename(get_class($relation));
+
+            if ($type === 'HasOne') {
+                $foreignKey = $relation->getForeignKeyName();
+                $localKey = $relation->getLocalKeyName();
+            } elseif ($type === 'BelongsTo') {
+                $foreignKey = $relation->getOwnerKeyName();
+                $localKey = $relation->getForeignKeyName();
+            } else {
+                continue;
+            }
+
+            $withTable = $relation->getRelated()->getTable();
+
+            $this->repository->join($withTable, "{$withTable}.{$foreignKey}", "{$currentTable}.{$localKey}");
+            $this->repository->orderBy("{$withTable}.{$key}", $sortD);
         }
     }
 
@@ -172,12 +219,14 @@ trait Parser
         if (! in_array($key, $fields)) {
             return;
         }
+        $subKey = $sub->qualifyColumn($key);
 
-        $this->repository->whereHas($with, function ($q) use ($where, $key) {
-               $this->setQueryBuilderWhereStatement($q, $key, $where);
+        $this->repository->whereHas($with, function ($q) use ($where, $key, $subKey) {
+
+               // $q->select("$key as $subKey");
+               $this->setQueryBuilderWhereStatement($q, $subKey, $where);
         });
     }
-
 
     protected function setWithQuery(?array $where = null, ?array $fields = null): callable
     {

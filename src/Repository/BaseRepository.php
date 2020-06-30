@@ -477,8 +477,10 @@ class BaseRepository
      */
     protected function setScopes()
     {
-        foreach ($this->scopes as $method => $args) {
-            $this->query->$method(...$args);
+        foreach ($this->scopes as $scope) {
+            foreach ($scope as $method => $args) {
+                $this->query->$method(...$args);
+            }
         }
 
         return $this;
@@ -499,6 +501,7 @@ class BaseRepository
         return $this;
     }
 
+
     /**
      * Add the given query scope.
      *
@@ -509,7 +512,8 @@ class BaseRepository
      */
     public function __call($scope, $args)
     {
-        $this->scopes[$scope] = $args;
+
+        $this->scopes[][$scope] = $args;
 
         return $this;
     }
