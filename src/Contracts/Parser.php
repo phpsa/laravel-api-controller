@@ -221,7 +221,7 @@ trait Parser
         }
         $subKey = $sub->qualifyColumn($key);
 
-        $this->repository->whereHas($with, function ($q) use ($where, $subKey) {
+        $this->repository->whereHas(Helpers::camel($with), function ($q) use ($where, $subKey) {
             $this->setQueryBuilderWhereStatement($q, $subKey, $where);
         });
     }
