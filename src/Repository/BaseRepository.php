@@ -499,7 +499,6 @@ class BaseRepository
         return $this;
     }
 
-
     /**
      * Add the given query scope.
      *
