@@ -5,6 +5,8 @@ namespace Phpsa\LaravelApiController\Contracts;
 use Illuminate\Support\Collection;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\UriParser;
+use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Str;
 
 trait Parser
 {
@@ -75,7 +77,6 @@ trait Parser
                 $where = array_map(function ($whr) use ($with, $sub) {
                     $key = str_replace(Helpers::snake($with).'.', '', $whr['key']);
                     $whr['key'] = $sub->qualifyColumn($key);
-
                     return $whr;
                 }, $where);
             }
@@ -100,7 +101,6 @@ trait Parser
             $sortD = ! empty($sortP[1]) && strtolower($sortP[1]) === 'desc' ? 'desc' : 'asc';
 
             if (strpos($sortF, '.') > 0) {
-                //$this->parseJoinSort($sortF, $sortD);
                 $withSorts[$sortF] = $sortD;
                 continue;
             }
@@ -121,10 +121,10 @@ trait Parser
 
     protected function parseJoinSorts(Collection $sorts)
     {
-        $currentTable = self::$model->getTable();
+        $currentTable= self::$model->getTable();
 
         $fields = array_map(function ($field) use ($currentTable) {
-            return $currentTable.'.'.$field;
+            return $currentTable . "." . $field;
         }, $this->parseFieldParams());
 
         $this->repository->select($fields);
