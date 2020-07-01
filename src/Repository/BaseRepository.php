@@ -2,11 +2,10 @@
 
 namespace Phpsa\LaravelApiController\Repository;
 
-use Closure;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
-use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Phpsa\LaravelApiController\Exceptions\ApiException;
 
 /**
  * Class BaseRepository.
@@ -352,11 +351,10 @@ class BaseRepository
      */
     public function where(string $column, ?string $operator = null, ?string $value = null)
     {
-        $this->wheres[] = func_get_args();//compact('column', 'operator', 'value');
+        $this->wheres[] = func_get_args(); //compact('column', 'operator', 'value');
 
         return $this;
     }
-
 
     /**
      * Add a simple where in clause to the query.
@@ -501,7 +499,6 @@ class BaseRepository
         return $this;
     }
 
-
     /**
      * Add the given query scope.
      *
@@ -512,7 +509,6 @@ class BaseRepository
      */
     public function __call($scope, $args)
     {
-
         $this->scopes[][$scope] = $args;
 
         return $this;

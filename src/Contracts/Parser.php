@@ -74,7 +74,7 @@ trait Parser
             if (! empty($where)) {
                 $where = array_map(function ($whr) use ($with, $sub) {
                     $key = str_replace(Helpers::snake($with).'.', '', $whr['key']);
-                    $whr['key'] =  $sub->qualifyColumn($key);
+                    $whr['key'] = $sub->qualifyColumn($key);
 
                     return $whr;
                 }, $where);
@@ -101,7 +101,7 @@ trait Parser
 
             if (strpos($sortF, '.') > 0) {
                 //$this->parseJoinSort($sortF, $sortD);
-                $withSorts[$sortF]=$sortD;
+                $withSorts[$sortF] = $sortD;
                 continue;
             }
             /** @scrutinizer ignore-call */
@@ -121,10 +121,10 @@ trait Parser
 
     protected function parseJoinSorts(Collection $sorts)
     {
-        $currentTable= self::$model->getTable();
+        $currentTable = self::$model->getTable();
 
         $fields = array_map(function ($field) use ($currentTable) {
-            return $currentTable . "." . $field;
+            return $currentTable.'.'.$field;
         }, $this->parseFieldParams());
 
         $this->repository->select($fields);
@@ -222,8 +222,7 @@ trait Parser
         $subKey = $sub->qualifyColumn($key);
 
         $this->repository->whereHas($with, function ($q) use ($where, $key, $subKey) {
-
-               $this->setQueryBuilderWhereStatement($q, $subKey, $where);
+            $this->setQueryBuilderWhereStatement($q, $subKey, $where);
         });
     }
 
@@ -250,11 +249,13 @@ trait Parser
                 if (! empty($where['values'])) {
                     $query->whereIn($key, $where['values']);
                 }
+
                 return;
             case 'NotIn':
                 if (! empty($where['values'])) {
                     $query->whereNotIn($key, $where['values']);
                 }
+
                 return;
             case 'Basic':
                 $query->where($key, $where['operator'], $where['value']);

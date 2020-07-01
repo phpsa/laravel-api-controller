@@ -1,12 +1,13 @@
 <?php
+
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
-use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Phpsa\LaravelApiController\Helpers;
 
-trait hasModel
+trait HasModel
 {
     /**
      * Eloquent model instance.
@@ -29,15 +30,14 @@ trait hasModel
      */
     protected $tableColumns = [];
 
-     /**
+    /**
      * Eloquent model.
      *
      * @return string (model classname)
      */
     abstract protected function model();
 
-
-     /**
+    /**
      * @throws ApiException
      */
     protected function makeModel(): void
@@ -124,7 +124,7 @@ trait hasModel
     }
 
     /**
-     * Gets related model
+     * Gets related model.
      *
      * @param string $name
      *
@@ -133,6 +133,7 @@ trait hasModel
     protected function getRelatedModel(string $name): Model
     {
         $with = Helpers::camel($name);
+
         return self::$model->{$with}()->getRelated();
     }
 }

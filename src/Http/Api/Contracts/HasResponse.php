@@ -2,12 +2,12 @@
 
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
-use Symfony\Component\HttpFoundation\Response as Res;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response as Res;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Illuminate\Support\Facades\Log;
 
 trait HasResponse
 {

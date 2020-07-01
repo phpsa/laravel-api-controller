@@ -1,12 +1,12 @@
 <?php
+
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
-use Phpsa\LaravelApiController\Http\Resources\ApiResource;
 use Phpsa\LaravelApiController\Http\Resources\ApiCollection;
+use Phpsa\LaravelApiController\Http\Resources\ApiResource;
 
 trait HasResources
 {
-
     /**
      * Resource for item.
      *
@@ -22,7 +22,7 @@ trait HasResources
     protected $resourceCollection = ApiCollection::class;
 
     /**
-     * Gets the single resource used in this endpoint
+     * Gets the single resource used in this endpoint.
      *
      * @return ApiResource
      */
@@ -32,7 +32,7 @@ trait HasResources
     }
 
     /**
-     * gets the collection resource used in this endpoint
+     * gets the collection resource used in this endpoint.
      *
      * @return ApiCollection
      */
@@ -49,6 +49,7 @@ trait HasResources
     protected function getDefaultFields(): array
     {
         $resource = $this->getResourceSingle();
+
         return (method_exists($resource, 'getDefaultFields')) ? ($resource)::getDefaultFields() : ['*'];
     }
 
@@ -60,6 +61,7 @@ trait HasResources
     protected function getAllowedScopes(): array
     {
         $resource = $this->getResourceSingle();
+
         return (method_exists($resource, 'getAllowedScopes')) ? ($resource)::getAllowedScopes() : [];
     }
 }
