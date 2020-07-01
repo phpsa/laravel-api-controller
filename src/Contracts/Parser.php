@@ -5,8 +5,6 @@ namespace Phpsa\LaravelApiController\Contracts;
 use Illuminate\Support\Collection;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\UriParser;
-use Phpsa\LaravelApiController\Exceptions\ApiException;
-use Str;
 
 trait Parser
 {
@@ -62,10 +60,11 @@ trait Parser
         $withs = array_flip($this->filterAllowedIncludes($withs));
 
         foreach ($withs as $with => $idx) {
-            $sub = self::$model->{$with}()->getRelated();
+            $sub = $this->getRelatedModel($with);
             $fields = $this->getIncludesFields($with);
+
             $where = array_filter(self::$uriParser->whereParameters(), function ($where) use ($with) {
-                return strpos($where['key'], $with.'.') !== false;
+                return strpos($where['key'], Helpers::snake($with).'.') !== false;
             });
 
             if (! empty($fields)) {
@@ -74,7 +73,7 @@ trait Parser
 
             if (! empty($where)) {
                 $where = array_map(function ($whr) use ($with, $sub) {
-                    $key = str_replace($with.'.', '', $whr['key']);
+                    $key = str_replace(Helpers::snake($with).'.', '', $whr['key']);
                     $whr['key'] =  $sub->qualifyColumn($key);
 
                     return $whr;
@@ -213,7 +212,8 @@ trait Parser
     {
         [$with, $key] = explode('.', $where['key']);
 
-        $sub = self::$model->{$with}()->getRelated();
+        $sub = $this->getRelatedModel($with);
+
         $fields = $this->getTableColumns($sub);
 
         if (! in_array($key, $fields)) {
@@ -223,7 +223,6 @@ trait Parser
 
         $this->repository->whereHas($with, function ($q) use ($where, $key, $subKey) {
 
-               // $q->select("$key as $subKey");
                $this->setQueryBuilderWhereStatement($q, $subKey, $where);
         });
     }
@@ -263,26 +262,6 @@ trait Parser
     }
 
     /**
-     * Gets our default fields for our query.
-     *
-     * @return array
-     */
-    protected function getDefaultFields(): array
-    {
-        return (method_exists($this->resourceSingle, 'getDefaultFields')) ? ($this->resourceSingle)::getDefaultFields() : ['*'];
-    }
-
-    /**
-     * Gets the allowed scopes for our query.
-     *
-     * @return array
-     */
-    protected function getAllowedScopes(): array
-    {
-        return (method_exists($this->resourceSingle, 'getAllowedScopes')) ? ($this->resourceSingle)::getAllowedScopes() : [];
-    }
-
-    /**
      * parses the fields to return.
      *
      * @return array
@@ -313,14 +292,13 @@ trait Parser
     protected function getIncludesFields(string $include): array
     {
         $fields = Helpers::filterFieldsFromRequest($this->request, $this->getDefaultFields());
-
         foreach ($fields as $key => $field) {
-            if (strpos($field, $include.'.') === false) {
+            if (strpos($field, Helpers::snake($include).'.') === false) {
                 unset($fields[$key]);
 
                 continue;
             }
-            $fields[$key] = str_replace($include.'.', '', $field);
+            $fields[$key] = str_replace(Helpers::snake($include).'.', '', $field);
         }
 
         return $fields;
