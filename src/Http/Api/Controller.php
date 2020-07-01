@@ -16,10 +16,10 @@ use Phpsa\LaravelApiController\Http\Api\Contracts\HasModel;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasRepository;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasResources;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasResponse;
-use Phpsa\LaravelApiController\Http\Api\Contracts\Parser;
-use Phpsa\LaravelApiController\Http\Api\Contracts\Policies;
-use Phpsa\LaravelApiController\Http\Api\Contracts\Relationships;
-use Phpsa\LaravelApiController\Http\Api\Contracts\Validation;
+use Phpsa\LaravelApiController\Contracts\Parser;
+use Phpsa\LaravelApiController\Contracts\Policies;
+use Phpsa\LaravelApiController\Contracts\Relationships;
+use Phpsa\LaravelApiController\Contracts\Validation;
 
 /**
  * Class Controller.

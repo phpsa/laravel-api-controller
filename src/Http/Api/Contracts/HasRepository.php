@@ -18,6 +18,6 @@ trait HasRepository
      */
     protected function makeRepository()
     {
-        $this->repository = BaseRepository::withModel($this->model());
+        $this->repository = BaseRepository::withModel($this->/** @scrutinizer ignore-call */model());
     }
 }

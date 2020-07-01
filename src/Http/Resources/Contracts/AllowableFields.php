@@ -101,7 +101,7 @@ trait AllowableFields
         }
 
         return array_filter($fields, function ($field) {
-            return in_array($field, static::$allowedFields);
+            return in_array($field, /** @scrutinizer ignore-type */static::$allowedFields);
         });
     }
 

@@ -54,12 +54,12 @@ trait Parser
             return;
         }
 
-        $withs = explode(',', $includes);
-
-        /** @scrutinizer ignore-call */
-        $withs = array_flip($this->filterAllowedIncludes($withs));
+        $withs = array_flip(
+            $this->/** @scrutinizer ignore-call */filterAllowedIncludes(explode(',', $includes))
+        );
 
         foreach ($withs as $with => $idx) {
+            /** @scrutinizer ignore-call */
             $sub = $this->getRelatedModel($with);
             $fields = $this->getIncludesFields($with);
 
@@ -200,7 +200,7 @@ trait Parser
      */
     protected function parseMethodParams($request): void
     {
-        foreach ($this->getAllowedScopes() as $scope) {
+        foreach ($this->/** @scrutinizer ignore-call */ getAllowedScopes() as $scope) {
             if ($request->has(Helpers::snake($scope))) {
                 call_user_func([$this->repository, $scope], $request->get(Helpers::snake($scope)));
             }
@@ -211,8 +211,9 @@ trait Parser
     {
         [$with, $key] = explode('.', $where['key']);
 
+        /** @scrutinizer ignore-call */
         $sub = $this->getRelatedModel($with);
-
+        /** @scrutinizer ignore-call */
         $fields = $this->getTableColumns($sub);
 
         if (! in_array($key, $fields)) {
@@ -220,7 +221,7 @@ trait Parser
         }
         $subKey = $sub->qualifyColumn($key);
 
-        $this->repository->whereHas($with, function ($q) use ($where, $key, $subKey) {
+        $this->repository->whereHas($with, function ($q) use ($where, $subKey) {
             $this->setQueryBuilderWhereStatement($q, $subKey, $where);
         });
     }
@@ -268,7 +269,8 @@ trait Parser
      */
     protected function parseFieldParams(): array
     {
-        $fields = Helpers::filterFieldsFromRequest($this->request, $this->getDefaultFields()); //$this->getFieldParamSets();
+        /** @scrutinizer ignore-call */
+        $fields = Helpers::filterFieldsFromRequest($this->request, $this->/** @scrutinizer ignore-call */ getDefaultFields());
 
         /** @scrutinizer ignore-call */
         $tableColumns = $this->getTableColumns();
@@ -291,7 +293,8 @@ trait Parser
      */
     protected function getIncludesFields(string $include): array
     {
-        $fields = Helpers::filterFieldsFromRequest($this->request, $this->getDefaultFields());
+        /** @scrutinizer ignore-call */
+        $fields = Helpers::filterFieldsFromRequest($this->request, $this->/** @scrutinizer ignore-call */ getDefaultFields());
         foreach ($fields as $key => $field) {
             if (strpos($field, Helpers::snake($include).'.') === false) {
                 unset($fields[$key]);

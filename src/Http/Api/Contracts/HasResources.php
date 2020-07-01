@@ -10,23 +10,23 @@ trait HasResources
     /**
      * Resource for item.
      *
-     * @var mixed instance of \Illuminate\Http\Resources\Json\JsonResource
+     * @var string
      */
     protected $resourceSingle = ApiResource::class;
 
     /**
      * Resource for collection.
      *
-     * @var mixed instance of \Illuminate\Http\Resources\Json\ResourceCollection
+     * @var string
      */
     protected $resourceCollection = ApiCollection::class;
 
     /**
      * Gets the single resource used in this endpoint.
      *
-     * @return ApiResource
+     * @return string
      */
-    public function getResourceSingle()
+    public function getResourceSingle() : string
     {
         return $this->resourceSingle ?? \Phpsa\LaravelApiController\Http\Resources\ApiResource::class;
     }
@@ -34,9 +34,9 @@ trait HasResources
     /**
      * gets the collection resource used in this endpoint.
      *
-     * @return ApiCollection
+     * @return string
      */
-    public function getResourceCollection()
+    public function getResourceCollection() : string
     {
         return $this->resourceCollection ?? \Phpsa\LaravelApiController\Http\Resources\ApiCollection::class;
     }
