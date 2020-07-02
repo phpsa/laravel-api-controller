@@ -97,19 +97,18 @@ trait Relationships
             $this->repository->with($with);
 
             switch ($type) {
-                 case 'HasOne':
+                case 'HasOne':
                     $this->processHasOneRelation($relation, $relatedRecords, $item);
-                break;
+                    break;
                 case 'HasMany':
                     $this->processHasRelation($relation, $relatedRecords, $item);
-                break;
+                    break;
                 case 'BelongsTo':
                     $this->processBelongsToRelation($relation, [$relatedRecords], $item, $data);
                     break;
                 case 'BelongsToMany':
                     $this->processBelongsToRelation($relation, $relatedRecords, $item, $data);
-                break;
-
+                    break;
             }
         }
     }

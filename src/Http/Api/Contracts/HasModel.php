@@ -1,13 +1,13 @@
 <?php
 
-namespace Phpsa\LaravelApiController\Contracts;
+namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
-use Phpsa\LaravelApiController\Repository\BaseRepository;
+use Phpsa\LaravelApiController\Helpers;
 
-trait ModelRepository
+trait HasModel
 {
     /**
      * Eloquent model instance.
@@ -17,11 +17,11 @@ trait ModelRepository
     protected static $model;
 
     /**
-     * Repository instance.
+     * Do we need to unguard the model before create/update?
      *
-     * @var mixed|BaseRepository
+     * @var bool
      */
-    protected $repository;
+    protected $unguard = false;
 
     /**
      * Holds the available table columns.
@@ -29,6 +29,13 @@ trait ModelRepository
      * @var array
      */
     protected $tableColumns = [];
+
+    /**
+     * Eloquent model.
+     *
+     * @return string (model classname)
+     */
+    abstract protected function model();
 
     /**
      * @throws ApiException
@@ -45,11 +52,13 @@ trait ModelRepository
     }
 
     /**
-     * Creates our repository linkage.
+     * Unguard eloquent model if needed.
      */
-    protected function makeRepository()
+    protected function unguardIfNeeded()
     {
-        $this->repository = BaseRepository::withModel($this->model());
+        if ($this->unguard) {
+            self::$model->unguard();
+        }
     }
 
     /**
@@ -115,19 +124,16 @@ trait ModelRepository
     }
 
     /**
-     * Eloquent model.
+     * Gets related model.
      *
-     * @return string (model classname)
+     * @param string $name
+     *
+     * @return mixed
      */
-    abstract protected function model();
-
-    /**
-     * Unguard eloquent model if needed.
-     */
-    protected function unguardIfNeeded()
+    protected function getRelatedModel(string $name): Model
     {
-        if ($this->unguard) {
-            self::$model->unguard();
-        }
+        $with = Helpers::camel($name);
+
+        return self::$model->{$with}()->getRelated();
     }
 }

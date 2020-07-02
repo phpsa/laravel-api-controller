@@ -5,8 +5,6 @@ namespace Phpsa\LaravelApiController\Contracts;
 use Illuminate\Support\Collection;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\UriParser;
-use Phpsa\LaravelApiController\Exceptions\ApiException;
-use Str;
 
 trait Parser
 {
@@ -56,16 +54,17 @@ trait Parser
             return;
         }
 
-        $withs = explode(',', $includes);
-
-        /** @scrutinizer ignore-call */
-        $withs = array_flip($this->filterAllowedIncludes($withs));
+        $withs = array_flip(
+            $this->/** @scrutinizer ignore-call */filterAllowedIncludes(explode(',', $includes))
+        );
 
         foreach ($withs as $with => $idx) {
-            $sub = self::$model->{$with}()->getRelated();
+            /** @scrutinizer ignore-call */
+            $sub = $this->getRelatedModel($with);
             $fields = $this->getIncludesFields($with);
+
             $where = array_filter(self::$uriParser->whereParameters(), function ($where) use ($with) {
-                return strpos($where['key'], $with.'.') !== false;
+                return strpos($where['key'], Helpers::snake($with).'.') !== false;
             });
 
             if (! empty($fields)) {
@@ -74,8 +73,8 @@ trait Parser
 
             if (! empty($where)) {
                 $where = array_map(function ($whr) use ($with, $sub) {
-                    $key = str_replace($with.'.', '', $whr['key']);
-                    $whr['key'] =  $sub->qualifyColumn($key);
+                    $key = str_replace(Helpers::snake($with).'.', '', $whr['key']);
+                    $whr['key'] = $sub->qualifyColumn($key);
 
                     return $whr;
                 }, $where);
@@ -101,8 +100,7 @@ trait Parser
             $sortD = ! empty($sortP[1]) && strtolower($sortP[1]) === 'desc' ? 'desc' : 'asc';
 
             if (strpos($sortF, '.') > 0) {
-                //$this->parseJoinSort($sortF, $sortD);
-                $withSorts[$sortF]=$sortD;
+                $withSorts[$sortF] = $sortD;
                 continue;
             }
             /** @scrutinizer ignore-call */
@@ -122,10 +120,10 @@ trait Parser
 
     protected function parseJoinSorts(Collection $sorts)
     {
-        $currentTable= self::$model->getTable();
+        $currentTable = self::$model->getTable();
 
         $fields = array_map(function ($field) use ($currentTable) {
-            return $currentTable . "." . $field;
+            return $currentTable.'.'.$field;
         }, $this->parseFieldParams());
 
         $this->repository->select($fields);
@@ -202,7 +200,7 @@ trait Parser
      */
     protected function parseMethodParams($request): void
     {
-        foreach ($this->getAllowedScopes() as $scope) {
+        foreach ($this->/** @scrutinizer ignore-call */ getAllowedScopes() as $scope) {
             if ($request->has(Helpers::snake($scope))) {
                 call_user_func([$this->repository, $scope], $request->get(Helpers::snake($scope)));
             }
@@ -213,7 +211,9 @@ trait Parser
     {
         [$with, $key] = explode('.', $where['key']);
 
-        $sub = self::$model->{$with}()->getRelated();
+        /** @scrutinizer ignore-call */
+        $sub = $this->getRelatedModel($with);
+        /** @scrutinizer ignore-call */
         $fields = $this->getTableColumns($sub);
 
         if (! in_array($key, $fields)) {
@@ -221,10 +221,8 @@ trait Parser
         }
         $subKey = $sub->qualifyColumn($key);
 
-        $this->repository->whereHas($with, function ($q) use ($where, $key, $subKey) {
-
-               // $q->select("$key as $subKey");
-               $this->setQueryBuilderWhereStatement($q, $subKey, $where);
+        $this->repository->whereHas(Helpers::camel($with), function ($q) use ($where, $subKey) {
+            $this->setQueryBuilderWhereStatement($q, $subKey, $where);
         });
     }
 
@@ -251,35 +249,17 @@ trait Parser
                 if (! empty($where['values'])) {
                     $query->whereIn($key, $where['values']);
                 }
+
                 return;
             case 'NotIn':
                 if (! empty($where['values'])) {
                     $query->whereNotIn($key, $where['values']);
                 }
+
                 return;
             case 'Basic':
                 $query->where($key, $where['operator'], $where['value']);
         }
-    }
-
-    /**
-     * Gets our default fields for our query.
-     *
-     * @return array
-     */
-    protected function getDefaultFields(): array
-    {
-        return (method_exists($this->resourceSingle, 'getDefaultFields')) ? ($this->resourceSingle)::getDefaultFields() : ['*'];
-    }
-
-    /**
-     * Gets the allowed scopes for our query.
-     *
-     * @return array
-     */
-    protected function getAllowedScopes(): array
-    {
-        return (method_exists($this->resourceSingle, 'getAllowedScopes')) ? ($this->resourceSingle)::getAllowedScopes() : [];
     }
 
     /**
@@ -289,7 +269,8 @@ trait Parser
      */
     protected function parseFieldParams(): array
     {
-        $fields = Helpers::filterFieldsFromRequest($this->request, $this->getDefaultFields()); //$this->getFieldParamSets();
+        /** @scrutinizer ignore-call */
+        $fields = Helpers::filterFieldsFromRequest($this->request, $this->/** @scrutinizer ignore-call */ getDefaultFields());
 
         /** @scrutinizer ignore-call */
         $tableColumns = $this->getTableColumns();
@@ -312,15 +293,15 @@ trait Parser
      */
     protected function getIncludesFields(string $include): array
     {
-        $fields = Helpers::filterFieldsFromRequest($this->request, $this->getDefaultFields());
-
+        /** @scrutinizer ignore-call */
+        $fields = Helpers::filterFieldsFromRequest($this->request, $this->/** @scrutinizer ignore-call */ getDefaultFields());
         foreach ($fields as $key => $field) {
-            if (strpos($field, $include.'.') === false) {
+            if (strpos($field, Helpers::snake($include).'.') === false) {
                 unset($fields[$key]);
 
                 continue;
             }
-            $fields[$key] = str_replace($include.'.', '', $field);
+            $fields[$key] = str_replace(Helpers::snake($include).'.', '', $field);
         }
 
         return $fields;

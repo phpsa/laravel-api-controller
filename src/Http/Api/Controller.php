@@ -8,18 +8,18 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
-use Phpsa\LaravelApiController\Contracts\ModelRepository;
 use Phpsa\LaravelApiController\Contracts\Parser;
 use Phpsa\LaravelApiController\Contracts\Policies;
 use Phpsa\LaravelApiController\Contracts\Relationships;
-use Phpsa\LaravelApiController\Contracts\Response as ApiResponse;
 use Phpsa\LaravelApiController\Contracts\Validation;
 use Phpsa\LaravelApiController\Events\Created;
 use Phpsa\LaravelApiController\Events\Deleted;
 use Phpsa\LaravelApiController\Events\Updated;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
-use Phpsa\LaravelApiController\Http\Resources\ApiCollection;
-use Phpsa\LaravelApiController\Http\Resources\ApiResource;
+use Phpsa\LaravelApiController\Http\Api\Contracts\HasModel;
+use Phpsa\LaravelApiController\Http\Api\Contracts\HasRepository;
+use Phpsa\LaravelApiController\Http\Api\Contracts\HasResources;
+use Phpsa\LaravelApiController\Http\Api\Contracts\HasResponse;
 
 /**
  * Class Controller.
@@ -29,33 +29,14 @@ abstract class Controller extends BaseController
     use AuthorizesRequests;
     use DispatchesJobs;
     use ValidatesRequests;
-    use ApiResponse;
+    use HasModel;
+    use HasRepository;
+    use HasResources;
+    use HasResponse;
     use Parser;
     use Relationships;
     use Policies;
-    use ModelRepository;
     use Validation;
-
-    /**
-     * Do we need to unguard the model before create/update?
-     *
-     * @var bool
-     */
-    protected $unguard = false;
-
-    /**
-     * Resource for item.
-     *
-     * @var mixed instance of \Illuminate\Http\Resources\Json\JsonResource
-     */
-    protected $resourceSingle = ApiResource::class;
-
-    /**
-     * Resource for collection.
-     *
-     * @var mixed instance of \Illuminate\Http\Resources\Json\ResourceCollection
-     */
-    protected $resourceCollection = ApiCollection::class;
 
     /**
      * Set the default sorting for queries.
@@ -139,15 +120,9 @@ abstract class Controller extends BaseController
         $this->validateRequestType($request);
         $this->authoriseUserAction('create');
 
-        $data = $request->all();
-
-        if (empty($data)) {
-            return $this->errorWrongArgs('Empty request');
-        }
-
         $this->validate($request, $this->rulesForCreate());
 
-        $data = $this->qualifyStoreQuery($data);
+        $data = $this->qualifyStoreQuery($request->all());
 
         $insert = $this->addTableData($data);
 
@@ -167,14 +142,11 @@ abstract class Controller extends BaseController
             DB::commit();
 
             return $this->respondItemCreated($this->repository->getById($item->getKey()));
-        } catch (\Illuminate\Database\QueryException $exception) {
+        } catch (\Exception $exception) {
             $message = config('app.debug') ? $exception->getMessage() : 'Failed to create Record';
 
-            throw new ApiException($message, (int) $exception->getCode(), $exception);
-        } catch (\Exception $exception) {
             DB::rollback();
-
-            return $this->errorWrongArgs($exception->getMessage());
+            throw new ApiException($message, (int) $exception->getCode(), $exception);
         }
     }
 
@@ -224,12 +196,6 @@ abstract class Controller extends BaseController
 
         $this->validate($request, $this->rulesForUpdate($id));
 
-        $data = $request->all();
-
-        if (empty($data)) {
-            return $this->errorWrongArgs('Empty request');
-        }
-
         try {
             $item = $this->repository->getById($id);
         } catch (ModelNotFoundException $exception) {
@@ -238,9 +204,7 @@ abstract class Controller extends BaseController
 
         $this->validate($request, $this->rulesForUpdate($item->getKey()));
 
-        $data = $this->qualifyUpdateQuery($data);
-
-        $data = $this->qualifyUpdateQuery($data);
+        $data = $this->qualifyUpdateQuery($request->all());
 
         $updates = $this->addTableData($data);
 
@@ -261,14 +225,11 @@ abstract class Controller extends BaseController
             DB::commit();
 
             return $this->respondWithOne($this->repository->getById($item->getKey()));
-        } catch (\Illuminate\Database\QueryException $exception) {
-            $message = config('app.debug') ? $exception->getMessage() : 'Failed to update Record';
-
-            throw new ApiException($message, (int) $exception->getCode(), $exception);
         } catch (\Exception $exception) {
+            $message = config('app.debug') ? $exception->getMessage() : 'Failed to update Record';
             DB::rollback();
 
-            return $this->errorWrongArgs($exception->getMessage());
+            throw new ApiException($message, (int) $exception->getCode(), $exception);
         }
     }
 

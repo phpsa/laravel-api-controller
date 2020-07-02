@@ -1,10 +1,15 @@
 <?php
 
-namespace Phpsa\LaravelApiController\Contracts;
+namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response as Res;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-trait Response
+trait HasResponse
 {
     /**
      * HTTP header status code.
@@ -40,7 +45,7 @@ trait Response
      */
     protected function respondWithOne($item, $code = null, $headers = [])
     {
-        return $this->respondWithResource($this->resourceSingle, $item, $code, $headers);
+        return $this->respondWithResource($this->/** @scrutinizer ignore-call */getResourceSingle(), $item, $code, $headers);
     }
 
     /**
@@ -54,7 +59,7 @@ trait Response
      */
     protected function respondWithMany($items, $code = null, $headers = [])
     {
-        return $this->respondWithResource($this->resourceCollection, $items, $code, $headers);
+        return $this->respondWithResource($this->/** @scrutinizer ignore-call */getResourceCollection(), $items, $code, $headers);
     }
 
     /**
@@ -139,88 +144,102 @@ trait Response
     /**
      * Generate a Response with a 403 HTTP header and a given message.
      *
-     * @param $message
-     * @param array  $errors
+     * @param string|null $message
+     * @param array|null  $errors
      *
-     * @return mixed Response|jsonResponse
+     * @throws AuthorizationException
+     * @return void
      */
-    protected function errorForbidden($message = 'Forbidden', array $errors = [])
+    protected function errorForbidden(?string $message = null, ?array $errors = null)
     {
-        return $this->setStatusCode(403)->respondWithError($message, $errors);
+        if ($errors) {
+            Log::error($message, $errors);
+        }
+        throw new AuthorizationException($message);
     }
 
     /**
      * Generate a Response with a 500 HTTP header and a given message.
      *
      * @param string $message
-     * @param array  $errors
+     * @param array|null  $errors
      *
-     * @return mixed Response|jsonResponse
+     * @throws HttpException
+     * @return void
      */
-    protected function errorInternalError($message = 'Internal Error', array $errors = [])
+    protected function errorInternalError(string $message = 'Internal Error', ?array $errors = null)
     {
-        return $this->setStatusCode(500)->respondWithError($message, $errors);
+        if ($errors) {
+            Log::error($message, $errors);
+        }
+        throw new HttpException(500, $message);
     }
 
     /**
      * Generate a Response with a 404 HTTP header and a given message.
      *
      * @param string $message
-     * @param array  $errors
+     * @param array|null  $errors
      *
-     * @return mixed Response|jsonResponse
+     * @throws NotFoundHttpException
+     * @return void
      */
-    protected function errorNotFound($message = 'Resource Not Found', array $errors = [])
+    protected function errorNotFound($message = 'Resource Not Found', ?array $errors = null)
     {
-        return $this->setStatusCode(404)->respondWithError($message, $errors);
+        if ($errors) {
+            Log::error($message, $errors);
+        }
+        throw new NotFoundHttpException($message);
     }
 
     /**
      * Generate a Response with a 401 HTTP header and a given message.
      *
-     * @param string $message
-     * @param array  $errors
+     * @param string|null $message
+     * @param array|null  $errors
      *
-     * @return mixed Response|jsonResponse
+     * @throws AuthorizationException
+     * @return void
      */
-    protected function errorUnauthorized($message = 'Unauthorized', array $errors = [])
+    protected function errorUnauthorized($message = null, ?array $errors = null)
     {
-        return $this->setStatusCode(401)->respondWithError($message, $errors);
+        if ($errors) {
+            Log::error($message, $errors);
+        }
+        throw new AuthorizationException($message);
     }
 
     /**
      * Generate a Response with a 400 HTTP header and a given message.
      *
      * @param string $message
-     * @param array  $errors
+     * @param array|null  $errors
      *
-     * @return mixed Response|jsonResponse
+     * @throws BadRequestHttpException
+     * @return void
      */
-    protected function errorWrongArgs($message = 'Wrong Arguments', array $errors = [])
+    protected function errorWrongArgs($message = 'Wrong Arguments', ?array $errors = null)
     {
-        return $this->setStatusCode(400)->respondWithError($message, $errors);
+        if ($errors) {
+            Log::error($message, $errors);
+        }
+        throw new BadRequestHttpException($message);
     }
 
     /**
      * Generate a Response with a 501 HTTP header and a given message.
      *
      * @param string $message
-     * @param array  $errors
+     * @param array|null  $errors
      *
-     * @return mixed Response|jsonResponse
+     * @throws HttpException
+     * @return void
      */
-    protected function errorNotImplemented($message = 'Not implemented', array $errors = [])
+    protected function errorNotImplemented($message = 'Not implemented', ?array $errors = null)
     {
-        return $this->setStatusCode(501)->respondWithError($message, $errors);
-    }
-
-    public function getResourceSingle()
-    {
-        return $this->resourceSingle ?? \Phpsa\LaravelApiController\Http\Resources\ApiResource::class;
-    }
-
-    public function getResourceCollection()
-    {
-        return $this->resourceCollection ?? \Phpsa\LaravelApiController\Http\Resources\ApiCollection::class;
+        if ($errors) {
+            Log::error($message, $errors);
+        }
+        throw new HttpException(501, $message);
     }
 }
