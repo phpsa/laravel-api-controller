@@ -81,23 +81,37 @@ abstract class Controller extends BaseController
      */
     public function handleIndexAction($request, array $extraParams = [])
     {
-        $this->addCustomParams($request, $extraParams);
-        $this->validateRequestType($request);
-        $this->authoriseUserAction('viewAny');
-        $this->getUriParser($request);
-
-        $this->parseIncludeParams();
-        $this->parseSortParams();
-        $this->parseFilterParams();
-        $this->parseMethodParams($request);
+        $this->handleIndexActionCommon($request, $extraParams);
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
-
-        $this->qualifyCollectionQuery();
 
         $items = $limit > 0 ? $this->repository->paginate($limit, $fields) : $this->repository->get($fields);
 
         return $this->respondWithMany($items);
+    }
+
+    public function handleIndexActionRaw($request, array $extraParams = [])
+    {
+        $this->handleIndexActionCommon($request, $extraParams);
+        $fields = $this->parseFieldParams();
+        $limit = $this->parseLimitParams();
+
+        $items = $limit > 0 ? $this->repository->paginateRaw($limit, $fields) : $this->repository->getRaw($fields);
+
+        return $this->respond($items);
+    }
+
+    protected function handleIndexActionCommon($request, array $extraParams = [])
+    {
+        $this->addCustomParams($request, $extraParams);
+        $this->validateRequestType($request);
+        $this->authoriseUserAction('viewAny');
+        $this->getUriParser($request);
+        $this->parseIncludeParams();
+        $this->parseSortParams();
+        $this->parseFilterParams();
+        $this->parseMethodParams($request);
+        $this->qualifyCollectionQuery();
     }
 
     public function handleStoreOrUpdateAction($request, array $extraParams = [])

@@ -115,6 +115,15 @@ class BaseRepository
         return $models;
     }
 
+    public function allRaw(array $columns = ['*'])
+    {
+        $this->newQuery()->eagerLoad();
+        $result = $this->query->toBase();
+        $this->unsetClauses();
+
+        return $result;
+    }
+
     /**
      * Count the number of specified model records in the database.
      *
@@ -237,6 +246,17 @@ class BaseRepository
         return $models;
     }
 
+    public function getRaw(array $columns = ['*'])
+    {
+        $this->newQuery()->eagerLoad()->setClauses()->setScopes();
+
+        $models = $this->query->toBase()->get($columns);
+
+        $this->unsetClauses();
+
+        return $models;
+    }
+
     /**
      * Get the specified model record from the database.
      *
@@ -285,6 +305,17 @@ class BaseRepository
         $this->newQuery()->eagerLoad()->setClauses()->setScopes();
 
         $models = $this->query->paginate($limit, $columns, $pageName, $page);
+
+        $this->unsetClauses();
+
+        return $models;
+    }
+
+    public function paginateRaw($limit = 25, array $columns = ['*'], $pageName = 'page', $page = null)
+    {
+        $this->newQuery()->eagerLoad()->setClauses()->setScopes();
+
+        $models = $this->query->toBase()->paginate($limit, $columns, $pageName, $page);
 
         $this->unsetClauses();
 
