@@ -2,10 +2,12 @@
 
 namespace Phpsa\LaravelApiController\Repository;
 
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as BaseCollection;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * Class BaseRepository.
@@ -118,10 +120,17 @@ class BaseRepository
     public function allRaw(array $columns = ['*'])
     {
         $this->newQuery()->eagerLoad();
-        $result = $this->query->toBase();
+        $result = $this->query->toBase()->get($columns);
         $this->unsetClauses();
 
-        return $result;
+        return $result ? $this->rawToArray($result) : $result;
+    }
+
+    protected function rawToArray(BaseCollection $result): array
+    {
+        return $result->map(function ($res) {
+            return (array) $res;
+        })->toArray();
     }
 
     /**
@@ -250,11 +259,11 @@ class BaseRepository
     {
         $this->newQuery()->eagerLoad()->setClauses()->setScopes();
 
-        $models = $this->query->toBase()->get($columns);
+        $result = $this->query->toBase()->get($columns);
 
         $this->unsetClauses();
 
-        return $models;
+        return $result ? $this->rawToArray($result) : $result;
     }
 
     /**
@@ -318,6 +327,9 @@ class BaseRepository
         $models = $this->query->toBase()->paginate($limit, $columns, $pageName, $page);
 
         $this->unsetClauses();
+
+        $collection = $this->rawToArray($models->getCollection());
+        $models->setCollection(collect($collection));
 
         return $models;
     }

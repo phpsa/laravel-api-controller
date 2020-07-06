@@ -98,7 +98,7 @@ abstract class Controller extends BaseController
 
         $items = $limit > 0 ? $this->repository->paginateRaw($limit, $fields) : $this->repository->getRaw($fields);
 
-        return $this->respond($items);
+        return $this->respondWithMany($items);
     }
 
     protected function handleIndexActionCommon($request, array $extraParams = [])
