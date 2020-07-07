@@ -2,10 +2,12 @@
 
 namespace Phpsa\LaravelApiController\Repository;
 
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as BaseCollection;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * Class BaseRepository.
@@ -113,6 +115,22 @@ class BaseRepository
         $this->unsetClauses();
 
         return $models;
+    }
+
+    public function allRaw(array $columns = ['*'])
+    {
+        $this->newQuery()->eagerLoad();
+        $result = $this->query->toBase()->get($columns);
+        $this->unsetClauses();
+
+        return $result ? $this->rawToArray($result) : $result;
+    }
+
+    protected function rawToArray(BaseCollection $result): array
+    {
+        return $result->map(function ($res) {
+            return (array) $res;
+        })->toArray();
     }
 
     /**
@@ -237,6 +255,17 @@ class BaseRepository
         return $models;
     }
 
+    public function getRaw(array $columns = ['*'])
+    {
+        $this->newQuery()->eagerLoad()->setClauses()->setScopes();
+
+        $result = $this->query->toBase()->get($columns);
+
+        $this->unsetClauses();
+
+        return $result ? $this->rawToArray($result) : $result;
+    }
+
     /**
      * Get the specified model record from the database.
      *
@@ -287,6 +316,20 @@ class BaseRepository
         $models = $this->query->paginate($limit, $columns, $pageName, $page);
 
         $this->unsetClauses();
+
+        return $models;
+    }
+
+    public function paginateRaw($limit = 25, array $columns = ['*'], $pageName = 'page', $page = null)
+    {
+        $this->newQuery()->eagerLoad()->setClauses()->setScopes();
+
+        $models = $this->query->toBase()->paginate($limit, $columns, $pageName, $page);
+
+        $this->unsetClauses();
+
+        $collection = $this->rawToArray($models->getCollection());
+        $models->setCollection(collect($collection));
 
         return $models;
     }
