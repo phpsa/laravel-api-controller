@@ -88,7 +88,7 @@ trait Relationships
             $relation = $item->$with();
             $type = class_basename(get_class($relation));
 
-            if (! in_array($type, ['HasOne', 'HasMany', 'BelongsTo', 'BelongsToMany'])) {
+            if (! in_array($type, ['HasOne', 'HasMany', 'BelongsTo', 'BelongsToMany', 'MorphOne','MorphMany'])) {
                 throw new ApiException("$type mapping not implemented yet");
             }
 
@@ -98,9 +98,11 @@ trait Relationships
 
             switch ($type) {
                 case 'HasOne':
+                case 'MorphOne':
                     $this->processHasOneRelation($relation, $relatedRecords, $item);
                     break;
                 case 'HasMany':
+                case 'MorphMany':
                     $this->processHasRelation($relation, $relatedRecords, $item);
                     break;
                 case 'BelongsTo':
