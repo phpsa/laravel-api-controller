@@ -79,10 +79,8 @@ trait AllowableFields
         });
 
         foreach($missing as $field){
-            if(!array_key_exists(Helpers::snake($field), $data)){
-                if(method_exists($this->resource, 'get' . Helpers::camel($field) . 'Attribute')){
-                    $data[$field] = $this->resource->{'get' . Helpers::camel($field) . 'Attribute'}();
-                }
+            if(method_exists($this->resource, 'get' . Helpers::camel($field) . 'Attribute')){
+                $data[$field] = $this->resource->{ Helpers::camel($field)};
             }
         }
 
