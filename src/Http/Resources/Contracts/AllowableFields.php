@@ -45,7 +45,7 @@ trait AllowableFields
     {
         $fields = Helpers::camelCaseArray($this->mapFields($request));
 
-        $data = parent::toArray($request);
+        $data = $this->mapFieldData($request, $fields);
 
         $resources = array_filter($data, function ($key) use ($fields) {
             return in_array(Helpers::camel($key), $fields);
@@ -69,13 +69,25 @@ trait AllowableFields
         return $resources;
     }
 
-    /**
-     * Checks for allowed fields.
-     *
-     * @param mixed $request
-     *
-     * @return array
-     */
+    protected function mapFieldData($request, $fields)
+    {
+
+        $data = parent::toArray($request);
+
+        $missing = array_filter($fields, function($field) use ($data){
+            return array_key_exists(Helpers::camel($field), $data) || array_key_exists(Helpers::snake($field), $data) ? false : true;
+        });
+
+        foreach($missing as $field){
+            if(!array_key_exists(Helpers::snake($field), $data)){
+                if(method_exists($this->resource, 'get' . Helpers::camel($field) . 'Attribute')){
+                    $data[$field] = $this->resource->{'get' . Helpers::camel($field) . 'Attribute'}();
+                }
+            }
+        }
+
+        return $data;
+    }
 
     /**
      * Checks for allowed fields.
