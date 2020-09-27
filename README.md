@@ -156,6 +156,12 @@ Simply add a `protected static $mapResources` to your `Resource` to define which
     ];
 ```
 
+- You can automatically update and create related records for most types of relationships. Just include the related resource name in your POST or PUT request.
+
+For `BelongsToMany` or `MorphToMany` relationships, you can choose the sync strategy. By default, this will take an *additive* strategy. That is to say, related records sent will be ADDED to any existing related records. On a request-by-request basis, you can opt for a *sync* strategy which will remove the pivot for any related records not listed in the request. Note the actual related record will not be removed, just the pivot entry.
+
+To opt for the *sync* behavaiour, set `?sync[field]=true` in your request.
+
 ## Sorting
 
 -   Sorts can be passed as comma list aswell, ie `sort=age asc` or `sort=age asc,name desc,eyes` - generates sql of `sort age asc` and `sort age asc, name desc, eyes asc` respectively
