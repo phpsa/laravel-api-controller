@@ -201,8 +201,8 @@ trait Parser
     protected function parseMethodParams($request): void
     {
         foreach ($this->/** @scrutinizer ignore-call */ getAllowedScopes() as $scope) {
-            if ($request->has(Helpers::snake($scope)) || $request->has(Helpers::camel($scope)) ) {
-                $value = $request->has(Helpers::snake($scope)) ? $request->get(Helpers::snake($scope)) :  $request->get(Helpers::camel($scope));
+            if ($request->has(Helpers::snake($scope)) || $request->has(Helpers::camel($scope))) {
+                $value = $request->has(Helpers::snake($scope)) ? $request->get(Helpers::snake($scope)) : $request->get(Helpers::camel($scope));
                 call_user_func([$this->repository, Helpers::camel($scope)], $value);
             }
         }

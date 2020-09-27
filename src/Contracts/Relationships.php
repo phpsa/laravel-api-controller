@@ -88,7 +88,7 @@ trait Relationships
             $relation = $item->$with();
             $type = class_basename(get_class($relation));
 
-            if (! in_array($type, ['HasOne', 'HasMany', 'BelongsTo', 'BelongsToMany', 'MorphOne','MorphMany'])) {
+            if (! in_array($type, ['HasOne', 'HasMany', 'BelongsTo', 'MorphOne', 'MorphMany', 'MorphTo', 'MorphToMany', 'BelongsToMany'])) {
                 throw new ApiException("$type mapping not implemented yet");
             }
 
@@ -106,10 +106,12 @@ trait Relationships
                     $this->processHasRelation($relation, $relatedRecords, $item);
                     break;
                 case 'BelongsTo':
-                    $this->processBelongsToRelation($relation, [$relatedRecords], $item, $data);
+                case 'MorphTo':
+                    $this->processBelongsToRelation($relation, $relatedRecords, $item, $data);
                     break;
                 case 'BelongsToMany':
-                    $this->processBelongsToRelation($relation, $relatedRecords, $item, $data);
+                case 'MorphToMany':
+                    $this->processBelongsToManyRelation($relation, $relatedRecords, $item, $data, $with);
                     break;
             }
         }
@@ -157,33 +159,59 @@ trait Relationships
         }
     }
 
-    protected function processBelongsToRelation($relation, array $relatedRecords, $item, array $data): void
+    protected function processBelongsToRelation($relation, $relatedRecord, $item, array $data): void
     {
         $ownerKey = $relation->getOwnerKeyName();
         $localKey = $relation->getForeignKeyName();
 
         $model = $relation->getRelated();
 
-        foreach ($relatedRecords as $relatedRecord) {
-            if (! isset($relatedRecord[$ownerKey])) {
-                $relatedRecord[$ownerKey] = $item->getAttribute($localKey);
-            }
-            if ($relatedRecord[$ownerKey]) {
-                $existanceCheck = [$ownerKey => $relatedRecord[$ownerKey]];
-                $relation->associate(
-                    $model->updateOrCreate($existanceCheck, $relatedRecord)
-                );
-            } elseif (isset($data[$localKey])) {
-                $existanceCheck = [$ownerKey => $data[$localKey]];
-                $relation->associate(
-                    $model->updateOrCreate($existanceCheck, $relatedRecord)
-                );
-            } else {
-                $relation->associate(
-                    $model->create($relatedRecord)
-                );
-            }
-            $item->save();
+        if (! isset($relatedRecord[$ownerKey])) {
+            $relatedRecord[$ownerKey] = $item->getAttribute($localKey);
         }
+        if ($relatedRecord[$ownerKey]) {
+            $existanceCheck = [$ownerKey => $relatedRecord[$ownerKey]];
+            $relation->associate(
+                $model->updateOrCreate($existanceCheck, $relatedRecord)
+            );
+        } elseif (isset($data[$localKey])) {
+            $existanceCheck = [$ownerKey => $data[$localKey]];
+            $relation->associate(
+                $model->updateOrCreate($existanceCheck, $relatedRecord)
+            );
+        } else {
+            $relation->associate(
+                $model->create($relatedRecord)
+            );
+        }
+        $item->save();
+    }
+
+    protected function processBelongsToManyRelation($relation, array $relatedRecords, $item, array $data, $with): void
+    {
+        $parentKey = $relation->getParentKeyName();
+        $relatedKey = $relation->getRelatedKeyName();
+
+        $model = $relation->getRelated();
+        $sync = collect();
+
+        foreach ($relatedRecords as $relatedRecord) {
+            if (! isset($relatedRecord[$parentKey])) {
+                $relatedRecord[$parentKey] = $item->getAttribute($relatedKey);
+            }
+            if ($relatedRecord[$parentKey]) {
+                $existanceCheck = [$parentKey => $relatedRecord[$parentKey]];
+                $sync->push($model->updateOrCreate($existanceCheck, $relatedRecord));
+            } elseif (isset($data[$relatedKey])) {
+                $existanceCheck = [$parentKey => $data[$relatedKey]];
+                $sync->push($model->updateOrCreate($existanceCheck, $relatedRecord));
+            } else {
+                $sync->push($model->create($relatedRecord));
+            }
+        }
+
+        $detach = filter_var(request()->get('sync')[$with] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+        $relation->sync($sync->pluck('id'), $detach);
     }
 }
