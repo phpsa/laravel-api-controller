@@ -88,7 +88,7 @@ trait Relationships
             $relation = $item->$with();
             $type = class_basename(get_class($relation));
 
-            if (! in_array($type, ['HasOne','HasMany','BelongsTo','MorphOne','MorphMany','MorphTo','MorphToMany','BelongsToMany'])) {
+            if (! in_array($type, ['HasOne', 'HasMany', 'BelongsTo', 'MorphOne', 'MorphMany', 'MorphTo', 'MorphToMany', 'BelongsToMany'])) {
                 throw new ApiException("$type mapping not implemented yet");
             }
 
