@@ -71,15 +71,14 @@ trait AllowableFields
 
     protected function mapFieldData($request, $fields)
     {
-
         $data = parent::toArray($request);
 
-        $missing = array_filter($fields, function($field) use ($data){
+        $missing = array_filter($fields, function ($field) use ($data) {
             return array_key_exists(Helpers::camel($field), $data) || array_key_exists(Helpers::snake($field), $data) ? false : true;
         });
 
-        foreach($missing as $field){
-            if(method_exists($this->resource, 'get' . Helpers::camel($field) . 'Attribute')){
+        foreach ($missing as $field) {
+            if (method_exists($this->resource, 'get'.Helpers::camel($field).'Attribute')) {
                 $data[$field] = $this->resource->{ Helpers::camel($field)};
             }
         }
