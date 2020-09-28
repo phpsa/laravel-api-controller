@@ -63,9 +63,11 @@ trait HasResources
     {
         $resource = $this->getResourceSingle();
 
-        $scopes =  collect((method_exists($resource, 'getAllowedScopes')) ? ($resource)::getAllowedScopes() : []);
-        
-        return $scopes->map(function($scope) { return strpos($scope, 'scope') === 0 ? substr($scope, 5 ): $scope; })->toArray();
+        $scopes = collect((method_exists($resource, 'getAllowedScopes')) ? ($resource)::getAllowedScopes() : []);
+
+        return $scopes->map(function ($scope) {
+            return strpos($scope, 'scope') === 0 ? substr($scope, 5) : $scope;
+        })->toArray();
     }
 
     /**
@@ -79,8 +81,8 @@ trait HasResources
             $snake = Helpers::snake($scope);
             $camel = Helpers::camel($scope);
 
-            if ($request->has($snake) || $request->has($camel) ) {
-                $value = $request->has($snake) ? $request->get($snake) :  $request->get($camel);
+            if ($request->has($snake) || $request->has($camel)) {
+                $value = $request->has($snake) ? $request->get($snake) : $request->get($camel);
                 call_user_func([$this->repository, $camel], $value);
             }
         }
