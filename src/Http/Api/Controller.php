@@ -110,7 +110,7 @@ abstract class Controller extends BaseController
         $this->parseIncludeParams();
         $this->parseSortParams();
         $this->parseFilterParams();
-        $this->parseMethodParams($request);
+        $this->parseAllowedScopes($request);
         $this->qualifyCollectionQuery();
     }
 
