@@ -2,6 +2,7 @@
 
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
+use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\Http\Resources\ApiCollection;
 use Phpsa\LaravelApiController\Http\Resources\ApiResource;
 
@@ -62,6 +63,28 @@ trait HasResources
     {
         $resource = $this->getResourceSingle();
 
-        return (method_exists($resource, 'getAllowedScopes')) ? ($resource)::getAllowedScopes() : [];
+        $scopes = collect((method_exists($resource, 'getAllowedScopes')) ? ($resource)::getAllowedScopes() : []);
+
+        return $scopes->map(function ($scope) {
+            return strpos($scope, 'scope') === 0 ? substr($scope, 5) : $scope;
+        })->toArray();
+    }
+
+    /**
+     * parses out custom method filters etc.
+     *
+     * @param mixed $request
+     */
+    protected function parseAllowedScopes($request): void
+    {
+        foreach ($this->getAllowedScopes() as $scope) {
+            $snake = Helpers::snake($scope);
+            $camel = Helpers::camel($scope);
+
+            if ($request->has($snake) || $request->has($camel)) {
+                $value = $request->has($snake) ? $request->get($snake) : $request->get($camel);
+                call_user_func([$this->repository, $camel], $value);
+            }
+        }
     }
 }
