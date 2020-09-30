@@ -82,9 +82,24 @@ trait HasResources
             $camel = Helpers::camel($scope);
 
             if ($request->has($snake) || $request->has($camel)) {
-                $value = $request->has($snake) ? $request->get($snake) : $request->get($camel);
+                $value = $this->parseScopeValue($request->has($snake) ? $request->get($snake) : $request->get($camel));
                 call_user_func([$this->repository, $camel], $value);
             }
         }
+    }
+
+    /**
+     * Parse the value to string / array based in input
+     *
+     * @param string|array|null $value
+     *
+     * @return string|array|null
+     */
+    protected function parseScopeValue($value = null)
+    {
+        if($value === null || is_array($value) || strpos($value, '||') === false){
+            return $value;
+        }
+        return explode("||", $value);
     }
 }
