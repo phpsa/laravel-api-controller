@@ -87,11 +87,6 @@ trait Relationships
         foreach ($filteredRelateds as $with) {
             $relation = $item->$with();
             $type = class_basename(get_class($relation));
-
-            if (! in_array($type, ['HasOne', 'HasMany', 'BelongsTo', 'MorphOne', 'MorphMany', 'MorphTo', 'MorphToMany', 'BelongsToMany'])) {
-                throw new ApiException("$type mapping not implemented yet");
-            }
-
             $relatedRecords = $data[Helpers::snake($with)];
 
             $this->repository->with($with);
@@ -113,17 +108,11 @@ trait Relationships
                 case 'MorphToMany':
                     $this->processBelongsToManyRelation($relation, $relatedRecords, $item, $data, $with);
                     break;
+                default:
+                    throw new ApiException("$type mapping not implemented yet");
+                    break;
             }
         }
-    }
-
-    protected function storeRelatedChild($relatedItem, $data): void
-    {
-        //$columns = $this->getTableColumns($relatedItem);
-        //$insert = array_intersect_key($data, array_flip($columns));
-        //$diff = array_diff(array_keys($data), array_keys($insert));
-        // then similar to the main methodology
-        //@todo
     }
 
     protected function processHasOneRelation($relation, array $collection, $item): void
