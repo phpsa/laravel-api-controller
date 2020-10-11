@@ -97,7 +97,8 @@ trait HasModel
         if (is_null($model)) {
             $model = self::$model;
         }
-        $table = explode('.',$model->getTable());
+        $table = explode('.', $model->getTable());
+
         return end($table);
     }
 
