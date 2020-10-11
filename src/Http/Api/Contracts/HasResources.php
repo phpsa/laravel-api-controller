@@ -89,7 +89,7 @@ trait HasResources
     }
 
     /**
-     * Parse the value to string / array based in input
+     * Parse the value to string / array based in input.
      *
      * @param string|array|null $value
      *
@@ -97,9 +97,10 @@ trait HasResources
      */
     protected function parseScopeValue($value = null)
     {
-        if($value === null || is_array($value) || strpos($value, '||') === false){
+        if ($value === null || is_array($value) || strpos($value, '||') === false) {
             return $value;
         }
-        return explode("||", $value);
+
+        return explode('||', $value);
     }
 }

@@ -88,6 +88,21 @@ trait HasModel
     }
 
     /**
+     * Gets the table name without database identifier.
+     *
+     * @param Model $model
+     */
+    protected function getUnqualifiedTableName(?Model $model = null): string
+    {
+        if (is_null($model)) {
+            $model = self::$model;
+        }
+        $table = explode('.', $model->getTable());
+
+        return end($table);
+    }
+
+    /**
      * Set which columns area available in the model.
      *
      * @param Model $model
@@ -97,7 +112,7 @@ trait HasModel
         if (is_null($model)) {
             $model = self::$model;
         }
-        $table = $model->getTable();
+        $table = $this->getUnqualifiedTableName($model);
         $this->tableColumns[$table] = Schema::connection($model->getConnectionName())->getColumnListing($table);
     }
 
@@ -114,7 +129,7 @@ trait HasModel
             $model = self::$model;
         }
 
-        $table = $model->getTable();
+        $table = $this->getUnqualifiedTableName($model);
 
         if (! isset($this->tableColumns[$table])) {
             $this->setTableColumns($model);
