@@ -238,7 +238,7 @@ abstract class Controller extends BaseController
 
             DB::commit();
 
-            return $this->respondWithOne($this->repository->getById($item->getKey()));
+            return $this->respondWithOne($item);
         } catch (\Exception $exception) {
             $message = config('app.debug') ? $exception->getMessage() : 'Failed to update Record';
             DB::rollback();
