@@ -284,6 +284,7 @@ trait Parser
 
         $relation = self::$model->{$include}();
         $type = $relation->getRelated();
+        /** @scrutinizer ignore-call */
         $tableColumns = $this->getTableColumns($type);
 
         foreach ($fields as $key => $field) {

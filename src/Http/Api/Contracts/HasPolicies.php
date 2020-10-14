@@ -84,6 +84,7 @@ trait HasPolicies
     protected function authoriseUserAction(string $ability, $arguments = null): bool
     {
         if (! $this->testUserPolicyAction($ability, $arguments)) {
+            /** @scrutinizer ignore-call */
             $this->errorUnauthorized();
         }
 
