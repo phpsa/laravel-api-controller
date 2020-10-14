@@ -69,7 +69,6 @@ abstract class Controller extends BaseController
      */
     public function __construct()
     {
-
         $this->makeModel();
         $this->makeRepository();
     }
