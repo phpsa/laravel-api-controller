@@ -6,7 +6,6 @@ use Gate;
 
 trait HasPolicies
 {
-
     /**
      * Qualifies the collection query to allow you to add params vai the policy
      * ie to limit to a specific user id mapping.
