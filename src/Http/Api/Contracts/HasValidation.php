@@ -1,11 +1,11 @@
 <?php
 
-namespace Phpsa\LaravelApiController\Contracts;
+namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Illuminate\Http\Request;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 
-trait Validation
+trait HasValidation
 {
     /**
      * \Illuminate\Http\Request instance.
@@ -52,37 +52,5 @@ trait Validation
     protected function rulesForUpdate(/* @scrutinizer ignore-unused */$id): array
     {
         return [];
-    }
-
-    /**
-     * Check if the user has one or more roles.
-     *
-     * @param mixed $role role name or array of role names
-     *
-     * @deprecated -- should be rather used in policies / gates
-     *
-     * @return bool
-     */
-    protected function hasRole($role): bool
-    {
-        $user = auth()->user();
-
-        return $user && $user->hasAnyRole((array) $role);
-    }
-
-    /**
-     * Checks if user has all the passed roles.
-     *
-     * @param array $roles
-     *
-     * @deprecated -- should be rather used in policies / gates
-     *
-     * @return bool
-     */
-    protected function hasAllRoles(array $roles): bool
-    {
-        $user = auth()->user();
-
-        return $user && $user->hasRole($roles, true);
     }
 }

@@ -281,12 +281,20 @@ trait Parser
     {
         /** @scrutinizer ignore-call */
         $fields = Helpers::filterFieldsFromRequest($this->request, $this->/** @scrutinizer ignore-call */ getDefaultFields());
+
+        $relation = self::$model->{$include}();
+        $type = $relation->getRelated();
+        /** @scrutinizer ignore-call */
+        $tableColumns = $this->getTableColumns($type);
+
         foreach ($fields as $key => $field) {
-            if (strpos($field, Helpers::snake($include).'.') === false) {
+            $parts = explode('.', $field);
+            if (strpos($field, Helpers::snake($include).'.') === false || ! in_array(end($parts), $tableColumns)) {
                 unset($fields[$key]);
 
                 continue;
             }
+
             $fields[$key] = str_replace(Helpers::snake($include).'.', '', $field);
         }
 
