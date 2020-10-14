@@ -9,17 +9,17 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
 use Phpsa\LaravelApiController\Contracts\Parser;
-use Phpsa\LaravelApiController\Contracts\Policies;
 use Phpsa\LaravelApiController\Contracts\Relationships;
-use Phpsa\LaravelApiController\Contracts\Validation;
 use Phpsa\LaravelApiController\Events\Created;
 use Phpsa\LaravelApiController\Events\Deleted;
 use Phpsa\LaravelApiController\Events\Updated;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasModel;
+use Phpsa\LaravelApiController\Http\Api\Contracts\HasPolicies;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasRepository;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasResources;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasResponse;
+use Phpsa\LaravelApiController\Http\Api\Contracts\HasValidation;
 
 /**
  * Class Controller.
@@ -30,13 +30,13 @@ abstract class Controller extends BaseController
     use DispatchesJobs;
     use ValidatesRequests;
     use HasModel;
+    use HasPolicies;
     use HasRepository;
     use HasResources;
     use HasResponse;
+    use HasValidation;
     use Parser;
     use Relationships;
-    use Policies;
-    use Validation;
 
     /**
      * Set the default sorting for queries.
@@ -69,6 +69,7 @@ abstract class Controller extends BaseController
      */
     public function __construct()
     {
+
         $this->makeModel();
         $this->makeRepository();
     }

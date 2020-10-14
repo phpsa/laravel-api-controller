@@ -1,11 +1,12 @@
 <?php
 
-namespace Phpsa\LaravelApiController\Contracts;
+namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Gate;
 
-trait Policies
+trait HasPolicies
 {
+
     /**
      * Qualifies the collection query to allow you to add params vai the policy
      * ie to limit to a specific user id mapping.
@@ -84,7 +85,7 @@ trait Policies
     protected function authoriseUserAction(string $ability, $arguments = null): bool
     {
         if (! $this->testUserPolicyAction($ability, $arguments)) {
-            abort(401, 'Unauthorised');
+            $this->errorUnauthorized();
         }
 
         return true;
