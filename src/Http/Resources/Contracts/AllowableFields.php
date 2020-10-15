@@ -95,7 +95,7 @@ trait AllowableFields
      */
     protected function mapFields($request): array
     {
-        $map = $this->getDefaultFields();
+        $map = self::getDefaultFields($request);
         $defaultFields = $map === ['*'] ? array_keys($this->getResourceFields()) : $map;
         $allowedFields = static::$allowedFields ?? [];
         $fields = Helpers::filterFieldsFromRequest($request, $defaultFields, $allowedFields);
@@ -124,13 +124,17 @@ trait AllowableFields
         return is_array($this->resource) ? $this->resource : $this->resource->getAttributes();
     }
 
-    /**
+      /**
      * Return default fields for this collection.
      *
      * @return array
      */
-    public static function getDefaultFields(): array
+    public static function getDefaultFields($request): array
     {
+        if (method_exists(get_called_class(), 'defaultFields')) {
+            $c = get_called_class();
+            return $c::defaultFields($request);
+        }
         return static::$defaultFields ?? ['*'];
     }
 
@@ -140,8 +144,12 @@ trait AllowableFields
      * @return array
      * @author Sam Sehnert <sam@customd.com>
      */
-    public static function getAllowedScopes(): array
+    public static function getAllowedScopes($request): array
     {
+        if (method_exists(get_called_class(), 'defaultScopes')) {
+            $c = get_called_class();
+            return $c::defaultScopes($request);
+        }
         return static::$allowedScopes ?? [];
     }
 }
