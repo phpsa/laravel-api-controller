@@ -2,9 +2,10 @@
 
 namespace Phpsa\LaravelApiController\Http\Resources;
 
+use Phpsa\LaravelApiController\Helpers;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Phpsa\LaravelApiController\Http\Resources\Contracts\AllowableFields;
 use Phpsa\LaravelApiController\Http\Resources\Contracts\CaseFormat;
+use Phpsa\LaravelApiController\Http\Resources\Contracts\AllowableFields;
 
 class ApiResource extends JsonResource
 {

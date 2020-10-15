@@ -51,7 +51,7 @@ trait HasResources
     {
         $resource = $this->getResourceSingle();
 
-        return (method_exists($resource, 'getDefaultFields')) ? ($resource)::getDefaultFields() : ['*'];
+        return (method_exists($resource, 'getDefaultFields')) ? ($resource)::getDefaultFields($this->request) : ['*'];
     }
 
     /**
@@ -63,7 +63,7 @@ trait HasResources
     {
         $resource = $this->getResourceSingle();
 
-        $scopes = collect((method_exists($resource, 'getAllowedScopes')) ? ($resource)::getAllowedScopes() : []);
+        $scopes = collect((method_exists($resource, 'getAllowedScopes')) ? ($resource)::getAllowedScopes($this->request) : []);
 
         return $scopes->map(function ($scope) {
             return strpos($scope, 'scope') === 0 ? substr($scope, 5) : $scope;
