@@ -208,7 +208,6 @@ abstract class Controller extends BaseController
         $this->validateRequestType($request);
 
         $this->handleCommonActions($request);
-        $fields = $this->parseFieldParams();
 
         try {
             $item = $this->repository->find($id);
