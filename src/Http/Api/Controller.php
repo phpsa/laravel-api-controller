@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 use Phpsa\LaravelApiController\Contracts\Parser;
 use Phpsa\LaravelApiController\Contracts\Relationships;
 use Phpsa\LaravelApiController\Events\Created;
-use Phpsa\LaravelApiController\Events\Deleted;
 use Phpsa\LaravelApiController\Events\Updated;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasModel;
