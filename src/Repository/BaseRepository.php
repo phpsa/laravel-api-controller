@@ -284,6 +284,17 @@ class BaseRepository
         return $this->query->findOrFail($id, $columns);
     }
 
+    public function find($id, array $columns = ['*']): Model
+    {
+        $this->newQuery()->eagerLoad()->setClauses()->setScopes();
+
+        $model = $this->query->findOrFail($id, $columns);
+
+        $this->unsetClauses();
+
+        return $model;
+    }
+
     /**
      * @param       $item
      * @param       $column

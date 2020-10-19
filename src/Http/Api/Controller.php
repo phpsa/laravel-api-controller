@@ -106,12 +106,17 @@ abstract class Controller extends BaseController
         $this->addCustomParams($request, $extraParams);
         $this->validateRequestType($request);
         $this->authoriseUserAction('viewAny');
+        $this->handleCommonActions($request);
+        $this->qualifyCollectionQuery();
+    }
+
+    protected function handleCommonActions($request)
+    {
         $this->getUriParser($request);
         $this->parseIncludeParams();
         $this->parseSortParams();
         $this->parseFilterParams();
         $this->parseAllowedScopes($request);
-        $this->qualifyCollectionQuery();
     }
 
     public function handleStoreOrUpdateAction($request, array $extraParams = [])
@@ -176,17 +181,13 @@ abstract class Controller extends BaseController
         $this->addCustomParams($request, $extraParams);
         $this->validateRequestType($request);
 
-        $this->authoriseUserAction('view', self::$model::find($id));
-
-        $this->getUriParser($request);
-
-        $this->parseIncludeParams();
+        $this->handleCommonActions($request);
         $fields = $this->parseFieldParams();
-
         $this->qualifyItemQuery();
 
         try {
-            $item = $this->repository->getById($id, $fields);
+            $item = $this->repository->find($id, $fields);
+            $this->authoriseUserAction('view', $item);
         } catch (\Exception $exception) {
             return $this->errorNotFound('Record not found');
         }
@@ -206,12 +207,12 @@ abstract class Controller extends BaseController
         $this->addCustomParams($request, $extraParams);
         $this->validateRequestType($request);
 
-        $this->authoriseUserAction('update', self::$model::find($id));
-
-        $this->validate($request, $this->rulesForUpdate($id));
+        $this->handleCommonActions($request);
+        $fields = $this->parseFieldParams();
 
         try {
-            $item = $this->repository->getById($id);
+            $item = $this->repository->find($id);
+            $this->authoriseUserAction('update', self::$model::find($id));
         } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record does not exist');
         }
@@ -257,13 +258,16 @@ abstract class Controller extends BaseController
     public function handleDestroyAction($id, $request)
     {
         $this->validateRequestType($request);
+
+        $this->handleCommonActions($request);
+        $this->qualifyItemQuery();
+
         try {
-            $item = self::$model::findOrFail($id);
+            $item = $this->repository->find($id);
             $this->authoriseUserAction('delete', $item);
-            $this->repository->deleteById($id);
-            event(new Deleted($item, $request));
-        } catch (ModelNotFoundException $exeption) {
-            return $this->errorNotFound('Record does not exist');
+            $item->delete();
+        } catch (\Exception $exception) {
+            return $this->errorNotFound('Record not found');
         }
 
         return $this->respondNoContent();
