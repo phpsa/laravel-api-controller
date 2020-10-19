@@ -212,7 +212,7 @@ abstract class Controller extends BaseController
 
         try {
             $item = $this->repository->find($id);
-            $this->authoriseUserAction('update', self::$model::find($id));
+            $this->authoriseUserAction('update', $item);
         } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record does not exist');
         }
