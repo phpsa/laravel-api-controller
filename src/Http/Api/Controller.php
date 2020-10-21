@@ -187,7 +187,7 @@ abstract class Controller extends BaseController
         try {
             $item = $this->repository->find($id, $fields);
             $this->authoriseUserAction('view', $item);
-        } catch (\Exception $exception) {
+        } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record not found');
         }
 
@@ -264,7 +264,7 @@ abstract class Controller extends BaseController
             $item = $this->repository->find($id);
             $this->authoriseUserAction('delete', $item);
             $item->delete();
-        } catch (\Exception $exception) {
+        } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record not found');
         }
 
