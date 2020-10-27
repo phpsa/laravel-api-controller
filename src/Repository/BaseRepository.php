@@ -254,6 +254,12 @@ class BaseRepository
         return $models;
     }
 
+    public function dd(array $columns = ['*'])
+    {
+        $this->newQuery()->eagerLoad()->setClauses()->setScopes();
+        $this->query->dd($columns);
+    }
+
     public function getRaw(array $columns = ['*'])
     {
         $this->newQuery()->eagerLoad()->setClauses()->setScopes();
