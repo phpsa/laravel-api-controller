@@ -130,7 +130,7 @@ trait Parser
 
         foreach ($sorts as $sortF => $sortD) {
             [$with, $key] = explode('.', $sortF);
-            $relation = self::$model->{$with}();
+            $relation = self::$model->{Helpers::camel($with)}();
             $type = class_basename(get_class($relation));
 
             if ($type === 'HasOne') {
@@ -143,10 +143,15 @@ trait Parser
                 continue;
             }
 
+            $withConnection = $relation->getRelated()->getConnection()->getDatabaseName();
+
             $withTable = $relation->getRelated()->getTable();
 
-            $this->repository->join($withTable, "{$withTable}.{$foreignKey}", "{$currentTable}.{$localKey}");
-            $this->repository->orderBy("{$withTable}.{$key}", $sortD);
+            $withTableName = strpos($withTable, ".") === false ? $withConnection . '.' . $withTable : $withTable;
+
+            $this->repository->join($withTableName, "{$withTableName}.{$foreignKey}", "{$currentTable}.{$localKey}");
+            $this->repository->orderBy("{$withTableName}.{$key}", $sortD);
+
         }
     }
 
