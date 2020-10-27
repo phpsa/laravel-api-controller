@@ -128,9 +128,9 @@ trait Parser
 
         $this->repository->select($fields);
 
-        foreach ($sorts as $sortF => $sortD) {
+                foreach ($sorts as $sortF => $sortD) {
             [$with, $key] = explode('.', $sortF);
-            $relation = self::$model->{$with}();
+            $relation = self::$model->{Helpers::camel($with)}();
             $type = class_basename(get_class($relation));
 
             if ($type === 'HasOne') {
@@ -144,9 +144,11 @@ trait Parser
             }
 
             $withTable = $relation->getRelated()->getTable();
+            $withConnection = $relation->getRelated()->getConnection()->getDatabaseName();
 
-            $this->repository->join($withTable, "{$withTable}.{$foreignKey}", "{$currentTable}.{$localKey}");
+            $this->repository->join($withConnection . '.' . $withTable, "{$withConnection}.{$withTable}.{$foreignKey}", "{$currentTable}.{$localKey}");
             $this->repository->orderBy("{$withTable}.{$key}", $sortD);
+
         }
     }
 
