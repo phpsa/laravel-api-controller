@@ -30,19 +30,19 @@ php artisan vendor:publish --provider="Phpsa\LaravelApiController\ServiceProvide
 
 This will create a Api/ModelNameController for you and you will have the basic routes in place as follows:
 
--   GET `api/v1/{model_name}` - list all/paged/filtered (class::index)
--   GET `api/v1/{model_name}/$id` - Show a specified id (class::show)
--   POST `api/v1/{model_name}` - Insert a new record (class::store)
--   PUT `api/v1/{model_name}/$id` - Update an existing record (class::update)
--   DELETE `api/v1/{model_name}/$id` - Delete an existing record (class::destroy)
+- GET `api/v1/{model_name}` - list all/paged/filtered (class::index)
+- GET `api/v1/{model_name}/$id` - Show a specified id (class::show)
+- POST `api/v1/{model_name}` - Insert a new record (class::store)
+- PUT `api/v1/{model_name}/$id` - Update an existing record (class::update)
+- DELETE `api/v1/{model_name}/$id` - Delete an existing record (class::destroy)
 
 You can override the methods by simply putting in your own methods to override - method names in braces above
 
 ## Events
 
--   POST (class::store) - triggers a new `Phpsa\LaravelApiController\Events\Created` Event which has the new record available as `$record`
--   PUT (class::update) - triggers a new `Phpsa\LaravelApiController\Events\Updated` Event which has the updated record available as `$record`
--   DELETE (class::destry) - triggers a new `Phpsa\LaravelApiController\Events\Deleted` Event which has the deleted record available as `$record`
+- POST (class::store) - triggers a new `Phpsa\LaravelApiController\Events\Created` Event which has the new record available as `$record`
+- PUT (class::update) - triggers a new `Phpsa\LaravelApiController\Events\Updated` Event which has the updated record available as `$record`
+- DELETE (class::destry) - triggers a new `Phpsa\LaravelApiController\Events\Deleted` Event which has the deleted record available as `$record`
 
 ## Policies
 
@@ -50,18 +50,18 @@ Policies: https://laravel.com/docs/6.x/authorization#generating-policies
 
 Generate with `php artisan make:policy PostPolicy --model=Post`
 
--   Get list - calls the `viewAny` policy
--   Get single - calls the `view` policy
--   Post New - calls the `create` policy
--   Put Update - calls the `update` policy
--   Delete item - calls the `delete` policy
+- Get list - calls the `viewAny` policy
+- Get single - calls the `view` policy
+- Post New - calls the `create` policy
+- Put Update - calls the `update` policy
+- Delete item - calls the `delete` policy
 
 Query/Data modifiers in policies for the api endpoints
 
--   `qualifyCollectionQueryWithUser($user, $repository)` -> return void - add any queries to the repository (ie ->where('x','))
--   `qualifyItemQueryWithUser($user, $repository)`-> return void - add any queries to the repository (ie ->where('x','))
--   `qualifyStoreDataWithUser($data)` - return the updated data array
--   `qualifyUpdateDataWithUser($data)` - return the updated data array
+- `qualifyCollectionQueryWithUser($user, $repository)` -> return void - add any queries to the repository (ie ->where('x','))
+- `qualifyItemQueryWithUser($user, $repository)`-> return void - add any queries to the repository (ie ->where('x','))
+- `qualifyStoreDataWithUser($data)` - return the updated data array
+- `qualifyUpdateDataWithUser($data)` - return the updated data array
 
 ## Resources / Collections (Transforming)
 
@@ -84,8 +84,8 @@ in your controller override the following params:
 
 ## Snake vs Camel
 
--   middleware to convert all camel to snake: `Phpsa\LaravelApiController\Http\Middleware\SnakeCaseInputs`
--   set request header `X-Accept-Case-Type` to either `snake` or `camel` to alter your data response
+- middleware to convert all camel to snake: `Phpsa\LaravelApiController\Http\Middleware\SnakeCaseInputs`
+- set request header `X-Accept-Case-Type` to either `snake` or `camel` to alter your data response
 
 ## Filtering
 
@@ -137,15 +137,15 @@ You can easily filter using any related model that is configured for `include`. 
 
 By default all fields are returned, you can limit that to specific fields in the following ways:
 
--   Api Controller parameter `$defaultFields` default as `protected $defaultFields = ['*'];` - switch to include an array of fields
--   fields param in url querystring: ie `fields=id,name,age` = will only return those, this will also override the above.
--   in your response resource you can set the static::allowedFields to lock down which fields are returnable
--   `addfields` and `removefields` params in url querystring will work with these.
--   Use laravel [eloquent model `$appends`](https://laravel.com/docs/6.x/eloquent-serialization#appending-values-to-json) property to automatically include custom attribute accessors.
+- Api Controller parameter `$defaultFields` default as `protected $defaultFields = ['*'];` - switch to include an array of fields
+- fields param in url querystring: ie `fields=id,name,age` = will only return those, this will also override the above.
+- in your response resource you can set the static::allowedFields to lock down which fields are returnable
+- `addfields` and `removefields` params in url querystring will work with these.
+- Use laravel [eloquent model `$appends`](https://laravel.com/docs/6.x/eloquent-serialization#appending-values-to-json) property to automatically include custom attribute accessors.
 
 ## Relationships
 
--   Using the relationships defined in your models, you can pass a comma delimited list eg `include=join1,join2` which will return those joins (one or many).
+- Using the relationships defined in your models, you can pass a comma delimited list eg `include=join1,join2` which will return those joins (one or many).
 
 Simply add a `protected static $mapResources` to your `Resource` to define which resources to assign your related data. E.e., for a one to many relationship, you should specify a collection, and a one-to-one relationship specify the related resource directly. This will allow the API to properly format the related record.
 
@@ -158,24 +158,24 @@ Simply add a `protected static $mapResources` to your `Resource` to define which
 
 - You can automatically update and create related records for most types of relationships. Just include the related resource name in your POST or PUT request.
 
-For `BelongsToMany` or `MorphToMany` relationships, you can choose the sync strategy. By default, this will take an *additive* strategy. That is to say, related records sent will be ADDED to any existing related records. On a request-by-request basis, you can opt for a *sync* strategy which will remove the pivot for any related records not listed in the request. Note the actual related record will not be removed, just the pivot entry.
+For `BelongsToMany` or `MorphToMany` relationships, you can choose the sync strategy. By default, this will take an _additive_ strategy. That is to say, related records sent will be ADDED to any existing related records. On a request-by-request basis, you can opt for a _sync_ strategy which will remove the pivot for any related records not listed in the request. Note the actual related record will not be removed, just the pivot entry.
 
-To opt for the *sync* behavaiour, set `?sync[field]=true` in your request.
+To opt for the _sync_ behavaiour, set `?sync[field]=true` in your request.
 
 ## Sorting
 
--   Sorts can be passed as comma list aswell, ie `sort=age asc` or `sort=age asc,name desc,eyes` - generates sql of `sort age asc` and `sort age asc, name desc, eyes asc` respectively
--   Default sort can also be added on the controller using by overrideing the `protected $defaultSort = null;` parameter
+- Sorts can be passed as comma list aswell, ie `sort=age asc` or `sort=age asc,name desc,eyes` - generates sql of `sort age asc` and `sort age asc, name desc, eyes asc` respectively
+- Default sort can also be added on the controller using by overrideing the `protected $defaultSort = null;` parameter
 
 ## Pagination
 
--   pagination can be enabled/disbled on the controller by overriding the `protected $defaultLimit = 25;` on the controller
--   pagination can also be passed via the url using `limit=xx&page=y`
--   pagination can also be limited to a max per page by overriding the `protected $maximumLimit = false;` parameter
+- pagination can be enabled/disbled on the controller by overriding the `protected $defaultLimit = 25;` on the controller
+- pagination can also be passed via the url using `limit=xx&page=y`
+- pagination can also be limited to a max per page by overriding the `protected $maximumLimit = false;` parameter
 
 ## Validation
 
--   When Posting a new record, validation can be done by adding a `rulesForCreate` method to your controller returning an array eg
+- When Posting a new record, validation can be done by adding a `rulesForCreate` method to your controller returning an array eg
 
 ```php
 [
@@ -186,22 +186,22 @@ To opt for the *sync* behavaiour, set `?sync[field]=true` in your request.
 
 see https://laravel.com/docs/5.8/validation#conditionally-adding-rules
 
--   for updating a record, add a method `rulesForUpdate` per above.
+- for updating a record, add a method `rulesForUpdate` per above.
 
 ## Defaults
 
 The following parameters are set in the Base Api controller and can be overwritten by your Controller on a case by case basis:
 
--   **DEPRECATED** `protected $resourceKeySingular = 'data';`
--   **DEPRECATED** `protected $resourceKeyPlural = 'data';`
+- **DEPRECATED** `protected $resourceKeySingular = 'data';`
+- **DEPRECATED** `protected $resourceKeyPlural = 'data';`
 
--   `protected $resourceSingle = JsonResource::class;` Collection to use for your single resource
--   `protected $resourceCollection = ResourceCollection::class;` Collection to use for your resource collection
--   `protected $defaultFields = ['*'];` Default Fields to respond with
--   `protected $defaultSort = null;` Set the default sorting for queries.
--   `protected $defaultLimit = 25;` Number of items displayed at once if not specified. (0 = maximumLimit)
--   `protected $maximumLimit = 0;` Maximum limit that can be set via \$\_GET['limit']. - this ties in with the defaultLimit aswell, and if wanting to disable pagination , both should be 0. ) will allow all records to be returned in a single call.
--   `protected $unguard = false;` Do we need to unguard the model before create/update?
+- `protected $resourceSingle = JsonResource::class;` Collection to use for your single resource
+- `protected $resourceCollection = ResourceCollection::class;` Collection to use for your resource collection
+- `protected $defaultFields = ['*'];` Default Fields to respond with
+- `protected $defaultSort = null;` Set the default sorting for queries.
+- `protected $defaultLimit = 25;` Number of items displayed at once if not specified. (0 = maximumLimit)
+- `protected $maximumLimit = 0;` Maximum limit that can be set via \$\_GET['limit']. - this ties in with the defaultLimit aswell, and if wanting to disable pagination , both should be 0. ) will allow all records to be returned in a single call.
+- `protected $unguard = false;` Do we need to unguard the model before create/update?
 
 ## Scopes
 
@@ -222,6 +222,16 @@ class MyModelResource extends ApiResource
 
 you can now append `withTrashed=1` or `onlyTrashed=1` to your query.
 
+## Responses
+
+you can override responses for each point by overriding the following protected methods:
+
+- handleIndexResponse
+- handleStoreResponse
+- handleShowResponse
+- handleUpdateResponse
+- handleDestroyResponse
+
 ## Security
 
 If you discover any security related issues, please email
@@ -229,14 +239,14 @@ instead of using the issue tracker.
 
 ## Credits
 
--   [Craig G Smith](https://github.com/phpsa)
--   [Sam Sehnert](https://github.com/samatcd)
--   [Phil Taylor](https://github.com/codeberry)
--   [All contributors](https://github.com/phpsa/laravel-api-controller/graphs/contributors)
+- [Craig G Smith](https://github.com/phpsa)
+- [Sam Sehnert](https://github.com/samatcd)
+- [Phil Taylor](https://github.com/codeberry)
+- [All contributors](https://github.com/phpsa/laravel-api-controller/graphs/contributors)
 
 ## Sponsors
 
--   [Custom D](https://customd.com)
+- [Custom D](https://customd.com)
 
 [badge_laravel]: https://img.shields.io/badge/Laravel-5.8%20to%207-orange.svg?style=flat-square
 [badge_issues]: https://img.shields.io/github/issues/ARCANEDEV/Support.svg?style=flat-square
