@@ -112,6 +112,7 @@ trait Relationships
                     throw new ApiException("$type mapping not implemented yet");
                     break;
             }
+            $item->load($with);
         }
     }
 
@@ -184,23 +185,38 @@ trait Relationships
         $model = $relation->getRelated();
         $sync = collect();
 
+        $pivots =  $relation->getPivotColumns();
+        $detach = filter_var(request()->get('sync')[$with] ?? false, FILTER_VALIDATE_BOOLEAN);
+
         foreach ($relatedRecords as $relatedRecord) {
+
             if (! isset($relatedRecord[$parentKey])) {
                 $relatedRecord[$parentKey] = $item->getAttribute($relatedKey);
             }
             if ($relatedRecord[$parentKey]) {
                 $existanceCheck = [$parentKey => $relatedRecord[$parentKey]];
-                $sync->push($model->updateOrCreate($existanceCheck, $relatedRecord));
+                $record = $model->updateOrCreate($existanceCheck, $relatedRecord);
             } elseif (isset($data[$relatedKey])) {
                 $existanceCheck = [$parentKey => $data[$relatedKey]];
-                $sync->push($model->updateOrCreate($existanceCheck, $relatedRecord));
+                $record = $model->updateOrCreate($existanceCheck, $relatedRecord);
             } else {
-                $sync->push($model->create($relatedRecord));
+                $record = $model->create($relatedRecord);
             }
+
+            $pvals = [];
+            if($pivots){
+
+                foreach($pivots as $pivot)
+                {
+                    if(isset($relatedRecord[$pivot])){
+                        $pvals[$pivot] = $relatedRecord[$pivot];
+                    }
+                }
+            }
+            $sync->put($record->getKey(), $pvals);
+
         }
 
-        $detach = filter_var(request()->get('sync')[$with] ?? false, FILTER_VALIDATE_BOOLEAN);
-
-        $relation->sync($sync->pluck('id'), $detach);
+        $relation->sync($sync->toArray(), $detach);
     }
 }
