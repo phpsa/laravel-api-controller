@@ -110,8 +110,9 @@ trait Relationships
                     break;
                 default:
                     throw new ApiException("$type mapping not implemented yet");
-                    break;
+                break;
             }
+            $item->load($with);
         }
     }
 
