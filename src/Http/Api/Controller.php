@@ -86,7 +86,7 @@ abstract class Controller extends BaseController
 
         $items = $limit > 0 ? $this->repository->paginate($limit, $fields) : $this->repository->get($fields);
 
-        return $this->respondWithMany($items);
+        return $this->handleIndexResponse($items);
     }
 
     public function handleIndexActionRaw($request, array $extraParams = [])
@@ -97,7 +97,7 @@ abstract class Controller extends BaseController
 
         $items = $limit > 0 ? $this->repository->paginateRaw($limit, $fields) : $this->repository->getRaw($fields);
 
-        return $this->respondWithMany($items);
+        return $this->handleIndexResponse($items);
     }
 
     protected function handleIndexActionCommon($request, array $extraParams = [])
@@ -159,7 +159,7 @@ abstract class Controller extends BaseController
 
             DB::commit();
 
-            return $this->respondItemCreated($this->repository->getById($item->getKey()));
+            return $this->handleStoreResponse($item);
         } catch (\Exception $exception) {
             $message = config('app.debug') ? $exception->getMessage() : 'Failed to create Record';
 
@@ -191,7 +191,7 @@ abstract class Controller extends BaseController
             return $this->errorNotFound('Record not found');
         }
 
-        return $this->respondWithOne($item);
+        return $this->handleShowResponse($item);
     }
 
     /**
@@ -237,7 +237,7 @@ abstract class Controller extends BaseController
 
             DB::commit();
 
-            return $this->respondWithOne($item);
+            return $this->handleUpdateResponse($item);
         } catch (\Exception $exception) {
             $message = config('app.debug') ? $exception->getMessage() : 'Failed to update Record';
             DB::rollback();
@@ -268,6 +268,6 @@ abstract class Controller extends BaseController
             return $this->errorNotFound('Record not found');
         }
 
-        return $this->respondNoContent();
+        return $this->handleDestroyResponse($id);
     }
 }

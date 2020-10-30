@@ -242,4 +242,30 @@ trait HasResponse
         }
         throw new HttpException(501, $message);
     }
+
+
+    protected function handleIndexResponse($items)
+    {
+        return $this->respondWithMany($items);
+    }
+
+    protected function handleStoreResponse($item)
+    {
+        return $this->respondItemCreated($item);
+    }
+
+    protected function handleShowResponse($item)
+    {
+        return $this->respondWithOne($item);
+    }
+
+    protected function handleUpdateResponse($item)
+    {
+        return $this->respondWithOne($item);
+    }
+
+    protected function handleDestroyResponse($id)
+    {
+        return $this->respondNoContent();
+    }
 }
