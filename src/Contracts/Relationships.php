@@ -183,10 +183,11 @@ trait Relationships
         $relatedKey = $relation->getRelatedKeyName();
 
         $model = $relation->getRelated();
-        $sync = collect();
-
         $pivots =  $relation->getPivotColumns();
-        $detach = filter_var(request()->get('sync')[$with] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+        $syncWithRelated = Helpers::snakeCaseArrayKeys(request()->get('sync') ?? []);
+        $detach = filter_var($syncWithRelated[Helpers::snake($with)] ?? false, FILTER_VALIDATE_BOOLEAN);
+        $sync = collect();
 
         foreach ($relatedRecords as $relatedRecord) {
 
