@@ -243,7 +243,6 @@ trait HasResponse
         throw new HttpException(501, $message);
     }
 
-
     protected function handleIndexResponse($items)
     {
         return $this->respondWithMany($items);
