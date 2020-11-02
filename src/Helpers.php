@@ -162,9 +162,10 @@ class Helpers
     protected static function fieldsFromPutPost($request, $fields): array
     {
         $method = $request->method();
-        if (! in_array($method, ['PUT','POST','PATCH'])) {
+        if (! in_array($method, ['PUT', 'POST', 'PATCH'])) {
             return [];
         }
+
         return array_values(collect($request->all())->filter(function ($item, $key) use ($fields) {
             if (in_array($key, $fields)) {
                 return false;
@@ -172,7 +173,8 @@ class Helpers
             if (! is_array($item) && ! is_object($key)) {
                 return false;
             }
-                return true;
+
+            return true;
         })->map(function ($item, $key) {
             return $key;
         })->toArray());
