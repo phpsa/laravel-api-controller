@@ -183,14 +183,13 @@ trait Relationships
         $relatedKey = $relation->getRelatedKeyName();
 
         $model = $relation->getRelated();
-        $pivots =  $relation->getPivotColumns();
+        $pivots = $relation->getPivotColumns();
 
         $syncWithRelated = Helpers::snakeCaseArrayKeys(request()->get('sync') ?? []);
         $detach = filter_var($syncWithRelated[Helpers::snake($with)] ?? false, FILTER_VALIDATE_BOOLEAN);
         $sync = collect();
 
         foreach ($relatedRecords as $relatedRecord) {
-
             if (! isset($relatedRecord[$parentKey])) {
                 $relatedRecord[$parentKey] = $item->getAttribute($relatedKey);
             }
@@ -205,17 +204,14 @@ trait Relationships
             }
 
             $pvals = [];
-            if($pivots){
-
-                foreach($pivots as $pivot)
-                {
-                    if(isset($relatedRecord[$pivot])){
+            if ($pivots) {
+                foreach ($pivots as $pivot) {
+                    if (isset($relatedRecord[$pivot])) {
                         $pvals[$pivot] = $relatedRecord[$pivot];
                     }
                 }
             }
             $sync->put($record->getKey(), $pvals);
-
         }
 
         $relation->sync($sync->toArray(), $detach);

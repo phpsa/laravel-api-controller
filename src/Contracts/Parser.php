@@ -147,11 +147,10 @@ trait Parser
 
             $withTable = $relation->getRelated()->getTable();
 
-            $withTableName = strpos($withTable, ".") === false ? $withConnection . '.' . $withTable : $withTable;
+            $withTableName = strpos($withTable, '.') === false ? $withConnection.'.'.$withTable : $withTable;
 
             $this->repository->join($withTableName, "{$withTableName}.{$foreignKey}", "{$currentTable}.{$localKey}");
             $this->repository->orderBy("{$withTableName}.{$key}", $sortD);
-
         }
     }
 
