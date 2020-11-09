@@ -184,6 +184,7 @@ trait Parser
 
         /** @scrutinizer ignore-call */
         $tableColumns = $this->getTableColumns();
+        $table = self::$model->getTable();
 
         foreach ($where as $whr) {
             if (strpos($whr['key'], '.') > 0) {
@@ -192,8 +193,7 @@ trait Parser
             } elseif (! in_array($whr['key'], $tableColumns)) {
                 continue;
             }
-
-            $this->setQueryBuilderWhereStatement($this->repository, $whr['key'], $whr);
+            $this->setQueryBuilderWhereStatement($this->repository, $table . '.' . $whr['key'], $whr);
         }
     }
 
