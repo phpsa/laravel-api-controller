@@ -170,9 +170,6 @@ class Helpers
             if (in_array($key, $fields)) {
                 return false;
             }
-            if (! is_array($item) && ! is_object($key)) {
-                return false;
-            }
 
             return true;
         })->map(function ($item, $key) {

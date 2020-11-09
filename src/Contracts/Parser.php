@@ -149,7 +149,7 @@ trait Parser
 
             $withTableName = strpos($withTable, '.') === false ? $withConnection.'.'.$withTable : $withTable;
 
-            $this->repository->join($withTableName, "{$withTableName}.{$foreignKey}", "{$currentTable}.{$localKey}");
+            $this->repository->leftJoin($withTableName, "{$withTableName}.{$foreignKey}", "{$currentTable}.{$localKey}");
             $this->repository->orderBy("{$withTableName}.{$key}", $sortD);
         }
     }
