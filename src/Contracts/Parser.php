@@ -239,16 +239,19 @@ trait Parser
                 if (! empty($where['values'])) {
                     $query->whereIn($key, $where['values']);
                 }
-
-                return;
+                break;
             case 'NotIn':
                 if (! empty($where['values'])) {
                     $query->whereNotIn($key, $where['values']);
                 }
-
-                return;
+                break;
             case 'Basic':
-                $query->where($key, $where['operator'], $where['value']);
+                if ($where['value'] !== 'NULL') {
+                    $query->where($key, $where['operator'], $where['value']);
+                    return;
+                }
+
+                $where['operator'] === '=' ? $query->whereNull($key) : $query->whereNotNull($key);
         }
     }
 
