@@ -193,7 +193,7 @@ trait Parser
             } elseif (! in_array($whr['key'], $tableColumns)) {
                 continue;
             }
-            $this->setQueryBuilderWhereStatement($this->repository, $table . '.' . $whr['key'], $whr);
+            $this->setQueryBuilderWhereStatement($this->repository, $table.'.'.$whr['key'], $whr);
         }
     }
 
@@ -248,6 +248,7 @@ trait Parser
             case 'Basic':
                 if ($where['value'] !== 'NULL') {
                     $query->where($key, $where['operator'], $where['value']);
+
                     return;
                 }
 
