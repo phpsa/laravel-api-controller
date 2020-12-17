@@ -1,7 +1,7 @@
 # Laravel Api Controller
 
 [![For Laravel 5][badge_laravel]](https://github.com/phpsa/laravel-api-controller/issues)
-[![Build Status](https://travis-ci.org/phpsa/laravel-api-controller.svg?branch=master)](https://travis-ci.org/phpsa/laravel-api-controller)
+[![Build Status](https://api.travis-ci.com/phpsa/laravel-api-controller.svg?branch=master)](https://travis-ci.com/phpsa/laravel-api-controller)
 [![Coverage Status](https://coveralls.io/repos/github/phpsa/laravel-api-controller/badge.svg?branch=master)](https://coveralls.io/github/phpsa/laravel-api-controller?branch=master)
 [![Packagist](https://img.shields.io/packagist/v/phpsa/laravel-api-controller.svg)](https://packagist.org/packages/phpsa/laravel-api-controller)
 [![Packagist](https://poser.pugx.org/phpsa/laravel-api-controller/d/total.svg)](https://packagist.org/packages/phpsa/laravel-api-controller)
