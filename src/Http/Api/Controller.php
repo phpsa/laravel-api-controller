@@ -84,7 +84,7 @@ abstract class Controller extends BaseController
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
 
-        $items = $limit > 0 ? $this->repository->paginate($limit, $fields) : $this->repository->get($fields);
+        $items = $limit > 0 ? $this->repository->paginate($limit, $fields)->appends($this->originalQueryParams) : $this->repository->get($fields);
 
         return $this->handleIndexResponse($items);
     }
@@ -95,7 +95,7 @@ abstract class Controller extends BaseController
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
 
-        $items = $limit > 0 ? $this->repository->paginateRaw($limit, $fields) : $this->repository->getRaw($fields);
+        $items = $limit > 0 ? $this->repository->paginateRaw($limit, $fields)->appends($this->originalQueryParams) : $this->repository->getRaw($fields);
 
         return $this->handleIndexResponse($items);
     }

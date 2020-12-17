@@ -15,6 +15,8 @@ trait Parser
      */
     protected static $uriParser;
 
+    protected $originalQueryParams;
+
     protected function getUriParser($request)
     {
         if (is_null(self::$uriParser)) {
@@ -32,6 +34,8 @@ trait Parser
      */
     protected function addCustomParams($request, array $extraParams = []): void
     {
+        $this->originalQueryParams = $request->query();
+
         $all = $request->all();
         $new = Helpers::array_merge_request($all, $extraParams);
         $request->replace($new);
