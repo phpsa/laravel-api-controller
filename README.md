@@ -112,6 +112,22 @@ For the get command you can filter by using the following url patterns
 You can pass to the filters an array of values
 ie: `filter[user_id]=1||2||||4||7` or `filter[user_id!]=55||33`
 
+# Null / Not Null (introduced 1.23.0)
+
+If you need to filter on whether a field is null or not null, you can use the filter param as of version 1.23.0 EG: `filter[age]=NULL` or `filter[age!]=NULL`. Note that NULL must be uppercase.
+
+**Older versions**
+Add a scope to your model: eg
+
+```php
+
+public function scopeAgeNull(Builder $builder, $isNull = true){
+  $isNull ? $builder->whereNull('age') : $builder->whereNotNull('age');
+}
+```
+
+Add to your allowedScopes and can then be called in url as `?ageNull=1` for where null and `?ageNull=0` for where age not null
+
 ## Scopes
 
 In addition to filtering, you can use Laravel's Eloquent [Query Scopes](https://laravel.com/docs/6.x/eloquent#local-scopes) to do more complex searches or filters.
