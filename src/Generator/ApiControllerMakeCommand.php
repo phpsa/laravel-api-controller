@@ -2,13 +2,12 @@
 
 namespace Phpsa\LaravelApiController\Generator;
 
-use Symfony\Component\Console\Input\InputOption;
 use Illuminate\Routing\Console\ControllerMakeCommand;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Input\InputOption;
 
 class ApiControllerMakeCommand extends ControllerMakeCommand
 {
-
     /**
      * The console command name.
      *
@@ -31,35 +30,33 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
         'resourceCollection' => null,
     ];
 
-
     public function handle()
     {
-
         $this->setRawName();
 
         if (empty($this->option('model'))) {
             $this->input->setOption('model', $this->ask('For which model?', $this->customClasses['rawName']));
         }
 
-        $this->customClasses['request'] =  $this->option('request') ?: $this->confirm("Add Custom Request?");
+        $this->customClasses['request'] = $this->option('request') ?: $this->confirm('Add Custom Request?');
 
-        if ($this->confirm("Add Custom Resource & Collection?")) {
+        if ($this->confirm('Add Custom Resource & Collection?')) {
             $this->customClasses['resources'] = true;
-            $this->customClasses['resourceSingle'] = $this->customClasses['rawName'] . 'Resource';
-            $this->customClasses['resourceCollection'] = $this->customClasses['rawName'] . 'ResourceCollection';
+            $this->customClasses['resourceSingle'] = $this->customClasses['rawName'].'Resource';
+            $this->customClasses['resourceCollection'] = $this->customClasses['rawName'].'ResourceCollection';
         }
 
         $this->confirmModelExists();
 
         parent::handle();
 
-        if ($this->confirm("Add Feature Test?")) {
+        if ($this->confirm('Add Feature Test?')) {
             $this->call('make:test', ['name' =>  $this->customClasses['rawName'].'Test']);
         }
 
         $this->addRoutes();
 
-        $this->info("Complete");
+        $this->info('Complete');
     }
 
     protected function setRawName()
@@ -68,25 +65,21 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
         $this->customClasses['rawName'] = class_basename($name);
     }
 
-
-
     protected function getRequestClass(): string
     {
         return  $this->customClasses['request'] === false ? '\\Illuminate\\Http\\Request' : $this->makeRequestClass();
     }
 
-
     protected function makeRequestClass()
     {
-        $class = $this->customClasses['rawName'] . 'Request';
+        $class = $this->customClasses['rawName'].'Request';
 
         $this->call('make:request', [
-            'name' => $class
+            'name' => $class,
         ]);
 
-        return 'App\\Http\\Requests\\' . $class;
+        return 'App\\Http\\Requests\\'.$class;
     }
-
 
     protected function confirmModelExists()
     {
@@ -96,6 +89,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
             if ($this->confirm("A {$modelClass} model does not exist!! Do you want to generate it?", true)) {
                 $this->call('make:api:model', ['name' => $modelClass]);
             }
+
             return;
         }
 
@@ -106,10 +100,10 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
     {
         $modelClass = $this->parseModel($this->option('model'));
         $model = class_basename($modelClass);
-        $policyClass = rtrim($modelClass, $model) . 'Policies\\' . $model . 'Policy';
+        $policyClass = rtrim($modelClass, $model).'Policies\\'.$model.'Policy';
         if (! class_exists($policyClass)) {
             if ($this->confirm("A {$policyClass} Policy does not exist. Do you want to generate it?", true)) {
-                $this->call('make:api:policy', ['name' => $policyClass, '--model' => '\\' . $modelClass]);
+                $this->call('make:api:policy', ['name' => $policyClass, '--model' => '\\'.$modelClass]);
             }
         }
     }
@@ -135,14 +129,13 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
             '{{useResourceCollection}}'   => $useResourceCollection,
             '{{ useResourceSingle }}'     => $useResourceSingle,
             '{{ useResourceCollection }}' => $useResourceCollection,
-            '{{resourceSingle}}'          => $this->customClasses['resourceSingle'] ? 'protected $resourceSingle = ' . $this->customClasses['resourceSingle'] . ';' : null,
-            '{{resourceCollection}}'      => $this->customClasses['resourceCollection'] ? 'protected $resourceCollection = ' . $this->customClasses['resourceCollection'] . ';' : null,
-            '{{ resourceSingle }}'        => $this->customClasses['resourceSingle'] ? 'protected $resourceSingle = ' . $this->customClasses['resourceSingle'] . "\n" : null,
-            '{{ resourceCollection }}'    => $this->customClasses['resourceCollection'] ? 'protected $resourceCollection = ' . $this->customClasses['resourceCollection'] . ';' : null,
+            '{{resourceSingle}}'          => $this->customClasses['resourceSingle'] ? 'protected $resourceSingle = '.$this->customClasses['resourceSingle'].';' : null,
+            '{{resourceCollection}}'      => $this->customClasses['resourceCollection'] ? 'protected $resourceCollection = '.$this->customClasses['resourceCollection'].';' : null,
+            '{{ resourceSingle }}'        => $this->customClasses['resourceSingle'] ? 'protected $resourceSingle = '.$this->customClasses['resourceSingle']."\n" : null,
+            '{{ resourceCollection }}'    => $this->customClasses['resourceCollection'] ? 'protected $resourceCollection = '.$this->customClasses['resourceCollection'].';' : null,
 
         ]);
     }
-
 
     protected function getUseResourceSingle()
     {
@@ -152,7 +145,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
 
         $this->call('make:api:resource', ['name' => $this->customClasses['resourceSingle']]);
 
-        return 'use App\Http\\Resources\\' . $this->customClasses['resourceSingle'] . ';';
+        return 'use App\Http\\Resources\\'.$this->customClasses['resourceSingle'].';';
     }
 
     protected function getUseResourceCollection()
@@ -163,9 +156,8 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
 
         $this->call('make:api:resource', ['name' => $this->customClasses['resourceCollection']]);
 
-        return 'use App\Http\\Resources\\' . $this->customClasses['resourceCollection'] . ';';
+        return 'use App\Http\\Resources\\'.$this->customClasses['resourceCollection'].';';
     }
-
 
     protected function getStub()
     {
@@ -186,9 +178,9 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
      */
     protected function resolveStubPath($stub)
     {
-        return file_exists($customPath = $this->laravel->basePath('api/' . trim($stub, '/')))
+        return file_exists($customPath = $this->laravel->basePath('api/'.trim($stub, '/')))
         ? $customPath
-        : __DIR__ .  '/stubs/' . $stub;
+        : __DIR__.'/stubs/'.$stub;
     }
 
     /**
@@ -199,9 +191,8 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace . '\Http\Controllers\Api';
+        return $rootNamespace.'\Http\Controllers\Api';
     }
-
 
     /**
      * Get the console command options.
@@ -218,7 +209,6 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
         ];
     }
 
-
     protected function addRoutes()
     {
         $stub = $this->resolveStubPath('route.stub');
@@ -228,7 +218,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
 
         $replacements = [
             '{{route.name}}'       => strtolower(Str::plural($this->customClasses['rawName'])),
-            '{{route.controller}}' => "\\" . $name . "::class"
+            '{{route.controller}}' => '\\'.$name.'::class',
         ];
 
         $stub = $this->files->get($stub);
@@ -243,8 +233,9 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
         $lines = file($routesFile);
 
         if (! $lines) {
-            $this->error("could not read routes file, add the following toyour routes file:");
-            $this->info("\n" . $stub . "\n");
+            $this->error('could not read routes file, add the following toyour routes file:');
+            $this->info("\n".$stub."\n");
+
             return false;
         }
 
@@ -260,8 +251,8 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
         $fileResource = fopen($routesFile, 'w');
 
         if (! is_resource($fileResource)) {
-            $this->error("could not read routes file, add the following toyour routes file:");
-            $this->info("\n" . $stub . "\n");
+            $this->error('could not read routes file, add the following toyour routes file:');
+            $this->info("\n".$stub."\n");
 
             return false;
         }

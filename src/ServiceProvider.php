@@ -4,14 +4,13 @@ namespace Phpsa\LaravelApiController;
 
 use Illuminate\Support\ServiceProvider;
 use Phpsa\LaravelApiController\Generator\ApiControllerMakeCommand;
-use Phpsa\LaravelApiController\Generator\ApiMakeCommand;
 use Phpsa\LaravelApiController\Generator\ApiModelMakeCommand;
 use Phpsa\LaravelApiController\Generator\ApiPolicyMakeCommand;
 use Phpsa\LaravelApiController\Generator\ApiResourceMakeCommand;
 
 class ServiceProvider extends ServiceProvider
 {
-    protected const CONFIG_PATH = __DIR__ . '/../config/laravel-api-controller.php';
+    protected const CONFIG_PATH = __DIR__.'/../config/laravel-api-controller.php';
 
     public function boot()
     {
