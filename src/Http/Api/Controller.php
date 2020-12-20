@@ -76,10 +76,11 @@ abstract class Controller extends BaseController
      * Display a listing of the resource.
      * GET /api/{resource}.
      *
-     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
+     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest|null $request
      */
-    public function handleIndexAction($request, array $extraParams = [])
+    public function handleIndexAction($request = null, array $extraParams = [])
     {
+        $request = $request ?? request();
         $this->handleIndexActionCommon($request, $extraParams);
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
@@ -89,8 +90,9 @@ abstract class Controller extends BaseController
         return $this->handleIndexResponse($items);
     }
 
-    public function handleIndexActionRaw($request, array $extraParams = [])
+    public function handleIndexActionRaw($request = null, array $extraParams = [])
     {
+        $request = $request ?? request();
         $this->handleIndexActionCommon($request, $extraParams);
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
@@ -100,8 +102,9 @@ abstract class Controller extends BaseController
         return $this->handleIndexResponse($items);
     }
 
-    protected function handleIndexActionCommon($request, array $extraParams = [])
+    protected function handleIndexActionCommon($request = null, array $extraParams = [])
     {
+        $request = $request ?? request();
         $this->addCustomParams($request, $extraParams);
         $this->validateRequestType($request);
         $this->authoriseUserAction('viewAny');
@@ -109,8 +112,9 @@ abstract class Controller extends BaseController
         $this->qualifyCollectionQuery();
     }
 
-    protected function handleCommonActions($request)
+    protected function handleCommonActions($request = null)
     {
+        $request = $request ?? request();
         $this->getUriParser($request);
         $this->parseIncludeParams();
         $this->parseSortParams();
@@ -173,9 +177,9 @@ abstract class Controller extends BaseController
      * GET /api/{resource}/{id}.
      *
      * @param int                                                              $id
-     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
+     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest|null $request
      */
-    public function handleShowAction($id, $request, array $extraParams = [])
+    public function handleShowAction($id, $request = null, array $extraParams = [])
     {
         $this->addCustomParams($request, $extraParams);
         $this->validateRequestType($request);
@@ -251,12 +255,10 @@ abstract class Controller extends BaseController
      * DELETE /api/{resource}/{id}.
      *
      * @param int                                                              $id
-     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
+     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest|null $request
      */
-    public function handleDestroyAction($id, $request)
+    public function handleDestroyAction($id, $request = null)
     {
-        $this->validateRequestType($request);
-
         $this->handleCommonActions($request);
         $this->qualifyItemQuery();
 

@@ -1,0 +1,82 @@
+<?php
+
+namespace {{ namespace }};
+
+use Phpsa\LaravelApiController\Http\Api\Controller;
+use {{ namespacedModel }};
+use {{ namespaceRequest }};
+{{useResourceSingle}}
+{{useResourceCollection}}
+
+class {{ class }} extends Controller
+{
+
+    {{resourceSingle}}
+    {{resourceCollection}}
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return $this->handleIndexAction();
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @see self::handleStoreOrUpdateAction to do magic insert / update
+     * @param  {{ namespaceRequest }}  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store({{ request }} $request)
+    {
+         return $this->handleStoreAction($request);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        return $this->handleShowAction($id);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  {{ namespaceRequest }}  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update({{ request }} $request, $id)
+    {
+        return $this->handleUpdateAction($id, $request);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        return $this->handleDestroyAction($id);
+    }
+
+    /**
+     * Eloquent model.
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    protected function model()
+    {
+        return {{ model }}::class;
+    }
+}

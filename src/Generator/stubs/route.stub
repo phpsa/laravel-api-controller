@@ -1,1 +1,1 @@
-Route::apiresource('{{route.name}}', '{{model.fullNameWithoutRoot}}Controller')->only(['index','store','destroy','show','update']);
+Route::apiresource('{{route.name}}', {{route.controller}})->only(['index','store','destroy','show','update']);

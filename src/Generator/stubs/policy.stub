@@ -1,0 +1,147 @@
+<?php
+
+namespace {{ namespace }};
+
+use Illuminate\Auth\Access\HandlesAuthorization;
+use {{ namespacedModel }};
+use {{ namespacedUserModel }};
+
+class {{ class }}
+{
+    use HandlesAuthorization;
+
+    /**
+     * Determine whether the user can view any models.
+     *
+     * @param  \{{ namespacedUserModel }}  $user
+     * @return mixed
+     */
+    public function viewAny({{ user }} $user)
+    {
+        //
+    }
+
+    /**
+     * Determine whether the user can view the model.
+     *
+     * @param  \{{ namespacedUserModel }}  $user
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
+     * @return mixed
+     */
+    public function view({{ user }} $user, {{ model }} ${{ modelVariable }})
+    {
+        //
+    }
+
+    /**
+     * Determine whether the user can create models.
+     *
+     * @param  \{{ namespacedUserModel }}  $user
+     * @return mixed
+     */
+    public function create({{ user }} $user)
+    {
+        //
+    }
+
+    /**
+     * Determine whether the user can update the model.
+     *
+     * @param  \{{ namespacedUserModel }}  $user
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
+     * @return mixed
+     */
+    public function update({{ user }} $user, {{ model }} ${{ modelVariable }})
+    {
+        //
+    }
+
+    /**
+     * Determine whether the user can delete the model.
+     *
+     * @param  \{{ namespacedUserModel }}  $user
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
+     * @return mixed
+     */
+    public function delete({{ user }} $user, {{ model }} ${{ modelVariable }})
+    {
+        //
+    }
+
+    /**
+     * Determine whether the user can restore the model.
+     *
+     * @param  \{{ namespacedUserModel }}  $user
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
+     * @return mixed
+     */
+    public function restore({{ user }} $user, {{ model }} ${{ modelVariable }})
+    {
+        //
+    }
+
+    /**
+     * Determine whether the user can permanently delete the model.
+     *
+     * @param  \{{ namespacedUserModel }}  $user
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
+     * @return mixed
+     */
+    public function forceDelete({{ user }} $user, {{ model }} ${{ modelVariable }})
+    {
+        //
+    }
+
+    /**
+     * Add query to the index (getall) endpoint for this endpoint call.
+     *
+     * @param \App\Model\User $user
+     * @param mixed $builder
+     *
+     * @return void
+     */
+    public function qualifyCollectionQueryWithUser({{ user }} $user, $builder): void
+    {
+        //
+    }
+
+    /**
+     * Add query to the show (get) endpoint for this endpoint call.
+     *
+     * @param \App\Model\User $user
+     * @param mixed $builder
+     *
+     * @return void
+     */
+    public function qualifyItemQueryWithUser({{ user }} $user, $builder): void
+    {
+        //
+    }
+
+    /**
+     * allows you to manipulate the data for the store endpoint
+     *
+     * @param \App\Model\User $user
+     * @param array $data
+     *
+     * @return array
+     */
+    public function qualifyStoreDataWithUser({{ user }} $user, array $data): array
+    {
+        return $data;
+    }
+
+    /**
+     * allows you to manipulate the data for the update endpoint
+     *
+     * @param \App\Model\User $user
+     * @param array $data
+     *
+     * @return array
+     */
+    public function qualifyUpdateDataWithUser({{ user }} $user, array $data): array
+    {
+        return $data;
+    }
+
+}

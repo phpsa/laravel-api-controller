@@ -6,7 +6,7 @@ use Illuminate\Foundation\Console\ResourceMakeCommand as Command;
 
 class ApiResourceMakeCommand extends Command
 {
-    protected $name = 'make:apiresource';
+    protected $name = 'make:api:resource';
 
     protected $description = 'Create a new api resource (phpsa/laravel-api-controller)';
 
