@@ -83,7 +83,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
 
     protected function confirmModelExists()
     {
-        $modelClass = $this->parseModel($this->option('model'));
+        $modelClass = $this->parseModel(/** @scrutinizer ignore-type */ $this->option('model'));
 
         if (! class_exists($modelClass, false)) {
             if ($this->confirm("A {$modelClass} model does not exist!! Do you want to generate it?", true)) {
@@ -98,7 +98,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
 
     protected function confirmModelPolicyExists()
     {
-        $modelClass = $this->parseModel($this->option('model'));
+        $modelClass = $this->parseModel(/** @scrutinizer ignore-type */ $this->option('model'));
         $model = class_basename($modelClass);
         $policyClass = rtrim($modelClass, $model).'Policies\\'.$model.'Policy';
         if (! class_exists($policyClass)) {

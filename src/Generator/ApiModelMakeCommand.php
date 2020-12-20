@@ -48,10 +48,10 @@ class ApiModelMakeCommand extends Command
      */
     protected function createMigration()
     {
-        $table = Str::snake(Str::pluralStudly(class_basename($this->argument('name'))));
+        $table = Str::snake(Str::pluralStudly(class_basename(/** @scrutinizer ignore-type */ $this->argument('name'))));
 
         $this->call('make:migration', [
-            'name' => "create_{$table}_table",
+            'name'     => "create_{$table}_table",
             '--create' => $table,
         ]);
     }
@@ -68,7 +68,7 @@ class ApiModelMakeCommand extends Command
         $policy = rtrim($modelName, $name).'Policies\\'.$name;
 
         $this->call('make:api:policy', [
-            'name' => "{$policy}Policy",
+            'name'    => "{$policy}Policy",
             '--model' => $modelName,
         ]);
     }
@@ -92,8 +92,8 @@ class ApiModelMakeCommand extends Command
     protected function resolveStubPath($stub)
     {
         return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
-                        ? $customPath
-                        : __DIR__.$stub;
+        ? $customPath
+        : __DIR__.$stub;
     }
 
     protected function getOptions()
