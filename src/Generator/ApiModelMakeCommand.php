@@ -2,14 +2,13 @@
 
 namespace Phpsa\LaravelApiController\Generator;
 
-use Illuminate\Support\Str;
 use Illuminate\Console\GeneratorCommand;
-use Symfony\Component\Console\Input\InputOption;
 use Illuminate\Foundation\Console\ModelMakeCommand as Command;
+use Illuminate\Support\Str;
+use Symfony\Component\Console\Input\InputOption;
 
 class ApiModelMakeCommand extends Command
 {
-
     /**
      * The console command name.
      *
@@ -17,12 +16,10 @@ class ApiModelMakeCommand extends Command
      */
     protected $name = 'make:api:model';
 
-        protected $type = 'Model';
-
+    protected $type = 'Model';
 
     public function handle()
     {
-
         if (GeneratorCommand::handle() === false && ! $this->option('force')) {
             return false;
         }
@@ -42,10 +39,9 @@ class ApiModelMakeCommand extends Command
         if ($this->confirm('Do you wish to generate a policy?')) {
             $this->createPolicy();
         }
-
     }
 
-        /**
+    /**
      * Create a migration file for the model.
      *
      * @return void
@@ -53,7 +49,6 @@ class ApiModelMakeCommand extends Command
     protected function createMigration()
     {
         $table = Str::snake(Str::pluralStudly(class_basename($this->argument('name'))));
-
 
         $this->call('make:migration', [
             'name' => "create_{$table}_table",
@@ -68,20 +63,17 @@ class ApiModelMakeCommand extends Command
      */
     protected function createPolicy()
     {
-
         $name = Str::studly(class_basename($this->getNameInput()));
         $modelName = ($this->qualifyClass($this->getNameInput()));
-        $policy = rtrim($modelName, $name) . 'Policies\\' . $name;
-
+        $policy = rtrim($modelName, $name).'Policies\\'.$name;
 
         $this->call('make:api:policy', [
             'name' => "{$policy}Policy",
-            '--model' => $modelName
+            '--model' => $modelName,
         ]);
     }
 
-
-        /**
+    /**
      * Get the stub file for the generator.
      *
      * @return string
@@ -104,7 +96,7 @@ class ApiModelMakeCommand extends Command
                         : __DIR__.$stub;
     }
 
-     protected function getOptions()
+    protected function getOptions()
     {
         return [
             ['force', null, InputOption::VALUE_NONE, 'Create the class even if the model already exists'],

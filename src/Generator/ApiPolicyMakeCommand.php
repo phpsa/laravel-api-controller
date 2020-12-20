@@ -2,14 +2,10 @@
 
 namespace Phpsa\LaravelApiController\Generator;
 
-use Illuminate\Support\Str;
-use Illuminate\Console\GeneratorCommand;
-use Symfony\Component\Console\Input\InputOption;
 use Illuminate\Foundation\Console\PolicyMakeCommand as Command;
 
 class ApiPolicyMakeCommand extends Command
 {
-
     /**
      * The console command name.
      *
@@ -17,7 +13,7 @@ class ApiPolicyMakeCommand extends Command
      */
     protected $name = 'make:api:policy';
 
-        /**
+    /**
      * Resolve the fully-qualified path to the stub.
      *
      * @param  string  $stub
@@ -29,5 +25,4 @@ class ApiPolicyMakeCommand extends Command
                         ? $customPath
                         : __DIR__.$stub;
     }
-
 }
