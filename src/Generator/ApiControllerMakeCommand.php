@@ -41,7 +41,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
             $this->input->setOption('model', $this->ask('For which model?', $this->customClasses['rawName']));
         }
 
-        $this->customClasses['request'] = $this->confirm("Add Custom Request?");
+        $this->customClasses['request'] =  $this->option('request') ?: $this->confirm("Add Custom Request?");
 
         if ($this->confirm("Add Custom Resource & Collection?")) {
             $this->customClasses['resources'] = true;
@@ -212,6 +212,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
     {
         return [
             ['force', null, InputOption::VALUE_NONE, 'Create the class even if the controller already exists'],
+            ['request', 'r', InputOption::VALUE_NONE, 'Create a request class for the put/post requests'],
             ['model', 'm', InputOption::VALUE_OPTIONAL, 'Generate a resource controller for the given model.'],
             ['parent', 'p', InputOption::VALUE_OPTIONAL, 'Generate a nested resource controller class.'],
         ];
