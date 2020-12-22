@@ -7,6 +7,7 @@ use Phpsa\LaravelApiController\Generator\ApiControllerMakeCommand;
 use Phpsa\LaravelApiController\Generator\ApiModelMakeCommand;
 use Phpsa\LaravelApiController\Generator\ApiPolicyMakeCommand;
 use Phpsa\LaravelApiController\Generator\ApiResourceMakeCommand;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -17,6 +18,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->publishes([
             self::CONFIG_PATH => config_path('laravel-api-controller.php'),
         ], 'config');
+        $this->addDbMacros();
     }
 
     public function register()
@@ -43,5 +45,16 @@ class ServiceProvider extends BaseServiceProvider
         $this->commands('command.api.make.model');
         $this->commands('command.api.make.policy');
         $this->commands('command.api.make.api');
+    }
+
+    public function addDbMacros()
+    {
+        EloquentBuilder::macro('getRaw', function (array $columns = ['*']) {
+            return $this->getQuery()->get($columns);
+        });
+
+        EloquentBuilder::macro('paginateRaw', function ($limit = 25, array $columns = ['*'], $pageName = 'page', $page = null) {
+            return $this->getQuery()->paginate($limit, $columns, $pageName, $page);
+        });
     }
 }

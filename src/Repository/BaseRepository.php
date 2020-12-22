@@ -10,6 +10,7 @@ use Phpsa\LaravelApiController\Exceptions\ApiException;
 
 /**
  * Class BaseRepository.
+ * @deprecated version
  */
 class BaseRepository
 {
