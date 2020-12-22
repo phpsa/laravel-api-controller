@@ -17,6 +17,12 @@ trait HasModel
     protected static $model;
 
     /**
+     *
+     * @var \Illuminate\Database\Eloquent\Builder
+     */
+    protected $builder;
+
+    /**
      * Do we need to unguard the model before create/update?
      *
      * @var bool
@@ -49,6 +55,8 @@ trait HasModel
         }
 
         self::$model = $model;
+
+        $this->builder = $model->newQuery();
     }
 
     /**

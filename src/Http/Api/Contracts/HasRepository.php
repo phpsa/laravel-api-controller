@@ -15,6 +15,8 @@ trait HasRepository
 
     /**
      * Creates our repository linkage.
+     *
+     * @deprecated
      */
     protected function makeRepository()
     {

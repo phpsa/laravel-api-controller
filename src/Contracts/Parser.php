@@ -87,7 +87,7 @@ trait Parser
             $withs[$with] = $this->setWithQuery($where, $fields);
         }
 
-        $this->repository->with($withs);
+        $this->builder->with($withs);
     }
 
     /**
@@ -114,7 +114,7 @@ trait Parser
                 continue;
             }
 
-            $this->repository->orderBy($sortF, $sortD);
+            $this->builder->orderBy($sortF, $sortD);
         }
 
         if ($withSorts->count() > 0) {
@@ -130,7 +130,7 @@ trait Parser
             return $currentTable.'.'.$field;
         }, $this->parseFieldParams());
 
-        $this->repository->select($fields);
+        $this->builder->select($fields);
 
         foreach ($sorts as $sortF => $sortD) {
             [$with, $key] = explode('.', $sortF);
@@ -153,8 +153,8 @@ trait Parser
 
             $withTableName = strpos($withTable, '.') === false ? $withConnection.'.'.$withTable : $withTable;
 
-            $this->repository->leftJoin($withTableName, "{$withTableName}.{$foreignKey}", "{$currentTable}.{$localKey}");
-            $this->repository->orderBy("{$withTableName}.{$key}", $sortD);
+            $this->builder->leftJoin($withTableName, "{$withTableName}.{$foreignKey}", "{$currentTable}.{$localKey}");
+            $this->builder->orderBy("{$withTableName}.{$key}", $sortD);
         }
     }
 
@@ -197,7 +197,7 @@ trait Parser
             } elseif (! in_array($whr['key'], $tableColumns)) {
                 continue;
             }
-            $this->setQueryBuilderWhereStatement($this->repository, $table.'.'.$whr['key'], $whr);
+            $this->setQueryBuilderWhereStatement($this->builder, $table.'.'.$whr['key'], $whr);
         }
     }
 
@@ -215,7 +215,7 @@ trait Parser
         }
         $subKey = $sub->qualifyColumn($key);
 
-        $this->repository->whereHas(Helpers::camel($with), function ($q) use ($where, $subKey) {
+        $this->builder->whereHas(Helpers::camel($with), function ($q) use ($where, $subKey) {
             $this->setQueryBuilderWhereStatement($q, $subKey, $where);
         });
     }

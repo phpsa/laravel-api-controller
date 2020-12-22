@@ -89,7 +89,7 @@ trait Relationships
             $type = class_basename(get_class($relation));
             $relatedRecords = $data[Helpers::snake($with)];
 
-            $this->repository->with($with);
+            $this->builder->with($with);
 
             switch ($type) {
                 case 'HasOne':

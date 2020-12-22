@@ -69,7 +69,7 @@ abstract class Controller extends BaseController
     public function __construct()
     {
         $this->makeModel();
-        $this->makeRepository();
+      //  $this->makeRepository();
     }
 
     /**
@@ -85,7 +85,7 @@ abstract class Controller extends BaseController
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
 
-        $items = $limit > 0 ? $this->repository->paginate($limit, $fields)->appends($this->originalQueryParams) : $this->repository->get($fields);
+        $items = $limit > 0 ? $this->builder->paginate($limit, $fields)->appends($this->originalQueryParams) : $this->builder->get($fields);
 
         return $this->handleIndexResponse($items);
     }
@@ -97,7 +97,7 @@ abstract class Controller extends BaseController
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
 
-        $items = $limit > 0 ? $this->repository->paginateRaw($limit, $fields)->appends($this->originalQueryParams) : $this->repository->getRaw($fields);
+        $items = $limit > 0 ? $this->builder->paginateRaw($limit, $fields)->appends($this->originalQueryParams) : $this->builder->getRaw($fields);
 
         return $this->handleIndexResponse($items);
     }
@@ -189,7 +189,7 @@ abstract class Controller extends BaseController
         $this->qualifyItemQuery();
 
         try {
-            $item = $this->repository->find($id, $fields);
+            $item = $this->builder->find($id, $fields);
             $this->authoriseUserAction('view', $item);
         } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record not found');
@@ -213,7 +213,7 @@ abstract class Controller extends BaseController
         $this->handleCommonActions($request);
 
         try {
-            $item = $this->repository->find($id);
+            $item = $this->builder->find($id);
             $this->authoriseUserAction('update', $item);
         } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record does not exist');
@@ -263,7 +263,7 @@ abstract class Controller extends BaseController
         $this->qualifyItemQuery();
 
         try {
-            $item = $this->repository->find($id);
+            $item = $this->builder->find($id);
             $this->authoriseUserAction('delete', $item);
             $item->delete();
         } catch (ModelNotFoundException $exception) {
