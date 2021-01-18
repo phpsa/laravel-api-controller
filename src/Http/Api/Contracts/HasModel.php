@@ -58,6 +58,11 @@ trait HasModel
 
         $this->builder = $model->newQuery();
     }
+    
+    public function getPostmanModel(): string
+    {
+        return $this->model();
+    }
 
     /**
      * Unguard eloquent model if needed.
