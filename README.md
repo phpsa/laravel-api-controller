@@ -26,7 +26,12 @@ php artisan vendor:publish --provider="Phpsa\LaravelApiController\ServiceProvide
 
 ## Usage
 
-**Generate a new Api Controller, Repository and Route via `php artisan make:api {ModelName}`**
+**CLI Commands**
+
+* `artisan make:api {ControllerName}` to generate the controller
+* `artisan make:api:policy` to generate a policy file
+* `artisan make:api:resource` to geneate the response resource
+
 
 This will create a Api/ModelNameController for you and you will have the basic routes in place as follows:
 

@@ -30,7 +30,6 @@ abstract class Controller extends BaseController
     use ValidatesRequests;
     use HasModel;
     use HasPolicies;
-    use HasRepository;
     use HasResources;
     use HasResponse;
     use HasValidation;
@@ -69,7 +68,6 @@ abstract class Controller extends BaseController
     public function __construct()
     {
         $this->makeModel();
-      //  $this->makeRepository();
     }
 
     /**
