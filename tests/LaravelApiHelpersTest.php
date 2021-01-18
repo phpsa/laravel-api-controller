@@ -2,30 +2,17 @@
 
 namespace Phpsa\LaravelApiController\Tests;
 
-use Orchestra\Testbench\TestCase;
-use Phpsa\LaravelApiController\Facades\LaravelApiController;
 use Phpsa\LaravelApiController\Helpers;
-use Phpsa\LaravelApiController\ServiceProvider;
+use Phpsa\LaravelApiController\Tests\TestCase;
 
 class LaravelApiHelpersTest extends TestCase
 {
-    protected function getPackageProviders($app)
-    {
-        return [ServiceProvider::class];
-    }
-
-    protected function getPackageAliases($app)
-    {
-        return [
-            'laravel-api-controller' => LaravelApiController::class,
-        ];
-    }
 
     public function testSnakeCasing()
     {
         $array = [
             'test_one' => 'test_one',
-            'testTwo' => 'test_two',
+            'testTwo'  => 'test_two',
         ];
 
         $transposed = Helpers::snakeCaseArrayKeys($array);
@@ -37,7 +24,7 @@ class LaravelApiHelpersTest extends TestCase
     {
         $array = [
             'test_one' => 'testOne',
-            'testTwo' => 'testTwo',
+            'testTwo'  => 'testTwo',
         ];
 
         $transposed = Helpers::camelCaseArrayKeys($array);
