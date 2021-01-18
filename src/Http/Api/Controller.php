@@ -15,7 +15,6 @@ use Phpsa\LaravelApiController\Events\Updated;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasModel;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasPolicies;
-use Phpsa\LaravelApiController\Http\Api\Contracts\HasRepository;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasResources;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasResponse;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasValidation;

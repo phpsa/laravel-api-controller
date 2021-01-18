@@ -2,3 +2,5 @@
 /.idea
 /node_modules
 /composer.lock
+.docksal
+.phpunit.result.cache
