@@ -129,11 +129,10 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
             '{{useResourceCollection}}'   => $useResourceCollection,
             '{{ useResourceSingle }}'     => $useResourceSingle,
             '{{ useResourceCollection }}' => $useResourceCollection,
-            '{{resourceSingle}}'          => $this->customClasses['resourceSingle'] ? 'protected $resourceSingle = '.$this->customClasses['resourceSingle'].';' : null,
-            '{{resourceCollection}}'      => $this->customClasses['resourceCollection'] ? 'protected $resourceCollection = '.$this->customClasses['resourceCollection'].';' : null,
-            '{{ resourceSingle }}'        => $this->customClasses['resourceSingle'] ? 'protected $resourceSingle = '.$this->customClasses['resourceSingle']."\n" : null,
-            '{{ resourceCollection }}'    => $this->customClasses['resourceCollection'] ? 'protected $resourceCollection = '.$this->customClasses['resourceCollection'].';' : null,
-
+            '{{resourceSingle}}'          => $this->customClasses['resourceSingle'] ? 'protected $resourceSingle = '.$this->customClasses['resourceSingle'].":class;\n" : null,
+            '{{resourceCollection}}'      => $this->customClasses['resourceCollection'] ? 'protected $resourceCollection = '.$this->customClasses['resourceCollection'].":class;\n" : null,
+            '{{ resourceSingle }}'        => $this->customClasses['resourceSingle'] ? 'protected $resourceSingle = '.$this->customClasses['resourceSingle'].":class;\n" : null,
+            '{{ resourceCollection }}'    => $this->customClasses['resourceCollection'] ? 'protected $resourceCollection = '.$this->customClasses['resourceCollection'].":class;\n" : null,
         ]);
     }
 
