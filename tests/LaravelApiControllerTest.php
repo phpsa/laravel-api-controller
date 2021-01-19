@@ -48,6 +48,8 @@ class LaravelApiControllerTest extends TestCase
                     'notcontain!~'   => 'notin',
                     'new[]'          => 1,
                     'new[]!'         => 2,
+                    'nullable'       => 'NULL',
+                    'nonnull!'       => 'NULL'
                 ],
             ]
         );
@@ -56,7 +58,7 @@ class LaravelApiControllerTest extends TestCase
 
         $params = $parser->whereParameters();
 
-        $this->assertSame(17, count($params));
+        $this->assertSame(19, count($params));
 
         $this->assertSame($parser->queryParameter('equal'), [
             'type'     => 'Basic',
@@ -186,6 +188,20 @@ class LaravelApiControllerTest extends TestCase
             'key'      => 'notcontain',
             'operator' => 'not like',
             'value'    => '%notin%',
+        ]);
+
+        $this->assertSame($parser->queryParameter('nullable'), [
+            'type'     => 'Basic',
+            'key'      => 'nullable',
+            'operator' => '=',
+            'value'    => 'NULL',
+        ]);
+
+        $this->assertSame($parser->queryParameter('nonnull'), [
+            'type'     => 'Basic',
+            'key'      => 'nonnull',
+            'operator' => '!=',
+            'value'    => 'NULL',
         ]);
     }
 }

@@ -60,4 +60,19 @@ class TestCase extends BaseTestCase
             )
         );
     }
+
+    public function apiGetJson($uri, array $data = [], array $headers = [])
+    {
+
+        $headers = array_merge([
+            'CONTENT_TYPE' => 'application/json',
+            'Accept'       => 'application/json',
+        ], $headers);
+
+        return $this->call(
+            'GET',
+            $uri,
+            $data
+        );
+    }
 }

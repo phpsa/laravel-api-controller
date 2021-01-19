@@ -13,18 +13,21 @@ trait Parser
      *
      * @var \Phpsa\LaravelApiController\UriParser
      */
-    protected static $uriParser;
+    protected $uriParser;
 
     protected $originalQueryParams;
 
     protected function getUriParser($request)
     {
-        if (is_null(self::$uriParser)) {
-            self::$uriParser = new UriParser($request, config('laravel-api-controller.parameters.filter'));
+
+        if (is_null($this->uriParser)) {
+            $this->uriParser = new UriParser($request, config('laravel-api-controller.parameters.filter'));
         }
 
-        return self::$uriParser;
+        return $this->uriParser;
     }
+
+
 
     /**
      * Method to add extra request parameters to the request instance.
@@ -67,7 +70,7 @@ trait Parser
             $sub = $this->getRelatedModel($with);
             $fields = $this->getIncludesFields($with);
 
-            $where = array_filter(self::$uriParser->whereParameters(), function ($where) use ($with) {
+            $where = array_filter($this->uriParser->whereParameters(), function ($where) use ($with) {
                 return strpos($where['key'], Helpers::snake($with).'.') !== false;
             });
 
@@ -180,7 +183,7 @@ trait Parser
      */
     protected function parseFilterParams(): void
     {
-        $where = self::$uriParser->whereParameters();
+        $where = $this->uriParser->whereParameters();
 
         if (empty($where)) {
             return;

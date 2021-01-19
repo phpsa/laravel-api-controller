@@ -33,7 +33,9 @@ class UserResource extends ApiResource
      *
      * @var array|null
      */
-    protected static $allowedScopes = null;
+    protected static $allowedScopes = [
+        'scopeHas2Fa'
+    ];
 
     /**
      * Transform the resource into an array.

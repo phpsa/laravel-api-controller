@@ -162,8 +162,8 @@ class UriParser
                 $type = 'In';
             }
             $this->queryParameters[] = [
-                'type' => $type,
-                'key' => $key,
+                'type'   => $type,
+                'key'    => $key,
                 'values' => $values,
             ];
 
@@ -193,10 +193,10 @@ class UriParser
             $value = $pre.$value.$post;
         }
         $this->queryParameters[] = [
-            'type' => 'Basic',
-            'key' => $key,
+            'type'     => 'Basic',
+            'key'      => $key,
             'operator' => $operator,
-            'value' => $value,
+            'value'    => $value,
         ];
     }
 
@@ -221,8 +221,8 @@ class UriParser
             $this->queryParameters[$index]['values'][] = explode($seperator, $parameter)[1];
         } else {
             $this->queryParameters[] = [
-                'type' => $type,
-                'key' => $key,
+                'type'   => $type,
+                'key'    => $key,
                 'values' => [explode($seperator, $parameter)[1]],
             ];
         }
