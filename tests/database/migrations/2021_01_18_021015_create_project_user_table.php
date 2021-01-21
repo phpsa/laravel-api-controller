@@ -14,8 +14,8 @@ class CreateProjectUserTable extends Migration
     public function up()
     {
         Schema::create('project_user', function (Blueprint $table) {
-            $table->foreignId('project_id');
-            $table->foreignId('user_id');
+            $table->unsignedBigInteger('project_id');
+            $table->unsignedBigInteger('user_id');
             $table->boolean('team_leader')->default(false);
         });
     }

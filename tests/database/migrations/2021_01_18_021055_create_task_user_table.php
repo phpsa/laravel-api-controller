@@ -14,10 +14,10 @@ class CreateTaskUserTable extends Migration
     public function up()
     {
         Schema::create('task_user', function (Blueprint $table) {
-            $table->foreignId('task_id');
-            $table->foreignId('user_id');
+            $table->unsignedBigInteger('task_id');
+            $table->unsignedBigInteger('user_id');
             $table->boolean('owner')->default(false);
-        });
+
     }
 
     /**
