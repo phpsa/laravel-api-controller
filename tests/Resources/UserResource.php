@@ -19,7 +19,10 @@ class UserResource extends ApiResource
      *
      * @var array|null
      */
-    protected static $defaultFields = null;
+    protected static $defaultFields = [
+        'name',
+        'email'
+    ];
 
     /**
      * Allowable fields to be used.

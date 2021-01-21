@@ -59,4 +59,8 @@ class User extends Authenticatable
                 break;
         }
     }
+
+    public function scopeNotCallable(Builder $builder)
+    {
+    }
 }
