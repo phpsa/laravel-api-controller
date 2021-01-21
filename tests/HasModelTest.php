@@ -9,6 +9,7 @@ use Phpsa\LaravelApiController\Tests\Controllers\UserController;
 use Phpsa\LaravelApiController\Tests\Models\User;
 
 use function PHPUnit\Framework\assertArrayNotHasKey;
+use function PHPUnit\Framework\assertEquals;
 use function PHPUnit\Framework\assertTrue;
 
 class HasModelTest extends TestCase
@@ -41,6 +42,9 @@ class HasModelTest extends TestCase
 
         assertArrayNotHasKey('age', $res);
         $this->assertArrayHasKey('email', $res);
+
+        $getUnqualifiedTableName = self::getMethod($class, 'getUnqualifiedTableName');
+        assertEquals('users', $getUnqualifiedTableName->invoke($class));
     }
 
 

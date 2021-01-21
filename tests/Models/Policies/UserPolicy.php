@@ -30,7 +30,7 @@ class UserPolicy
      */
     public function view(User $authed, User $user)
     {
-        //
+        return true;
     }
 
     /**
