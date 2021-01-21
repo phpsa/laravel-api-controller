@@ -18,6 +18,8 @@ class CreateTaskUserTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->boolean('owner')->default(false);
 
+        });
+
     }
 
     /**
