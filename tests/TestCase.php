@@ -2,6 +2,7 @@
 
 namespace Phpsa\LaravelApiController\Tests;
 
+use ReflectionClass;
 use Illuminate\Http\Request;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
@@ -74,5 +75,21 @@ class TestCase extends BaseTestCase
             $uri,
             $data
         );
+    }
+
+    protected static function getMethod($class, $name)
+    {
+        $class = new ReflectionClass($class);
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+        return $method;
+    }
+
+    protected static function getProperty($class, $name)
+    {
+        $class = new ReflectionClass($class);
+        $property = $class->getProperty($name);
+        $property->setAccessible(true);
+        return $property;
     }
 }

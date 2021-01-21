@@ -97,10 +97,6 @@ class UserControllerTest extends TestCase
     public function test_calls_scopes()
     {
 
-        $model = Mockery::mock(User::class)->makePartial();
-        app()->instance(User::class, $model);
-        $model->shouldReceive('scopeHas2Fa')->with(Builder::class)->once()->andReturn(null);
-
         //scopeHas2Fa
         User::factory(100)->create();
         User::factory()->create([
@@ -108,14 +104,16 @@ class UserControllerTest extends TestCase
         ]);
 
         assertEquals(1, User::where('email', 'api@laravel.dev')->count());
+
+        User::where('id', '<=', 8)->update([
+            'two_factor_secret'         => 'sdfsdf',
+            'two_factor_recovery_codes' => 'sdfasdf'
+        ]);
+
         $this->actingAs(User::first());
 
         $url = '/users?' .  http_build_query([
-            'filter'  =>
-            [
-                'email' => 'api@laravel.dev'
-            ],
-            'has2_fa' => '0'
+            'has2Fa' => '1'
         ]);
 
         $response = $this->getJson($url);
@@ -123,12 +121,11 @@ class UserControllerTest extends TestCase
     //    dd($response->request);
 
         $json = $response->decodeResponseJson();
-        dd($json);
+
         $response->assertStatus(200);
 
         $this->assertArrayHasKey('meta', $json);
-        $this->assertEquals(1, $json['meta']['total']);
-        $this->assertEquals('api@laravel.dev', $json['data'][0]['email']);
+        $this->assertEquals(8, $json['meta']['total']);
     }
 
 
