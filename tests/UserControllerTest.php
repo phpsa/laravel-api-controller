@@ -2,7 +2,6 @@
 
 namespace Phpsa\LaravelApiController\Tests;
 
-use Illuminate\Database\Eloquent\Builder;
 use Mockery;
 use function PHPUnit\Framework\assertEquals;
 
@@ -14,6 +13,14 @@ use Phpsa\LaravelApiController\Tests\Models\Policies\UserPolicy;
 class UserControllerTest extends TestCase
 {
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        factory(User::class, 100)->create();
+        factory(User::class, 1)->create([
+            'email' => 'api@laravel.dev'
+        ]);
+    }
 
     /**
      * Define routes setup.
@@ -29,8 +36,9 @@ class UserControllerTest extends TestCase
 
     public function test_user_policy_all_approved()
     {
-        User::factory(100)->create();
-        assertEquals(100, User::count());
+      //  factory(User::class, 100)->create();
+
+        assertEquals(101, User::count());
 
         $policy = Mockery::mock(UserPolicy::class)->makePartial();
         app()->instance(UserPolicy::class, $policy);
@@ -45,13 +53,12 @@ class UserControllerTest extends TestCase
         $json = $response->decodeResponseJson();
 
         $this->assertArrayHasKey('meta', $json);
-        $this->assertEquals(100, $json['meta']['total']);
+        $this->assertEquals(101, $json['meta']['total']);
     }
 
     public function test_user_policy_not_allowed()
     {
-        User::factory(10)->create();
-        assertEquals(10, User::count());
+        //factory(User::class, 100)->create();
 
         $policy = Mockery::mock(UserPolicy::class)->makePartial();
         app()->instance(UserPolicy::class, $policy);
@@ -66,10 +73,10 @@ class UserControllerTest extends TestCase
 
     public function test_filtering()
     {
-        User::factory(100)->create();
-        User::factory()->create([
-            'email' => 'api@laravel.dev'
-        ]);
+        // factory(User::class, 100)->create();
+        // factory(User::class, 100)->create([
+        //     'email' => 'api@laravel.dev'
+        // ]);
 
         assertEquals(1, User::where('email', 'api@laravel.dev')->count());
         $this->actingAs(User::first());
@@ -98,10 +105,14 @@ class UserControllerTest extends TestCase
     {
 
         //scopeHas2Fa
-        User::factory(100)->create();
-        User::factory()->create([
-            'email' => 'api@laravel.dev'
-        ]);
+        // factory(User::class, 100)->create();
+        // factory(User::class, 100)->create([
+        //     'email' => 'api@laravel.dev'
+        // ]);
+        //User::factory(100)->create();
+        // User::factory()->create([
+        //     'email' => 'api@laravel.dev'
+        // ]);
 
         assertEquals(1, User::where('email', 'api@laravel.dev')->count());
 

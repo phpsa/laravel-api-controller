@@ -3,7 +3,7 @@
 namespace Phpsa\LaravelApiController\Tests\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Phpsa\LaravelApiController\Tests\Factories\UserFactory as FactoriesUserFactory;
@@ -11,7 +11,7 @@ use Phpsa\LaravelApiController\Tests\Factories\UserFactory as FactoriesUserFacto
 class User extends Authenticatable
 {
 
-    use HasFactory, Notifiable;
+    use  Notifiable;
 
     protected $table = 'users';
 
@@ -44,12 +44,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-
-    protected static function newFactory()
-    {
-        return FactoriesUserFactory::new();
-    }
 
 
     public function scopeHas2Fa(Builder $builder, ?bool $on = null)
