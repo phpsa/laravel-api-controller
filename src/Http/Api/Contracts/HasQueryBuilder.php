@@ -11,6 +11,23 @@ use Phpsa\LaravelApiController\Helpers;
 trait HasQueryBuilder
 {
 
+
+    /**
+     * @var \Illuminate\Database\Eloquent\Builder
+     */
+    protected $builder;
+
+
+    protected function initBuilder()
+    {
+        $this->builder = $this->getNewQuery();
+    }
+
+    protected function getNewQuery(): Builder
+    {
+        return self::$model->newQuery();
+    }
+
     protected function setWhereHasClause(array $where): void
     {
         [$with, $key] = explode('.', $where['key']);

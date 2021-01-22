@@ -77,7 +77,7 @@ abstract class Controller extends BaseController
      */
     public function handleIndexAction($request = null, array $extraParams = [])
     {
-        $request = $request ?? request();
+        $this->request = $request ?? request();
         $this->handleIndexActionCommon($request, $extraParams);
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
@@ -89,7 +89,7 @@ abstract class Controller extends BaseController
 
     public function handleIndexActionRaw($request = null, array $extraParams = [])
     {
-        $request = $request ?? request();
+        $this->request = $request ?? request();
         $this->handleIndexActionCommon($request, $extraParams);
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
@@ -101,7 +101,7 @@ abstract class Controller extends BaseController
 
     protected function handleIndexActionCommon($request = null, array $extraParams = [])
     {
-        $request = $request ?? request();
+        $this->request = $request ?? request();
         $this->addCustomParams($request, $extraParams);
         $this->validateRequestType($request);
         $this->authoriseUserAction('viewAny');
@@ -111,7 +111,7 @@ abstract class Controller extends BaseController
 
     protected function handleCommonActions($request = null)
     {
-        $request = $request ?? request();
+        $this->request = $request ?? request();
         $this->getUriParser($request);
         $this->parseIncludeParams();
         $this->parseSortParams();

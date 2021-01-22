@@ -17,6 +17,7 @@ trait Parser
 
     protected $originalQueryParams;
 
+
     protected function getUriParser($request)
     {
 
@@ -41,7 +42,6 @@ trait Parser
         $new = Helpers::array_merge_request($all, $extraParams);
         $request->replace($new);
     }
-
 
 
     /**
@@ -146,12 +146,12 @@ trait Parser
 
         foreach ($where as $whr) {
             if (strpos($whr['key'], '.') > 0) {
-                $this->setWhereHasClause($whr);
+                $this->/** @scrutinizer ignore-call */setWhereHasClause($whr);
                 continue;
             } elseif (! in_array($whr['key'], $tableColumns)) {
                 continue;
             }
-            $this->setQueryBuilderWhereStatement($this->builder, $table . '.' . $whr['key'], $whr);
+            $this->/** @scrutinizer ignore-call */setQueryBuilderWhereStatement($this->builder, $table . '.' . $whr['key'], $whr);
         }
     }
 
