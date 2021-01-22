@@ -2,15 +2,18 @@
 
 namespace Phpsa\LaravelApiController\Tests;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
-use Phpsa\LaravelApiController\Http\Api\Contracts\HasModel;
-use Phpsa\LaravelApiController\Tests\Controllers\UserController;
+use Illuminate\Database\Eloquent\Builder;
+use function PHPUnit\Framework\assertTrue;
+use function PHPUnit\Framework\assertEquals;
+use Phpsa\LaravelApiController\ServiceProvider;
 use Phpsa\LaravelApiController\Tests\Models\User;
 
 use function PHPUnit\Framework\assertArrayNotHasKey;
-use function PHPUnit\Framework\assertEquals;
-use function PHPUnit\Framework\assertTrue;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Phpsa\LaravelApiController\Http\Api\Contracts\HasModel;
+use Phpsa\LaravelApiController\Tests\Controllers\UserController;
 
 class HasModelTest extends TestCase
 {
@@ -48,11 +51,17 @@ class HasModelTest extends TestCase
     }
 
 
-    // public function testFoo()
-    // {
-    //     $foo = self::getMethod('foo');
-    //     $obj = new MyClass();
-    //     $foo->invokeArgs($obj, [...]);
-    //     ...
-    // }
+    public function test_db_macros()
+    {
+
+        factory(User::class, 100)->create();
+        $result = User::where('id', '<', 10)->getRaw();
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertEquals(9, $result->count());
+
+        $paged = User::paginateRaw(5)->appends(['age>' => 5]);
+        $this->assertInstanceOf(LengthAwarePaginator::class, $paged);
+        $this->assertEquals(100, $paged->total());
+        $this->assertIsArray($paged->items());
+    }
 }

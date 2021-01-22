@@ -13,6 +13,7 @@ use Phpsa\LaravelApiController\Contracts\Relationships;
 use Phpsa\LaravelApiController\Events\Created;
 use Phpsa\LaravelApiController\Events\Updated;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Phpsa\LaravelApiController\Http\Api\Contracts\HasIncludes;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasModel;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasPolicies;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasResources;
@@ -34,6 +35,7 @@ abstract class Controller extends BaseController
     use HasValidation;
     use Parser;
     use Relationships;
+    use HasIncludes;
 
     /**
      * Set the default sorting for queries.
@@ -57,9 +59,7 @@ abstract class Controller extends BaseController
      */
     protected $maximumLimit = 0;
 
-    protected $includesWhitelist = [];
 
-    protected $includesBlacklist = [];
 
     /**
      * Constructor.

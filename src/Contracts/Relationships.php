@@ -9,67 +9,6 @@ use Phpsa\LaravelApiController\Helpers;
 trait Relationships
 {
     /**
-     * Gets whitelisted methods.
-     *
-     * @return array
-     */
-    protected function getIncludesWhitelist(): array
-    {
-        return is_array($this->includesWhitelist) ? $this->includesWhitelist : [];
-    }
-
-    /**
-     * Gets blacklisted methods.
-     *
-     * @return array
-     */
-    protected function getIncludesBlacklist(): array
-    {
-        return is_array($this->includesBlacklist) ? $this->includesBlacklist : [];
-    }
-
-    /**
-     * is method blacklisted.
-     *
-     * @param string $item
-     *
-     * @return bool
-     */
-    public function isBlacklisted($item)
-    {
-        return in_array($item, $this->getIncludesBlacklist()) || $this->getIncludesBlacklist() === ['*'];
-    }
-
-    /**
-     * filters the allowed includes and returns only the ones that are allowed.
-     *
-     * @param array $includes
-     *
-     * @return array
-     */
-    protected function filterAllowedIncludes(array $includes): array
-    {
-        return array_filter(Helpers::camelCaseArray($includes), function ($item) {
-            $callable = method_exists(self::$model, $item);
-
-            if (! $callable) {
-                return false;
-            }
-
-            //check if in the allowed includes array:
-            if (in_array($item, Helpers::camelCaseArray($this->getIncludesWhitelist()))) {
-                return true;
-            }
-
-            if ($this->isBlacklisted($item) || $this->isBlacklisted(Helpers::snake($item))) {
-                return false;
-            }
-
-            return empty($this->getIncludesWhitelist()) && ! Str::startsWith($item, '_');
-        });
-    }
-
-    /**
      * Method used to store related.
      *
      * @param mixed $item newly created \Illuminate\Database\Eloquent\Model instance

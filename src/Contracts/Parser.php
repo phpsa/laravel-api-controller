@@ -27,8 +27,6 @@ trait Parser
         return $this->uriParser;
     }
 
-
-
     /**
      * Method to add extra request parameters to the request instance.
      *
@@ -44,54 +42,7 @@ trait Parser
         $request->replace($new);
     }
 
-    /**
-     * Parses our include joins.
-     */
-    protected function parseIncludeParams(): void
-    {
-        $field = config('laravel-api-controller.parameters.include');
 
-        if (empty($field)) {
-            return;
-        }
-
-        $includes = $this->request->input($field);
-
-        if (empty($includes)) {
-            return;
-        }
-
-        $withs = array_flip(
-            $this->/** @scrutinizer ignore-call */filterAllowedIncludes(explode(',', $includes))
-        );
-
-        foreach ($withs as $with => $idx) {
-            /** @scrutinizer ignore-call */
-            $sub = $this->getRelatedModel($with);
-            $fields = $this->getIncludesFields($with);
-
-            $where = array_filter($this->uriParser->whereParameters(), function ($where) use ($with) {
-                return strpos($where['key'], Helpers::snake($with).'.') !== false;
-            });
-
-            if (! empty($fields)) {
-                $fields[] = $sub->getKeyName();
-            }
-
-            if (! empty($where)) {
-                $where = array_map(function ($whr) use ($with, $sub) {
-                    $key = str_replace(Helpers::snake($with).'.', '', $whr['key']);
-                    $whr['key'] = $sub->qualifyColumn($key);
-
-                    return $whr;
-                }, $where);
-            }
-
-            $withs[$with] = $this->setWithQuery($where, $fields);
-        }
-
-        $this->builder->with($withs);
-    }
 
     /**
      * Parses our sort parameters.
@@ -130,7 +81,7 @@ trait Parser
         $currentTable = self::$model->getTable();
 
         $fields = array_map(function ($field) use ($currentTable) {
-            return $currentTable.'.'.$field;
+            return $currentTable . '.' . $field;
         }, $this->parseFieldParams());
 
         $this->builder->select($fields);
@@ -154,7 +105,7 @@ trait Parser
 
             $withTable = $relation->getRelated()->getTable();
 
-            $withTableName = strpos($withTable, '.') === false ? $withConnection.'.'.$withTable : $withTable;
+            $withTableName = strpos($withTable, '.') === false ? $withConnection . '.' . $withTable : $withTable;
 
             $this->builder->leftJoin($withTableName, "{$withTableName}.{$foreignKey}", "{$currentTable}.{$localKey}");
             $this->builder->orderBy("{$withTableName}.{$key}", $sortD);
@@ -200,68 +151,11 @@ trait Parser
             } elseif (! in_array($whr['key'], $tableColumns)) {
                 continue;
             }
-            $this->setQueryBuilderWhereStatement($this->builder, $table.'.'.$whr['key'], $whr);
+            $this->setQueryBuilderWhereStatement($this->builder, $table . '.' . $whr['key'], $whr);
         }
     }
 
-    protected function setWhereHasClause(array $where): void
-    {
-        [$with, $key] = explode('.', $where['key']);
 
-        /** @scrutinizer ignore-call */
-        $sub = $this->getRelatedModel($with);
-        /** @scrutinizer ignore-call */
-        $fields = $this->getTableColumns($sub);
-
-        if (! in_array($key, $fields)) {
-            return;
-        }
-        $subKey = $sub->qualifyColumn($key);
-
-        $this->builder->whereHas(Helpers::camel($with), function ($q) use ($where, $subKey) {
-            $this->setQueryBuilderWhereStatement($q, $subKey, $where);
-        });
-    }
-
-    protected function setWithQuery(?array $where = null, ?array $fields = null): callable
-    {
-        //dd($fields);
-        return function ($query) use ($where, $fields) {
-            if ($fields !== null && count($fields) > 0) {
-                $query->select(array_unique($fields));
-            }
-
-            if ($where !== null && count($where) > 0) {
-                foreach ($where as $whr) {
-                    $this->setQueryBuilderWhereStatement($query, $whr['key'], $whr);
-                }
-            }
-        };
-    }
-
-    protected function setQueryBuilderWhereStatement($query, $key, $where): void
-    {
-        switch ($where['type']) {
-            case 'In':
-                if (! empty($where['values'])) {
-                    $query->whereIn($key, $where['values']);
-                }
-                break;
-            case 'NotIn':
-                if (! empty($where['values'])) {
-                    $query->whereNotIn($key, $where['values']);
-                }
-                break;
-            case 'Basic':
-                if ($where['value'] !== 'NULL') {
-                    $query->where($key, $where['operator'], $where['value']);
-
-                    return;
-                }
-
-                $where['operator'] === '=' ? $query->whereNull($key) : $query->whereNotNull($key);
-        }
-    }
 
     /**
      * parses the fields to return.
@@ -271,7 +165,9 @@ trait Parser
     protected function parseFieldParams(): array
     {
         /** @scrutinizer ignore-call */
-        $fields = Helpers::filterFieldsFromRequest($this->request, $this->/** @scrutinizer ignore-call */ getDefaultFields());
+        $fields = Helpers::filterFieldsFromRequest($this->request, $this->
+        /** @scrutinizer ignore-call */
+        getDefaultFields());
 
         /** @scrutinizer ignore-call */
         $tableColumns = $this->getTableColumns();
@@ -285,36 +181,7 @@ trait Parser
         return $fields;
     }
 
-    /**
-     * Parses an includes fields and returns as an array.
-     *
-     * @param string $include - the table definer
-     *
-     * @return array
-     */
-    protected function getIncludesFields(string $include): array
-    {
-        /** @scrutinizer ignore-call */
-        $fields = Helpers::filterFieldsFromRequest($this->request, $this->/** @scrutinizer ignore-call */ getDefaultFields());
 
-        $relation = self::$model->{$include}();
-        $type = $relation->getRelated();
-        /** @scrutinizer ignore-call */
-        $tableColumns = $this->getTableColumns($type);
-
-        foreach ($fields as $key => $field) {
-            $parts = explode('.', $field);
-            if (strpos($field, Helpers::snake($include).'.') === false || ! in_array(end($parts), $tableColumns)) {
-                unset($fields[$key]);
-
-                continue;
-            }
-
-            $fields[$key] = str_replace(Helpers::snake($include).'.', '', $field);
-        }
-
-        return $fields;
-    }
 
     /**
      * parses the limit value.

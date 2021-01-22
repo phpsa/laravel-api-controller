@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Orchestra\Testbench\Concerns\WithFactories;
 use Orchestra\Testbench\TestCase as BaseTestCase;
 use Illuminate\Database\Eloquent\Factory as EloquentFactory;
+use Phpsa\LaravelApiController\ServiceProvider;
 
 class TestCase extends BaseTestCase
 {
@@ -19,6 +20,20 @@ class TestCase extends BaseTestCase
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
         $this->withFactories(__DIR__.'/Factories');
     }
+
+
+    protected function getPackageProviders($app)
+    {
+        return [ServiceProvider::class];
+    }
+
+    protected function getPackageAliases($app)
+    {
+        return [
+            'laravel-api-controller' => LaravelApiController::class,
+        ];
+    }
+
 
     /**
      * Define environment setup.

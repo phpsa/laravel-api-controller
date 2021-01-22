@@ -9,17 +9,6 @@ use Phpsa\LaravelApiController\UriParser;
 
 class LaravelApiControllerTest extends TestCase
 {
-    protected function getPackageProviders($app)
-    {
-        return [ServiceProvider::class];
-    }
-
-    protected function getPackageAliases($app)
-    {
-        return [
-            'laravel-api-controller' => LaravelApiController::class,
-        ];
-    }
 
     public function testQueryParsers()
     {

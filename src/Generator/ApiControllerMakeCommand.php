@@ -86,7 +86,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
         $modelClass = $this->parseModel(/** @scrutinizer ignore-type */ $this->option('model'));
 
         if (! class_exists($modelClass, false)) {
-            if ($this->confirm("A {$modelClass} model does not exist!! Do you want to generate it?", true)) {
+            if ($this->confirm("A {$modelClass} model does not exist! Do you want to generate it?", true)) {
                 $this->call('make:api:model', ['name' => $modelClass]);
             }
 
@@ -228,15 +228,15 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
             $stub
         );
 
-        // read file
-        $lines = file($routesFile);
-
-        if (! $lines) {
-            $this->error('could not read routes file, add the following toyour routes file:');
+        if (! File::exists($routesFile)) {
+            $this->error('could not read routes file, add the following to your routes file:');
             $this->info("\n".$stub."\n");
 
             return false;
         }
+
+        // read file
+        $lines = file($routesFile);
 
         $lastLine = trim($lines[count($lines) - 1]);
         // modify file
@@ -250,7 +250,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
         $fileResource = fopen($routesFile, 'w');
 
         if (! is_resource($fileResource)) {
-            $this->error('could not read routes file, add the following toyour routes file:');
+            $this->error('could not read routes file, add the following to your routes file:');
             $this->info("\n".$stub."\n");
 
             return false;
