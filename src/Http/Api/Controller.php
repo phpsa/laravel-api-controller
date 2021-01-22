@@ -76,7 +76,6 @@ abstract class Controller extends BaseController
      */
     public function handleIndexAction($request = null, array $extraParams = [])
     {
-        $this->request = $request ?? request();
         $this->handleIndexActionCommon($request, $extraParams);
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
@@ -88,7 +87,6 @@ abstract class Controller extends BaseController
 
     public function handleIndexActionRaw($request = null, array $extraParams = [])
     {
-        $this->request = $request ?? request();
         $this->handleIndexActionCommon($request, $extraParams);
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
@@ -100,9 +98,8 @@ abstract class Controller extends BaseController
 
     protected function handleIndexActionCommon($request = null, array $extraParams = [])
     {
-        $this->request = $request ?? request();
-        $this->addCustomParams($request, $extraParams);
         $this->validateRequestType($request);
+        $this->addCustomParams($extraParams);
         $this->authoriseUserAction('viewAny');
         $this->handleCommonActions($request);
         $this->qualifyCollectionQuery();
@@ -110,12 +107,12 @@ abstract class Controller extends BaseController
 
     protected function handleCommonActions($request = null)
     {
-        $this->request = $request ?? request();
-        $this->getUriParser($request);
+        $this->validateRequestType($request);
+        $this->getUriParser();
         $this->parseIncludeParams();
         $this->parseSortParams();
         $this->parseFilterParams();
-        $this->parseAllowedScopes($request);
+        $this->parseAllowedScopes();
     }
 
     public function handleStoreOrUpdateAction($request, array $extraParams = [])
@@ -134,8 +131,8 @@ abstract class Controller extends BaseController
      */
     public function handleStoreAction($request, array $extraParams = [])
     {
-        $this->addCustomParams($request, $extraParams);
         $this->validateRequestType($request);
+        $this->addCustomParams($extraParams);
         $this->authoriseUserAction('create');
 
         $this->validate($request, $this->rulesForCreate());
@@ -177,8 +174,8 @@ abstract class Controller extends BaseController
      */
     public function handleShowAction($id, $request = null, array $extraParams = [])
     {
-        $this->addCustomParams($request, $extraParams);
         $this->validateRequestType($request);
+        $this->addCustomParams($extraParams);
 
         $this->handleCommonActions($request);
         $fields = $this->parseFieldParams();
@@ -203,8 +200,8 @@ abstract class Controller extends BaseController
      */
     public function handleUpdateAction($id, $request, array $extraParams = [])
     {
-        $this->addCustomParams($request, $extraParams);
         $this->validateRequestType($request);
+        $this->addCustomParams($extraParams);
 
         $this->handleCommonActions($request);
 

@@ -73,16 +73,15 @@ trait HasResources
     /**
      * parses out custom method filters etc.
      *
-     * @param mixed $request
      */
-    protected function parseAllowedScopes($request): void
+    protected function parseAllowedScopes(): void
     {
         foreach ($this->getAllowedScopes() as $scope) {
             $snake = Helpers::snake($scope);
             $camel = Helpers::camel($scope);
 
-            if ($request->has($snake) || $request->has($camel)) {
-                $value = $this->parseScopeValue($request->has($snake) ? $request->get($snake) : $request->get($camel));
+            if ($this->request->has($snake) || $this->request->has($camel)) {
+                $value = $this->parseScopeValue($this->request->has($snake) ? $this->request->get($snake) : $this->request->get($camel));
                 call_user_func([$this->builder, $camel], $value);
             }
         }

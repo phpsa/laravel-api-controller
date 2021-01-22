@@ -18,11 +18,11 @@ trait HasParser
     protected $originalQueryParams;
 
 
-    protected function getUriParser($request)
+    protected function getUriParser()
     {
 
         if (is_null($this->uriParser)) {
-            $this->uriParser = new UriParser($request, config('laravel-api-controller.parameters.filter'));
+            $this->uriParser = new UriParser($this->request, config('laravel-api-controller.parameters.filter'));
         }
 
         return $this->uriParser;
@@ -34,13 +34,13 @@ trait HasParser
      * @param mixed $request
      * @param array $extraParams
      */
-    protected function addCustomParams($request, array $extraParams = []): void
+    protected function addCustomParams(array $extraParams = []): void
     {
-        $this->originalQueryParams = $request->query();
+        $this->originalQueryParams = $this->request->query();
 
-        $all = $request->all();
+        $all = $this->request->all();
         $new = Helpers::array_merge_request($all, $extraParams);
-        $request->replace($new);
+        $this->request->replace($new);
     }
 
 
