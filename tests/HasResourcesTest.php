@@ -62,8 +62,10 @@ class HasResourcesTest extends TestCase
        // $class = App::make($class);
         $request = $this->createRequest('GET', '/?has2Fa=1&notCallable=0');
 
+        $req = self::getMethod($class, 'validateRequestType');
+        $req->invokeArgs($class, [$request]);
         $parseAllowedScopes = self::getMethod($class, 'parseAllowedScopes');
-        $parseAllowedScopes->invokeArgs($class, [$request]);
+        $parseAllowedScopes->invoke($class);
     }
 
     public function test_block_scope_from_request()
@@ -77,8 +79,10 @@ class HasResourcesTest extends TestCase
 
         //$class = App::make($class);
         $request = $this->createRequest('GET', '/?has2Fa=1&notCallable=0');
+        $req = self::getMethod($class, 'validateRequestType');
+        $req->invokeArgs($class, [$request]);
 
         $parseAllowedScopes = self::getMethod($class, 'parseAllowedScopes');
-        $parseAllowedScopes->invokeArgs($class, [$request]);
+        $parseAllowedScopes->invoke($class);
     }
 }
