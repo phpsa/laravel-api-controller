@@ -1,12 +1,11 @@
 <?php
 
-namespace Phpsa\LaravelApiController\Contracts;
+namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
-use Illuminate\Support\Str;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Helpers;
 
-trait Relationships
+trait HasRelationships
 {
     /**
      * Method used to store related.

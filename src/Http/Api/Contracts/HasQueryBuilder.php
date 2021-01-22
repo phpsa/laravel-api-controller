@@ -18,7 +18,7 @@ trait HasQueryBuilder
     protected $builder;
 
 
-    protected function initBuilder()
+    protected function initBuilder():void
     {
         $this->builder = $this->getNewQuery();
     }

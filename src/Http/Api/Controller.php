@@ -2,39 +2,39 @@
 
 namespace Phpsa\LaravelApiController\Http\Api;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
-use Phpsa\LaravelApiController\Contracts\Parser;
-use Phpsa\LaravelApiController\Contracts\Relationships;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Phpsa\LaravelApiController\Events\Created;
 use Phpsa\LaravelApiController\Events\Updated;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
-use Phpsa\LaravelApiController\Http\Api\Contracts\HasIncludes;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasModel;
+use Phpsa\LaravelApiController\Http\Api\Contracts\HasParser;
+use Phpsa\LaravelApiController\Http\Api\Contracts\HasIncludes;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasPolicies;
-use Phpsa\LaravelApiController\Http\Api\Contracts\HasResources;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasResponse;
+use Phpsa\LaravelApiController\Http\Api\Contracts\HasResources;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasValidation;
+use Phpsa\LaravelApiController\Http\Api\Contracts\HasRelationships;
 
-/**
- * Class Controller.
- */
 abstract class Controller extends BaseController
 {
+    //Laravel Specific Items
     use AuthorizesRequests;
     use DispatchesJobs;
     use ValidatesRequests;
+
+    //Api=Controller extended traits
     use HasModel;
     use HasPolicies;
     use HasResources;
     use HasResponse;
     use HasValidation;
-    use Parser;
-    use Relationships;
+    use HasParser;
+    use HasRelationships;
     use HasIncludes;
 
     /**
@@ -58,7 +58,6 @@ abstract class Controller extends BaseController
      * @var int
      */
     protected $maximumLimit = 0;
-
 
 
     /**

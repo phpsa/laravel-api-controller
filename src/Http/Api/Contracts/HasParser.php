@@ -1,12 +1,12 @@
 <?php
 
-namespace Phpsa\LaravelApiController\Contracts;
+namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Illuminate\Support\Collection;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\UriParser;
 
-trait Parser
+trait HasParser
 {
     /**
      * UriParser instance.
