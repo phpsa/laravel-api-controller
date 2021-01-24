@@ -14,6 +14,10 @@ class ConsoleTest extends TestCase
 
         $this->flushFiles();
 
+        if (! File::exists(app_path('../routes'))) {
+            File::makeDirectory(app_path('../routes'));
+        }
+
        // dd(app_path('api.php'));
         // make sure we're starting from a clean state
         if (! File::exists(app_path('../routes/api.php'))) {
