@@ -2,9 +2,10 @@
 
 namespace Phpsa\LaravelApiController\Generator;
 
-use Illuminate\Routing\Console\ControllerMakeCommand;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 use Symfony\Component\Console\Input\InputOption;
+use Illuminate\Routing\Console\ControllerMakeCommand;
 
 class ApiControllerMakeCommand extends ControllerMakeCommand
 {
