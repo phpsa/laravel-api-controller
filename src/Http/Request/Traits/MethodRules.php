@@ -17,4 +17,9 @@ trait MethodRules
         ? array_merge($this->commonRules(), $this->$methodRules())
         : $this->commonRules();
     }
+
+    public function commonRules(): array
+    {
+        return [];
+    }
 }
