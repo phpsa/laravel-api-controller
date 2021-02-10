@@ -135,9 +135,9 @@ abstract class Controller extends BaseController
         $this->addCustomParams($extraParams);
         $this->authoriseUserAction('create');
 
-        $this->validate($request, $this->rulesForCreate());
+        $this->validate($this->request, $this->rulesForCreate());
 
-        $data = $this->qualifyStoreQuery($request->all());
+        $data = $this->qualifyStoreQuery($this->request->all());
 
         $insert = $this->addTableData($data);
 
@@ -152,7 +152,7 @@ abstract class Controller extends BaseController
 
             $this->storeRelated($item, $diff, $data);
 
-            event(new Created($item, $request));
+            event(new Created($item, $this->request));
 
             DB::commit();
 
