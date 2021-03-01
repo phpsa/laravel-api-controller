@@ -51,12 +51,22 @@ class ServiceProvider extends BaseServiceProvider
     {
         EloquentBuilder::macro('getRaw', function (array $columns = ['*']) {
             return $this->/** @scrutinizer ignore-call */getQuery()
-            ->get($columns);
+            ->get($columns)->map(function ($row) {
+                return (array) $row;
+            });
         });
 
         EloquentBuilder::macro('paginateRaw', function ($limit = 25, array $columns = ['*'], $pageName = 'page', $page = null) {
-            return $this->/** @scrutinizer ignore-call */getQuery()
+            $result = $this->/** @scrutinizer ignore-call */getQuery()
             ->paginate($limit, $columns, $pageName, $page);
+
+            $collection = $result->getCollection()->map(function ($row) {
+                return (array) $row;
+            });
+
+            $result->setCollection($collection);
+
+            return $result;
         });
     }
 }
