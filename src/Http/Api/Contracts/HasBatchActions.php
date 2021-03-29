@@ -1,4 +1,9 @@
 <?php
+
+/**
+Note this is still experimental
+**/
+
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Illuminate\Support\Facades\DB;
