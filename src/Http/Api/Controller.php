@@ -182,7 +182,7 @@ abstract class Controller extends BaseController
         $this->qualifyItemQuery();
 
         try {
-            $item = $this->builder->find($id, $fields);
+            $item = $this->builder->findOrFail($id, $fields);
             $this->authoriseUserAction('view', $item);
         } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record not found');
@@ -206,7 +206,7 @@ abstract class Controller extends BaseController
         $this->handleCommonActions($request);
 
         try {
-            $item = $this->builder->find($id);
+            $item = $this->builder->findOrFail($id);
             $this->authoriseUserAction('update', $item);
         } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record does not exist');
@@ -256,7 +256,7 @@ abstract class Controller extends BaseController
         $this->qualifyItemQuery();
 
         try {
-            $item = $this->builder->find($id);
+            $item = $this->builder->findOrFail($id);
             $this->authoriseUserAction('delete', $item);
             $item->delete();
         } catch (ModelNotFoundException $exception) {
