@@ -4,7 +4,6 @@ namespace Phpsa\LaravelApiController\Http\Request\Traits;
 
 trait MethodRules
 {
-
     public function rules()
     {
         if (! $this->route()) {
