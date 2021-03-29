@@ -1,6 +1,6 @@
 <?php
 
-namespace Phpsa\LaravelApiController\Http\Requests\Traits;
+namespace Phpsa\LaravelApiController\Http\Request\Traits;
 
 trait MethodRules
 {
