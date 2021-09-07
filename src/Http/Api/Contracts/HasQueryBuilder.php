@@ -3,22 +3,16 @@
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema;
-use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Helpers;
 
 trait HasQueryBuilder
 {
-
-
     /**
      * @var \Illuminate\Database\Eloquent\Builder
      */
     protected $builder;
 
-
-    protected function initBuilder():void
+    protected function initBuilder(): void
     {
         $this->builder = $this->getNewQuery();
     }
@@ -63,7 +57,15 @@ trait HasQueryBuilder
         };
     }
 
-    protected function setQueryBuilderWhereStatement(Builder $query, string $key, $where): void
+    /**
+     * Queries for where clauses statement.
+     * @todo For PHP 8.x , may be Type hint `$query` param to `Builder|Relation` Union types
+     * @param mixed $query
+     * @param string $key
+     * @param mixed $where
+     * @return void
+     */
+    protected function setQueryBuilderWhereStatement($query, string $key, $where): void
     {
         switch ($where['type']) {
             case 'In':
