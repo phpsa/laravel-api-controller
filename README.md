@@ -47,7 +47,7 @@ You can override the methods by simply putting in your own methods to override -
 
 - POST (class::store) - triggers a new `Phpsa\LaravelApiController\Events\Created` Event which has the new record available as `$record`
 - PUT (class::update) - triggers a new `Phpsa\LaravelApiController\Events\Updated` Event which has the updated record available as `$record`
-- DELETE (class::destry) - triggers a new `Phpsa\LaravelApiController\Events\Deleted` Event which has the deleted record available as `$record`
+- DELETE (class::destroy) - triggers a new `Phpsa\LaravelApiController\Events\Deleted` Event which has the deleted record available as `$record`
 
 ## Policies
 
