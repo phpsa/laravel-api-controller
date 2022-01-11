@@ -51,10 +51,10 @@ trait AllowableFields
             return in_array(Helpers::camel($key), $fields);
         }, ARRAY_FILTER_USE_KEY);
 
-        return $this->mapRelatedResources($resources);
+        return $this->mapRelatedResources($resources, $request);
     }
 
-    protected function mapRelatedResources($resources)
+    protected function mapRelatedResources($resources, $request)
     {
         if (empty(static::$mapResources)) {
             return $resources;
@@ -62,7 +62,7 @@ trait AllowableFields
 
         foreach ($resources as $key => $value) {
             if (array_key_exists($key, static::$mapResources)) {
-                $resources[$key] = static::$mapResources[$key]::make($this->{Helpers::camel($key)});
+                $resources[$key] = static::$mapResources[$key]::make($this->{Helpers::camel($key)})->toArray();
             }
         }
 
