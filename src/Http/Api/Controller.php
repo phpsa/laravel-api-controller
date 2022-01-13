@@ -169,7 +169,7 @@ abstract class Controller extends BaseController
      * Display the specified resource.
      * GET /api/{resource}/{id}.
      *
-     * @param int                                                              $id
+     * @param \Illuminate\Database\Eloquent\Model|int|string $id Model id / model instance for the record
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest|null $request
      */
     public function handleShowAction($id, $request = null, array $extraParams = [])
@@ -196,7 +196,7 @@ abstract class Controller extends BaseController
      * Update the specified resource in storage.
      * PUT /api/{resource}/{id}.
      *
-     * @param int                                                              $id
+     * @param \Illuminate\Database\Eloquent\Model|int|string $id Model id / model instance for the record                                                            $id
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      */
     public function handleUpdateAction($id, $request, array $extraParams = [])
@@ -248,7 +248,7 @@ abstract class Controller extends BaseController
      * Remove the specified resource from storage.
      * DELETE /api/{resource}/{id}.
      *
-     * @param int                                                              $id
+     * @param \Illuminate\Database\Eloquent\Model|int|string $id Model id / model instance for the record                                                             $id
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest|null $request
      */
     public function handleDestroyAction($id, $request = null)
