@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasQueryBuilder;
+use RuntimeException;
 
 trait HasModel
 {
