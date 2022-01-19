@@ -14,7 +14,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
      *
      * @var string
      */
-    protected $name = 'make:api';
+    protected $name = 'make:api:controller';
 
     /**
      * The console command description.
@@ -33,131 +33,86 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
 
     public function handle()
     {
-        $this->setRawName();
 
         if (empty($this->option('model'))) {
-            $this->input->setOption('model', $this->ask('For which model?', $this->customClasses['rawName']));
+            $this->input->setOption('model', $this->ask('For which model?', Str::replace("Controller", "", $this->getNameInput())));
         }
-
-        $this->customClasses['request'] = $this->option('request') ?: $this->confirm('Add Custom Request?');
-
-        if ($this->confirm('Add Custom Resource & Collection?')) {
-            $this->customClasses['resources'] = true;
-            $this->customClasses['resourceSingle'] = $this->customClasses['rawName'].'Resource';
-            $this->customClasses['resourceCollection'] = $this->customClasses['rawName'].'ResourceCollection';
-        }
-
-        $this->confirmModelExists();
 
         parent::handle();
-
-        if ($this->confirm('Add Feature Test?')) {
-            $this->call('make:test', ['name' =>  $this->customClasses['rawName'].'Test']);
-        }
 
         $this->addRoutes();
 
         $this->info('Complete');
     }
 
-    protected function setRawName()
+
+    protected function qualifyResource(string $resource)
     {
-        $name = substr($this->getNameInput(), -10) === 'Controller' ? substr($this->getNameInput(), 0, -10) : $this->getNameInput();
-        $this->customClasses['rawName'] = class_basename($name);
-    }
+        $resource = ltrim($resource, '\\/');
 
-    protected function getRequestClass(): string
-    {
-        return  $this->customClasses['request'] === false ? '\\Illuminate\\Http\\Request' : $this->makeRequestClass();
-    }
+        $resource = str_replace('/', '\\', $resource);
 
-    protected function makeRequestClass()
-    {
-        $class = $this->customClasses['rawName'].'Request';
+        $rootNamespace = $this->rootNamespace();
 
-        $this->call('make:request', [
-            'name' => $class,
-        ]);
-
-        return 'App\\Http\\Requests\\'.$class;
-    }
-
-    protected function confirmModelExists()
-    {
-        $modelClass = $this->parseModel(/** @scrutinizer ignore-type */ $this->option('model'));
-
-        if (! class_exists($modelClass, false)) {
-            if ($this->confirm("A {$modelClass} model does not exist! Do you want to generate it?", true)) {
-                $this->call('make:api:model', ['name' => $modelClass]);
-            }
-
-            return;
+        if (Str::startsWith($resource, $rootNamespace)) {
+            return $resource;
         }
 
-        $this->confirmModelPolicyExists();
+        return $rootNamespace.'Http\\Resources\\'.$resource;
     }
 
-    protected function confirmModelPolicyExists()
-    {
-        $modelClass = $this->parseModel(/** @scrutinizer ignore-type */ $this->option('model'));
-        $model = class_basename($modelClass);
-        $policyClass = rtrim($modelClass, $model).'Policies\\'.$model.'Policy';
-        if (! class_exists($policyClass)) {
-            if ($this->confirm("A {$policyClass} Policy does not exist. Do you want to generate it?", true)) {
-                $this->call('make:api:policy', ['name' => $policyClass, '--model' => '\\'.$modelClass]);
-            }
-        }
-    }
 
-    /**
-     * Build the model replacement values.
-     *
-     * @param  array  $replace
-     * @return array
-     */
+
     protected function buildModelReplacements(array $replace)
     {
-        $requestClass = $this->getRequestClass();
-        $useResourceSingle = $this->getUseResourceSingle();
-        $useResourceCollection = $this->getUseResourceCollection();
+        $modelClass = $this->parseModel($this->option('model'));
 
-        return array_merge(parent::buildModelReplacements($replace), [
-            '{{namespaceRequest}}'        => $requestClass,
-            '{{request}}'                 => class_basename($requestClass),
-            '{{ namespaceRequest }}'      => $requestClass,
-            '{{ request }}'               => class_basename($requestClass),
-            '{{useResourceSingle}}'       => $useResourceSingle,
-            '{{useResourceCollection}}'   => $useResourceCollection,
-            '{{ useResourceSingle }}'     => $useResourceSingle,
-            '{{ useResourceCollection }}' => $useResourceCollection,
-            '{{resourceSingle}}'          => $this->customClasses['resourceSingle'] ? 'protected $resourceSingle = '.$this->customClasses['resourceSingle']."::class;\n" : null,
-            '{{resourceCollection}}'      => $this->customClasses['resourceCollection'] ? 'protected $resourceCollection = '.$this->customClasses['resourceCollection']."::class;\n" : null,
-            '{{ resourceSingle }}'        => $this->customClasses['resourceSingle'] ? 'protected $resourceSingle = '.$this->customClasses['resourceSingle']."::class;\n" : null,
-            '{{ resourceCollection }}'    => $this->customClasses['resourceCollection'] ? 'protected $resourceCollection = '.$this->customClasses['resourceCollection']."::class;\n" : null,
+        if (! class_exists($modelClass)) {
+            if ($this->confirm("A {$modelClass} model does not exist. Do you want to generate it?", true)) {
+                $opts = ['name' => $modelClass];
+                $opts['--migration'] = $this->confirm("Create a new migration file for the model", false);
+                $opts['--policy'] = $this->confirm("Create a new policy for the model", false);
+                $opts['--seed'] = $this->confirm("Create a new seed for the model", false);
+                $opts['--factory'] = $this->confirm("Create a new factory for the model?", false);
+
+                $this->call('make:model', $opts);
+            }
+        }
+
+        $resourceClass = $this->qualifyResource($this->option('model') . 'Resource');
+        if (! class_exists($resourceClass)) {
+            $this->call('make:api:resource', ['name' => $this->option('model') . 'Resource']);
+        }
+
+        $resourceCollection = $this->qualifyResource($this->option('model') . 'Collection');
+        if (! class_exists($resourceCollection)) {
+            $this->call('make:api:resource', ['name' => $this->option('model') . 'Collection']);
+        }
+
+        $replace = $this->buildFormRequestReplacements($replace, $modelClass);
+
+        return array_merge($replace, [
+            'DummyFullModelClass'         => $modelClass,
+            '{{ namespacedModel }}'       => $modelClass,
+            '{{namespacedModel}}'         => $modelClass,
+            'DummyModelClass'             => class_basename($modelClass),
+            '{{ model }}'                 => class_basename($modelClass),
+            '{{model}}'                   => class_basename($modelClass),
+            'DummyModelVariable'          => lcfirst(class_basename($modelClass)),
+            '{{ modelVariable }}'         => lcfirst(class_basename($modelClass)),
+            '{{modelVariable}}'           => lcfirst(class_basename($modelClass)),
+            '{{useResourceSingle}}'       => $resourceClass,
+            '{{useResourceCollection}}'   => $resourceCollection,
+            '{{ useResourceSingle }}'     => $resourceClass,
+            '{{ useResourceCollection }}' => $resourceCollection,
+            '{{resourceSingle}}'          => class_basename($resourceClass),
+            '{{resourceCollection}}'      => class_basename($resourceCollection),
+            '{{ resourceSingle }}'        => class_basename($resourceClass),
+            '{{ resourceCollection }}'    => class_basename($resourceCollection),
         ]);
     }
 
-    protected function getUseResourceSingle()
-    {
-        if (! $this->customClasses['resources']) {
-            return null;
-        }
 
-        $this->call('make:api:resource', ['name' => $this->customClasses['resourceSingle']]);
-
-        return 'use App\Http\\Resources\\'.$this->customClasses['resourceSingle'].';';
-    }
-
-    protected function getUseResourceCollection()
-    {
-        if (! $this->customClasses['resources']) {
-            return null;
-        }
-
-        $this->call('make:api:resource', ['name' => $this->customClasses['resourceCollection']]);
-
-        return 'use App\Http\\Resources\\'.$this->customClasses['resourceCollection'].';';
-    }
 
     protected function getStub()
     {
@@ -194,20 +149,6 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
         return $rootNamespace.'\Http\Controllers\Api';
     }
 
-    /**
-     * Get the console command options.
-     *
-     * @return array
-     */
-    protected function getOptions()
-    {
-        return [
-            ['force', null, InputOption::VALUE_NONE, 'Create the class even if the controller already exists'],
-            ['request', 'r', InputOption::VALUE_NONE, 'Create a request class for the put/post requests'],
-            ['model', 'm', InputOption::VALUE_OPTIONAL, 'Generate a resource controller for the given model.'],
-            ['parent', 'p', InputOption::VALUE_OPTIONAL, 'Generate a nested resource controller class.'],
-        ];
-    }
 
     protected function addRoutes()
     {

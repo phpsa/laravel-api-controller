@@ -2,19 +2,19 @@
 
 namespace {{ namespace }};
 
-use Phpsa\LaravelApiController\Http\Api\Controller;
 use {{ namespacedModel }};
-use {{ namespaceRequest }};
-{{useResourceSingle}}
-{{useResourceCollection}}
+use Phpsa\LaravelApiController\Http\Api\Controller;
+use {{ namespacedRequests }}
+use {{ useResourceSingle }};
+use {{ useResourceCollection }};
 
 class {{ class }} extends Controller
 {
+    protected string $resourceModel = {{ model }}::class;
+    protected $resourceSingle = {{ resourceSingle }}::class;
+    protected $resourceCollection = {{ resourceCollection }}::class;
 
-    {{resourceSingle}}
-    {{resourceCollection}}
-
-    /**
+     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -27,11 +27,10 @@ class {{ class }} extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @see self::handleStoreOrUpdateAction to do magic insert / update
-     * @param  {{ namespaceRequest }}  $request
+     * @param  \{{ namespacedStoreRequest }}  $request
      * @return \Illuminate\Http\Response
      */
-    public function store({{ request }} $request)
+    public function store({{ storeRequest }} $request)
     {
          return $this->handleStoreAction($request);
     }
@@ -39,44 +38,37 @@ class {{ class }} extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show({{ model }} ${{ modelVariable }})
     {
-        return $this->handleShowAction($id);
+        return $this->handleShowAction(${{ modelVariable }});
     }
 
-    /**
+   /**
      * Update the specified resource in storage.
      *
-     * @param  {{ namespaceRequest }}  $request
-     * @param  int  $id
+     * @param  \{{ namespacedUpdateRequest }}  $request
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
      * @return \Illuminate\Http\Response
      */
-    public function update({{ request }} $request, $id)
+    public function update({{ updateRequest }} $request, {{ model }} ${{ modelVariable }})
     {
-        return $this->handleUpdateAction($id, $request);
+        return $this->handleUpdateAction(${{ modelVariable }}, $request);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy({{ model }} ${{ modelVariable }})
     {
-        return $this->handleDestroyAction($id);
+        return $this->handleDestroyAction(${{ modelVariable }});
     }
 
-    /**
-     * Eloquent model.
-     *
-     * @return \Illuminate\Database\Eloquent\Model
-     */
-    protected function model()
-    {
-        return {{ model }}::class;
-    }
 }
+
+
