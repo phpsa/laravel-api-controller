@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasQueryBuilder;
+use RuntimeException;
 
 trait HasModel
 {
@@ -39,7 +40,11 @@ trait HasModel
      *
      * @return string (model classname)
      */
-    abstract protected function model();
+    protected function model()
+    {
+        throw_if(! property_exists($this, 'resourceModel'), RuntimeException::class, 'Api Controller requires the model to be listed on the resourceModel property of your Controller');
+        return $this->resourceModel;
+    }
 
     /**
      * @throws ApiException

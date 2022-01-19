@@ -2,7 +2,9 @@
 
 namespace Phpsa\LaravelApiController\Http\Resources\Contracts;
 
+use Illuminate\Support\Facades\Gate;
 use Phpsa\LaravelApiController\Helpers;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 trait AllowableFields
 {
@@ -35,6 +37,13 @@ trait AllowableFields
     protected static $allowedScopes = null;
 
     /**
+     * which gates to apply to the list of fields available
+     *
+     * @var array|null
+     */
+    protected static ?array $fieldGates = null;
+
+    /**
      * Makes sure we only return allowable fields.
      *
      * @param mixed $request
@@ -43,7 +52,9 @@ trait AllowableFields
      */
     protected function onlyAllowed($request): array
     {
-        $fields = Helpers::camelCaseArray($this->mapFields($request));
+        $fields =  Helpers::camelCaseArray(
+            $this->filterUserViewableFields($request)
+        );
 
         $data = $this->mapFieldData($request, $fields);
 
@@ -155,5 +166,32 @@ trait AllowableFields
         }
 
         return static::$allowedScopes ?? [];
+    }
+
+    /**
+     * Method to filter the allowed fields through a gate to make sure that they are allowed to be viewed but he current viewer
+     *
+     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
+     *
+     * @return array
+     */
+    protected function filterUserViewableFields($request): array
+    {
+        return collect($this->mapFields($request))
+        ->when(
+            ! empty(static::$fieldGates),
+            fn($collection) => $collection->filter(fn($field) => $this->filterUserField($field, $request->user()))
+        )
+        ->toArray();
+    }
+
+    protected function filterUserField(string $field, ?Authenticatable $user): bool
+    {
+        foreach (static::$fieldGates as $gate => $fields) {
+            if (in_array($field, $fields)) {
+                return Gate::forUser($user)->check($gate);
+            }
+        }
+        return true;
     }
 }

@@ -169,7 +169,7 @@ abstract class Controller extends BaseController
      * Display the specified resource.
      * GET /api/{resource}/{id}.
      *
-     * @param int                                                              $id
+     * @param \Illuminate\Database\Eloquent\Model|int|string $id Model id / model instance for the record
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest|null $request
      */
     public function handleShowAction($id, $request = null, array $extraParams = [])
@@ -182,7 +182,8 @@ abstract class Controller extends BaseController
         $this->qualifyItemQuery();
 
         try {
-            $item = $this->builder->findOrFail($id, $fields);
+            $item = $this->builder->whereKey($id)->firstOrFail($fields);
+
             $this->authoriseUserAction('view', $item);
         } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record not found');
@@ -195,7 +196,7 @@ abstract class Controller extends BaseController
      * Update the specified resource in storage.
      * PUT /api/{resource}/{id}.
      *
-     * @param int                                                              $id
+     * @param \Illuminate\Database\Eloquent\Model|int|string $id Model id / model instance for the record                                                            $id
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
      */
     public function handleUpdateAction($id, $request, array $extraParams = [])
@@ -206,7 +207,7 @@ abstract class Controller extends BaseController
         $this->handleCommonActions($request);
 
         try {
-            $item = $this->builder->findOrFail($id);
+            $item = $this->builder->whereKey($id)->firstOrFail();
             $this->authoriseUserAction('update', $item);
         } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record does not exist');
@@ -247,7 +248,7 @@ abstract class Controller extends BaseController
      * Remove the specified resource from storage.
      * DELETE /api/{resource}/{id}.
      *
-     * @param int                                                              $id
+     * @param \Illuminate\Database\Eloquent\Model|int|string $id Model id / model instance for the record                                                             $id
      * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest|null $request
      */
     public function handleDestroyAction($id, $request = null)
@@ -256,7 +257,7 @@ abstract class Controller extends BaseController
         $this->qualifyItemQuery();
 
         try {
-            $item = $this->builder->findOrFail($id);
+            $item = $this->builder->whereKey($id)->firstOrFail();
             $this->authoriseUserAction('delete', $item);
             $item->delete();
         } catch (ModelNotFoundException $exception) {
