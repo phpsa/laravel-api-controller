@@ -158,7 +158,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
         $name = $this->qualifyClass($this->getNameInput());
 
         $replacements = [
-            '{{route.name}}'       => strtolower(Str::plural($this->customClasses['rawName'])),
+            '{{route.name}}'       => strtolower(Str::plural($this->option('model'))),
             '{{route.controller}}' => '\\'.$name.'::class',
         ];
 
