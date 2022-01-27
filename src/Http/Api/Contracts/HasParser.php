@@ -34,13 +34,46 @@ trait HasParser
      * @param mixed $request
      * @param array $extraParams
      */
-    protected function addCustomParams(array $extraParams = []): void
+       protected function addCustomParams(array $extraParams = []): void
     {
         $this->originalQueryParams = $this->request->query();
 
         $all = $this->request->all();
-        $new = Helpers::array_merge_request($all, $extraParams);
+        $new = Helpers::array_merge_request($all, $extraParams, $this->filterByParent());
         $this->request->replace($new);
+    }
+
+
+    protected function filterByParent(): array
+    {
+        $parent = $this->parentModel ?? null;
+        if($parent === null){
+            return [];
+        }
+
+        if(is_array($parent)) {
+            $key = key($parent);
+            $param = reset($parent);
+        }else{
+            $key = strtolower(class_basename($parent));
+        }
+
+        if($this->request->isMethod('get'))
+        {
+            return [
+                'filter' => [
+                    self::$model->{$key}()->getForeignKeyName() => $this->request->route()->originalParameter($param ?? $key)
+                ]
+            ];
+        }
+
+        if($this->request->isMethod('post'))
+        {
+            return [
+                self::$model->{$key}()->getForeignKeyName() => $this->request->route()->originalParameter($param ?? $key)
+            ];
+        }
+
     }
 
 
