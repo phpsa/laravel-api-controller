@@ -58,6 +58,8 @@ trait HasParser
             $key = strtolower(class_basename($parent));
         }
 
+        $this->authoriseUserAction("access" . ucFirst($key), self::$model, true);
+
         if($this->request->isMethod('get'))
         {
             return [
