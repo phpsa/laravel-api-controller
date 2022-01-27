@@ -3,12 +3,19 @@
 namespace {{ namespace }};
 
 use {{ namespacedModel }};
-use {{ rootNamespace }}Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Phpsa\LaravelApiController\Http\Api\Controller;
+use {{ namespacedRequests }}
+use {{ useResourceSingle }};
+use {{ useResourceCollection }};
 use {{ namespacedParentModel }};
 
 class {{ class }} extends Controller
 {
+
+    protected string $resourceModel = {{ model }}::class;
+    protected $resourceSingle = {{ resourceSingle }}::class;
+    protected $resourceCollection = {{ resourceCollection }}::class;
+    protected string $parentModel = Viewing::class;
     /**
      * Display a listing of the resource.
      *
@@ -17,19 +24,19 @@ class {{ class }} extends Controller
      */
     public function index({{ parentModel }} ${{ parentModelVariable }})
     {
-        //
+        return $this->handleIndexAction();
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \{{ namespacedStoreRequest }}  $request
      * @param  \{{ namespacedParentModel }}  ${{ parentModelVariable }}
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, {{ parentModel }} ${{ parentModelVariable }})
+    public function store({{ storeRequest }} $request, {{ parentModel }} ${{ parentModelVariable }})
     {
-        //
+        return $this->handleStoreAction($request);
     }
 
     /**
@@ -41,20 +48,20 @@ class {{ class }} extends Controller
      */
     public function show({{ parentModel }} ${{ parentModelVariable }}, {{ model }} ${{ modelVariable }})
     {
-        //
+        return $this->handleShowAction(${{ modelVariable }});
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \{{ namespacedUpdateRequest }}  $request
      * @param  \{{ namespacedParentModel }}  ${{ parentModelVariable }}
      * @param  \{{ namespacedModel }}  ${{ modelVariable }}
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, {{ parentModel }} ${{ parentModelVariable }}, {{ model }} ${{ modelVariable }})
+    public function update({{ updateRequest }} $request, {{ parentModel }} ${{ parentModelVariable }}, {{ model }} ${{ modelVariable }})
     {
-        //
+        return $this->handleUpdateAction(${{ modelVariable }}, $request);
     }
 
     /**
@@ -66,6 +73,6 @@ class {{ class }} extends Controller
      */
     public function destroy({{ parentModel }} ${{ parentModelVariable }}, {{ model }} ${{ modelVariable }})
     {
-        //
+        return $this->handleDestroyAction(${{ modelVariable }});
     }
 }
