@@ -3,6 +3,7 @@
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\UriParser;
 
