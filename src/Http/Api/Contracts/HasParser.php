@@ -3,6 +3,7 @@
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\UriParser;
 
@@ -34,13 +35,60 @@ trait HasParser
      * @param mixed $request
      * @param array $extraParams
      */
-    protected function addCustomParams(array $extraParams = []): void
+       protected function addCustomParams(array $extraParams = []): void
     {
         $this->originalQueryParams = $this->request->query();
 
         $all = $this->request->all();
-        $new = Helpers::array_merge_request($all, $extraParams);
+        $new = Helpers::array_merge_request($all, $extraParams, $this->filterByParent());
         $this->request->replace($new);
+    }
+
+
+        protected function filterByParent(): array
+    {
+        $parent = $this->parentModel ?? null;
+        if($parent === null){
+            return [];
+        }
+
+        if(is_array($parent)) {
+            $key = key($parent);
+            $param = reset($parent);
+        }else{
+            $key = strtolower(class_basename($parent));
+            $param = $key;
+        }
+
+        $routeRelation = $this->request->route()->parameter($param);
+
+        $child = resolve($this->model());
+
+        if(!$routeRelation instanceof Model){
+            $bindingField = $this->request->route()->bindingFieldFor($param) ?? $child->{$key}()->getRelated()->getKeyName();
+            $routeRelation = $child->{$key}()->getRelated()->where($bindingField, $routeRelation)->firstOrFail();
+        }
+
+        $this->authoriseUserAction('view', $routeRelation);
+
+        if($this->request->isMethod('get') || $this->request->isMethod('options'))
+        {
+            return [
+                'filter' => [
+                    $child->{$key}()->getForeignKeyName() => $routeRelation->getKey()
+                ]
+            ];
+        }
+
+        if($this->request->isMethod('post') || $this->request->isMethod('put') || $this->request->isMethod('patch'))
+        {
+            return [
+                $child->{$key}()->getForeignKeyName() => $routeRelation->getKey()
+            ];
+        }
+            
+            return [];
+
     }
 
 

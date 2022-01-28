@@ -23,13 +23,6 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
      */
     protected $description = 'Create a new controller class';
 
-    protected $customClasses = [
-        'request'            => false,
-        'rawName'            => null,
-        'resources'          => false,
-        'resourceSingle'     => null,
-        'resourceCollection' => null,
-    ];
 
     public function handle()
     {
@@ -46,7 +39,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
     }
 
 
-    protected function qualifyResource(string $resource)
+    protected function qualifyResource(string $resource): string
     {
         $resource = ltrim($resource, '\\/');
 
@@ -65,7 +58,10 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
 
     protected function buildModelReplacements(array $replace)
     {
-        $modelClass = $this->parseModel($this->option('model'));
+        /** @var string $model */
+        $model = $this->option('model');
+
+        $modelClass = $this->parseModel($model);
 
         if (! class_exists($modelClass)) {
             if ($this->confirm("A {$modelClass} model does not exist. Do you want to generate it?", true)) {
@@ -79,14 +75,14 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
             }
         }
 
-        $resourceClass = $this->qualifyResource($this->option('model') . 'Resource');
+        $resourceClass = $this->qualifyResource($model . 'Resource');
         if (! class_exists($resourceClass)) {
-            $this->call('make:api:resource', ['name' => $this->option('model') . 'Resource']);
+            $this->call('make:api:resource', ['name' => $model . 'Resource']);
         }
 
-        $resourceCollection = $this->qualifyResource($this->option('model') . 'Collection');
+        $resourceCollection = $this->qualifyResource($model . 'Collection');
         if (! class_exists($resourceCollection)) {
-            $this->call('make:api:resource', ['name' => $this->option('model') . 'Collection']);
+            $this->call('make:api:resource', ['name' => $model . 'Collection']);
         }
 
         $replace = $this->buildFormRequestReplacements($replace, $modelClass);
@@ -150,7 +146,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
     }
 
 
-    protected function addRoutes()
+    protected function addRoutes(): void
     {
         $stub = $this->resolveStubPath('route.stub');
         $routesFile = app_path(config('laravel-api-controller.routes_file'));
@@ -174,11 +170,14 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
             $this->error('could not read routes file, add the following to your routes file:');
             $this->info("\n".$stub."\n");
 
-            return false;
+            return;
         }
 
         // read file
         $lines = file($routesFile);
+        if($lines === false){
+            return;
+        }
 
         $lastLine = trim($lines[count($lines) - 1]);
         // modify file
@@ -195,7 +194,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
             $this->error('could not read routes file, add the following to your routes file:');
             $this->info("\n".$stub."\n");
 
-            return false;
+            return;
         }
         fwrite($fileResource, implode('', $lines));
         fclose($fileResource);

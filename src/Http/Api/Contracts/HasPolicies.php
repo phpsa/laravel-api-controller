@@ -81,9 +81,9 @@ trait HasPolicies
      *
      * @return bool
      */
-    protected function authoriseUserAction(string $ability, $arguments = null): bool
+    protected function authoriseUserAction(string $ability, $arguments = null, bool $excludeMissing = false): bool
     {
-        if (! $this->testUserPolicyAction($ability, $arguments)) {
+        if (! $this->testUserPolicyAction($ability, $arguments, $excludeMissing)) {
             /** @scrutinizer ignore-call */
             $this->errorUnauthorized();
         }
@@ -101,7 +101,7 @@ trait HasPolicies
      *
      * @return bool
      */
-    protected function testUserPolicyAction(string $ability, $arguments = null): bool
+    protected function testUserPolicyAction(string $ability, $arguments = null, bool $excludeMissing): bool
     {
         // If no arguments are specified, set it to the controller's model (default)
         if ($arguments === null) {
@@ -117,7 +117,7 @@ trait HasPolicies
 
         $modelPolicy = Gate::getPolicyFor($model);
         // If no policy exists for this model, then there's nothing to check
-        if (is_null($modelPolicy)) {
+        if (is_null($modelPolicy) || ($excludeMissing && !method_exists($modelPolicy, $ability)) ) {
             return true;
         }
 
