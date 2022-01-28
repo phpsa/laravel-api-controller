@@ -56,14 +56,15 @@ trait HasParser
             $param = reset($parent);
         }else{
             $key = strtolower(class_basename($parent));
+            $param = $key;
         }
 
-        $routeRelation = $this->request->route()->parameter($key);
+        $routeRelation = $this->request->route()->parameter($param);
 
         $child = resolve($this->model());
 
         if(!$routeRelation instanceof Model){
-            $bindingField = $this->request->route()->bindingFieldFor($key) ?? $child->{$key}()->getRelated()->getKeyName();
+            $bindingField = $this->request->route()->bindingFieldFor($param) ?? $child->{$key}()->getRelated()->getKeyName();
             $routeRelation = $child->{$key}()->getRelated()->where($bindingField, $routeRelation)->firstOrFail();
         }
 
