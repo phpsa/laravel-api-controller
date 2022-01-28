@@ -71,7 +71,7 @@ trait HasParser
 
         $this->authoriseUserAction('view', $routeRelation);
 
-        if($this->request->isMethod('get'))
+        if($this->request->isMethod('get') || $this->request->isMethod('options'))
         {
             return [
                 'filter' => [
