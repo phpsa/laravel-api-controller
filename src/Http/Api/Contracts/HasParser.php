@@ -44,7 +44,7 @@ trait HasParser
     }
 
 
-    protected function filterByParent(): array
+        protected function filterByParent(): array
     {
         $parent = $this->parentModel ?? null;
         if($parent === null){
@@ -58,13 +58,22 @@ trait HasParser
             $key = strtolower(class_basename($parent));
         }
 
-        $this->authoriseUserAction("access" . ucFirst($key), self::$model, true);
+        $routeRelation = $this->request->route()->parameter($key);
+
+        $child = resolve($this->model());
+
+        if(!$routeRelation instanceof Model){
+            $bindingField = $this->request->route()->bindingFieldFor($key) ?? $child->{$key}()->getRelated()->getKeyName();
+            $routeRelation = $child->{$key}()->getRelated()->where($bindingField, $routeRelation)->firstOrFail();
+        }
+
+        $this->authoriseUserAction('view', $routeRelation);
 
         if($this->request->isMethod('get'))
         {
             return [
                 'filter' => [
-                    self::$model->{$key}()->getForeignKeyName() => $this->request->route()->originalParameter($param ?? $key)
+                    $child->{$key}()->getForeignKeyName() => $routeRelation->getKey()
                 ]
             ];
         }
@@ -72,7 +81,7 @@ trait HasParser
         if($this->request->isMethod('post'))
         {
             return [
-                self::$model->{$key}()->getForeignKeyName() => $this->request->route()->originalParameter($param ?? $key)
+                $child->{$key}()->getForeignKeyName() => $routeRelation->getKey()
             ];
         }
 
