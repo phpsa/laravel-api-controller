@@ -102,7 +102,7 @@ abstract class Controller extends BaseController
         $this->validateRequestType($request);
         $this->addCustomParams($extraParams);
         $this->authoriseUserAction('viewAny');
-        $this->handleCommonActions($request);
+        $this->handleCommonActions($this->request);
         $this->qualifyCollectionQuery();
     }
 
@@ -178,7 +178,7 @@ abstract class Controller extends BaseController
         $this->validateRequestType($request);
         $this->addCustomParams($extraParams);
 
-        $this->handleCommonActions($request);
+        $this->handleCommonActions($this->request);
         $fields = $this->parseFieldParams();
         $this->qualifyItemQuery();
 
@@ -205,7 +205,7 @@ abstract class Controller extends BaseController
         $this->validateRequestType($request);
         $this->addCustomParams($extraParams);
 
-        $this->handleCommonActions($request);
+        $this->handleCommonActions($this->request);
 
         try {
             $item = $this->builder->whereKey($id)->firstOrFail();
@@ -214,9 +214,9 @@ abstract class Controller extends BaseController
             return $this->errorNotFound('Record does not exist');
         }
 
-        $this->validate($request, $this->rulesForUpdate($item->getKey()));
+        $this->validate($this->request, $this->rulesForUpdate($item->getKey()));
 
-        $data = $this->qualifyUpdateQuery($request->all());
+        $data = $this->qualifyUpdateQuery($this->request->all());
 
         $updates = $this->addTableData($data);
 
@@ -232,7 +232,7 @@ abstract class Controller extends BaseController
 
             $this->storeRelated($item, $diff, $data);
 
-            event(new Updated($item, $request));
+            event(new Updated($item, $this->request));
 
             DB::commit();
 
@@ -261,7 +261,7 @@ abstract class Controller extends BaseController
             $item = $this->builder->whereKey($id)->firstOrFail();
             $this->authoriseUserAction('delete', $item);
             $item->delete();
-            event(new Deleted($item, $request));
+            event(new Deleted($item, $this->request));
         } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record not found');
         }
