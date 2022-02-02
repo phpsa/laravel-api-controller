@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Phpsa\LaravelApiController\Events\Created;
 use Phpsa\LaravelApiController\Events\Updated;
+use Phpsa\LaravelApiController\Events\Deleted;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
@@ -260,6 +261,7 @@ abstract class Controller extends BaseController
             $item = $this->builder->whereKey($id)->firstOrFail();
             $this->authoriseUserAction('delete', $item);
             $item->delete();
+            event(new Deleted($item, $request));
         } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record not found');
         }
