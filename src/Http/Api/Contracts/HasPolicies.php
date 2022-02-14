@@ -101,7 +101,7 @@ trait HasPolicies
      *
      * @return bool
      */
-    protected function testUserPolicyAction(string $ability, $arguments = null, bool $excludeMissing): bool
+    protected function testUserPolicyAction(string $ability, $arguments = null, bool $excludeMissing = false): bool
     {
         // If no arguments are specified, set it to the controller's model (default)
         if ($arguments === null) {
