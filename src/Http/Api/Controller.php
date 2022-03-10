@@ -187,7 +187,7 @@ abstract class Controller extends BaseController
 
             $this->authoriseUserAction('view', $item);
         } catch (ModelNotFoundException $exception) {
-            return $this->errorNotFound('Record not found');
+            $this->errorNotFound('Record not found');
         }
 
         return $this->handleShowResponse($item);

@@ -8,11 +8,14 @@ use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasQueryBuilder;
 use RuntimeException;
+use Throwable;
 
 trait HasModel
 {
 
     use HasQueryBuilder;
+
+    protected string $resourceModel;
 
     /**
      * Eloquent model instance.
@@ -51,9 +54,11 @@ trait HasModel
      */
     protected function makeModel(): void
     {
-        $model = resolve($this->model());
-
-        if (! $model instanceof Model) {
+        try {
+            /** @var \Illuminate\Database\Eloquent\Model|object $model */
+            $model = resolve($this->model());
+            throw_unless($model instanceof Model);
+        } catch (Throwable) {
             throw new ApiException("Class {$this->model()} must be an instance of ".Model::class);
         }
 
@@ -159,7 +164,7 @@ trait HasModel
      *
      * @param string $name
      *
-     * @return mixed
+     * @return Model
      */
     protected function getRelatedModel(string $name): Model
     {

@@ -1,0 +1,7 @@
++ add ability to do batchUpdate / BatchCreate / toggle
+ https://github.com/tailflow/laravel-orion/blob/main/src/Http/Requests/Request.php
+
+ + look at enhanced validation to override rules to allow rules for each
+ store, batchStore, update, batchUpdate, toggle
+
+ Make use of a trait - and add that trait as an optional to the api controller (v2.1)

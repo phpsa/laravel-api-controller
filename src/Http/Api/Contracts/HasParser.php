@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\UriParser;
 
+/**
+ * @property \Illuminate\Http\Request $request
+ * @property string|array<string,string>|null $parentModel
+ */
 trait HasParser
 {
     /**
@@ -14,12 +18,12 @@ trait HasParser
      *
      * @var \Phpsa\LaravelApiController\UriParser
      */
-    protected $uriParser;
+    protected ?UriParser $uriParser;
 
     protected $originalQueryParams;
 
 
-    protected function getUriParser()
+    protected function getUriParser(): UriParser
     {
 
         if (is_null($this->uriParser)) {
@@ -32,10 +36,9 @@ trait HasParser
     /**
      * Method to add extra request parameters to the request instance.
      *
-     * @param mixed $request
      * @param array $extraParams
      */
-       protected function addCustomParams(array $extraParams = []): void
+    protected function addCustomParams(array $extraParams = []): void
     {
         $this->originalQueryParams = $this->request->query();
 
@@ -45,17 +48,17 @@ trait HasParser
     }
 
 
-        protected function filterByParent(): array
+    protected function filterByParent(): array
     {
         $parent = $this->parentModel ?? null;
-        if($parent === null){
+        if ($parent === null) {
             return [];
         }
 
-        if(is_array($parent)) {
+        if (is_array($parent)) {
             $key = key($parent);
             $param = reset($parent);
-        }else{
+        } else {
             $key = strtolower(class_basename($parent));
             $param = $key;
         }
@@ -64,15 +67,14 @@ trait HasParser
 
         $child = resolve($this->model());
 
-        if(!$routeRelation instanceof Model){
+        if (! $routeRelation instanceof Model) {
             $bindingField = $this->request->route()->bindingFieldFor($param) ?? $child->{$key}()->getRelated()->getKeyName();
             $routeRelation = $child->{$key}()->getRelated()->where($bindingField, $routeRelation)->firstOrFail();
         }
 
         $this->authoriseUserAction('view', $routeRelation);
 
-        if($this->request->isMethod('get') || $this->request->isMethod('options'))
-        {
+        if ($this->request->isMethod('get') || $this->request->isMethod('options')) {
             return [
                 'filter' => [
                     $child->{$key}()->getForeignKeyName() => $routeRelation->getKey()
@@ -80,15 +82,13 @@ trait HasParser
             ];
         }
 
-        if($this->request->isMethod('post') || $this->request->isMethod('put') || $this->request->isMethod('patch'))
-        {
+        if ($this->request->isMethod('post') || $this->request->isMethod('put') || $this->request->isMethod('patch')) {
             return [
                 $child->{$key}()->getForeignKeyName() => $routeRelation->getKey()
             ];
         }
-            
-            return [];
 
+        return [];
     }
 
 
