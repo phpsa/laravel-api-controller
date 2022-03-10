@@ -18,7 +18,7 @@ trait HasParser
      *
      * @var \Phpsa\LaravelApiController\UriParser
      */
-    protected ?UriParser $uriParser;
+    protected ?UriParser $uriParser = null;
 
     protected $originalQueryParams;
 
