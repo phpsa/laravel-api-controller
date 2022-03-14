@@ -67,6 +67,7 @@ trait AllowableFields
 
     protected function mapRelatedResources($resources, $request)
     {
+
         if (empty(static::$mapResources)) {
             return $resources;
         }
