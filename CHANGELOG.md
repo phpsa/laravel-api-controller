@@ -1,3 +1,25 @@
+# [4.0.0](https://git.customd.com/composer/laravel-api-controller/compare/v3.2.3...v4.0.0) (2022-03-14)
+
+
+### Bug Fixes
+
+* lara 9 style atributes ([9df0fb8](https://git.customd.com/composer/laravel-api-controller/commit/9df0fb8553f824d14daccfa9a4d07d23a52764bd))
+
+
+### chore
+
+* update Docs ([d594689](https://git.customd.com/composer/laravel-api-controller/commit/d59468978d768047f9e0d7c56483e46daf543ba2))
+
+
+### Features
+
+* Laravel 9 compatability ([d8b8906](https://git.customd.com/composer/laravel-api-controller/commit/d8b890682a16f38acf4f973df8da6a57fcdd39c1))
+
+
+### BREAKING CHANGES
+
+* - support for laravel prior to 8.5 dropped
+
 # [4.0.0-beta.1](https://git.customd.com/composer/laravel-api-controller/compare/v3.2.3...v4.0.0-beta.1) (2022-03-14)
 
 
