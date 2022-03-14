@@ -29,7 +29,7 @@ trait HasResources
      */
     public function getResourceSingle(): string
     {
-        return $this->resourceSingle ?? \Phpsa\LaravelApiController\Http\Resources\ApiResource::class;
+        return $this->resourceSingle;
     }
 
     /**
@@ -39,7 +39,7 @@ trait HasResources
      */
     public function getResourceCollection(): string
     {
-        return $this->resourceCollection ?? \Phpsa\LaravelApiController\Http\Resources\ApiCollection::class;
+        return $this->resourceCollection;
     }
 
     /**

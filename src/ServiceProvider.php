@@ -50,16 +50,16 @@ class ServiceProvider extends BaseServiceProvider
     public function addDbMacros()
     {
         EloquentBuilder::macro('getRaw', function (array $columns = ['*']) {
-            /* @var \Illuminate\Database\Eloquent\Builder $this */
-            return $this->/** @scrutinizer ignore-call */toBase()
+            /**  @var \Illuminate\Database\Eloquent\Builder $this */
+            return $this->toBase()
             ->get($columns)->map(function ($row) {
                 return (array) $row;
             });
         });
 
         EloquentBuilder::macro('paginateRaw', function ($limit = 25, array $columns = ['*'], $pageName = 'page', $page = null) {
-             /* @var \Illuminate\Database\Eloquent\Builder $this */
-            $result = $this->/** @scrutinizer ignore-call */toBase()
+             /** @var \Illuminate\Database\Eloquent\Builder $this */
+            $result = $this->toBase()
             ->paginate($limit, $columns, $pageName, $page);
 
             $collection = $result->getCollection()->map(function ($row) {

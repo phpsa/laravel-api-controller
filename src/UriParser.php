@@ -28,16 +28,11 @@ class UriParser
      */
     protected const ARRAY_QUERY_PATTERN = '/(.*)\[\]/';
 
-    /**
-     * Undocumented variable.
-     *
-     * @var Request
-     */
-    protected $request;
+    protected Request $request;
 
-    protected $queryUri;
+    protected array $queryUri;
 
-    protected $queryParameters = [];
+    protected array $queryParameters = [];
 
     /**
      * Constructor.
@@ -49,7 +44,7 @@ class UriParser
     {
         $this->request = $request;
 
-        $this->queryUri = $request->input($filter);
+        $this->queryUri = $request->input($filter, []);
 
         if ($this->hasQueryUri()) {
             $this->setQueryParameters($this->queryUri);

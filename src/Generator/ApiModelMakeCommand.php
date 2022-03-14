@@ -21,7 +21,7 @@ class ApiModelMakeCommand extends Command
     public function handle()
     {
         if (GeneratorCommand::handle() === false && ! $this->option('force')) {
-            return false;
+            return;
         }
 
         if ($this->confirm('Do you wish to generate a factory?')) {

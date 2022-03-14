@@ -54,15 +54,12 @@ class SnakeCaseInputs
     /**
      * Process parameters within a ParameterBag to snake_case the keys.
      *
-     * @param ParameterBag $bag
+     * @param \Symfony\Component\HttpFoundation\ParameterBag $bag
      */
-    protected function processParamBag(ParameterBag $bag)
+    protected function processParamBag(ParameterBag $bag): void
     {
-        $parameters = $bag->all();
-
-        if (! empty($parameters) && count($parameters) > 0) {
-            $parameters = Helpers::snakeCaseArrayKeys($parameters);
-            $bag->replace($parameters);
-        }
+        $bag->replace(
+            Helpers::snakeCaseArrayKeys($bag->all())
+        );
     }
 }

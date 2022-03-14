@@ -11,25 +11,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 trait HasResponse
 {
-    /**
-     * HTTP header status code.
-     */
     protected $statusCode = Res::HTTP_OK;
 
-    /**
-     * @return mixed
-     */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
-    /**
-     * @param $message
-     *
-     * @return self
-     */
-    public function setStatusCode($statusCode): self
+    public function setStatusCode(int $statusCode): self
     {
         $this->statusCode = $statusCode;
 
@@ -37,13 +26,9 @@ trait HasResponse
     }
 
     /**
-     * Respond with a given item.
-     *
-     * @param $item
-     *
      * @return mixed Response|jsonResponse
      */
-    protected function respondWithOne($item, $code = null, $headers = [])
+    protected function respondWithOne($item, ?int $code = null, array $headers = [])
     {
         return $this->respondWithResource($this->/** @scrutinizer ignore-call */getResourceSingle(), $item, $code, $headers);
     }
@@ -182,7 +167,7 @@ trait HasResponse
      * @param array|null  $errors
      *
      * @throws NotFoundHttpException
-     * @return void
+     * @return never
      */
     protected function errorNotFound($message = 'Resource Not Found', ?array $errors = null)
     {
