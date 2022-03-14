@@ -67,14 +67,13 @@ trait AllowableFields
 
     protected function mapRelatedResources($resources, $request)
     {
+
         if (empty(static::$mapResources)) {
             return $resources;
         }
 
-        foreach ($resources as $key => $value) {
-            if (array_key_exists($key, static::$mapResources)) {
-                $resources[$key] = static::$mapResources[$key]::make($this->{Helpers::camel($key)})->toArray($request);
-            }
+        foreach(static::$mapResources as $field => $related){
+            $resources[$field] = $related::make($this->resource->getAttribute($field)->toArray());
         }
 
         return $resources;
@@ -89,9 +88,7 @@ trait AllowableFields
         });
 
         foreach ($missing as $field) {
-            if (method_exists($this->resource, 'get'.Helpers::camel($field).'Attribute')) {
-                $data[Helpers::snake($field)] = $this->resource->{ Helpers::snake($field)};
-            }
+          $data[Helpers::snake($field)] = $this->resource->getAttribute($field);
         }
 
         return $data;
