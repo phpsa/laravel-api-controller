@@ -269,5 +269,5 @@ instead of using the issue tracker.
 
 - [Custom D](https://customd.com)
 
-[badge_laravel]: https://img.shields.io/badge/Laravel-6%20to%208-blue.svg
+[badge_laravel]: https://img.shields.io/badge/Laravel-8.7%20to%209-blue.svg
 [badge_issues]: https://img.shields.io/github/issues/phpsa/laravel-api-controller
