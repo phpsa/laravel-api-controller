@@ -65,15 +65,20 @@ trait AllowableFields
         return $this->mapRelatedResources($resources, $request);
     }
 
-    protected function mapRelatedResources($resources, $request)
+     protected function mapRelatedResources($resources, $request)
     {
-
         if (empty(static::$mapResources)) {
             return $resources;
         }
 
         foreach(static::$mapResources as $field => $related){
-            $resources[$field] = $related::make($this->resource->getAttribute($field)->toArray());
+
+            $resources[$field] = $related::make(is_array($this->resource)
+            ? $this->resource[$field]
+            : $this->resource->getAttribute($field)->toArray()
+        );
+
+
         }
 
         return $resources;
@@ -88,7 +93,7 @@ trait AllowableFields
         });
 
         foreach ($missing as $field) {
-          $data[Helpers::snake($field)] = $this->resource->getAttribute($field);
+          $data[Helpers::snake($field)] = is_array($this->resource) ? null : $this->resource->getAttribute($field);
         }
 
         return $data;
