@@ -1,3 +1,10 @@
+## [4.0.1](https://git.customd.com/composer/laravel-api-controller/compare/v4.0.0...v4.0.1) (2022-03-15)
+
+
+### Bug Fixes
+
+* array breaks when passed to resource ([2380d81](https://git.customd.com/composer/laravel-api-controller/commit/2380d816e3d13a79c5bd1c13106ba4d312fb8645))
+
 # [4.0.0](https://git.customd.com/composer/laravel-api-controller/compare/v3.2.3...v4.0.0) (2022-03-14)
 
 
