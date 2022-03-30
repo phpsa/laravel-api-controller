@@ -1,3 +1,11 @@
+## [4.0.3](https://git.customd.com/composer/laravel-api-controller/compare/v4.0.2...v4.0.3) (2022-03-30)
+
+
+### Bug Fixes
+
+* api nested stub not working ([6f003c8](https://git.customd.com/composer/laravel-api-controller/commit/6f003c842f889398b5eb18e13184d9e9e619aa5f))
+* stub paths / variables ([1f7a787](https://git.customd.com/composer/laravel-api-controller/commit/1f7a787f86881314df15ce82656d610fd78992c0))
+
 ## [4.0.2](https://git.customd.com/composer/laravel-api-controller/compare/v4.0.1...v4.0.2) (2022-03-30)
 
 
