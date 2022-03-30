@@ -115,7 +115,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
         $stub = 'controller.api.stub';
 
         if ($this->option('parent')) {
-            $stub = 'controller.nested.stub';
+            $stub = 'controller.nested.api.stub';
         }
 
         return $this->resolveStubPath($stub);
@@ -175,7 +175,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
 
         // read file
         $lines = file($routesFile);
-        if($lines === false){
+        if ($lines === false) {
             return;
         }
 
