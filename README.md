@@ -1,6 +1,6 @@
 # Laravel Api Controller
 
-[![For Laravel 5][badge_laravel]](https://github.com/phpsa/laravel-api-controller/issues)
+[![For Laravel 8.7 to 9][badge_laravel]](https://github.com/phpsa/laravel-api-controller/issues)
 [![Build Status](https://api.travis-ci.com/phpsa/laravel-api-controller.svg?branch=master)](https://travis-ci.com/phpsa/laravel-api-controller)
 [![Coverage Status](https://coveralls.io/repos/github/phpsa/laravel-api-controller/badge.svg?branch=master)](https://coveralls.io/github/phpsa/laravel-api-controller?branch=master)
 [![Packagist](https://img.shields.io/packagist/v/phpsa/laravel-api-controller.svg)](https://packagist.org/packages/phpsa/laravel-api-controller)
@@ -28,7 +28,7 @@ php artisan vendor:publish --provider="Phpsa\LaravelApiController\ServiceProvide
 
 **CLI Commands**
 
-* `artisan make:api {ControllerName}` to generate the controller
+* `artisan make:api:controller {ControllerName}` to generate the controller
 * `artisan make:api:policy` to generate a policy file
 * `artisan make:api:resource` to geneate the response resource
 
