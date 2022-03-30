@@ -1,3 +1,10 @@
+## [4.0.2](https://git.customd.com/composer/laravel-api-controller/compare/v4.0.1...v4.0.2) (2022-03-30)
+
+
+### Bug Fixes
+
+* non-default related models were returned if defined in $mapResources ([d9d4ff1](https://git.customd.com/composer/laravel-api-controller/commit/d9d4ff1f76130c5234d28d0230b633096d891492))
+
 ## [4.0.1](https://git.customd.com/composer/laravel-api-controller/compare/v4.0.0...v4.0.1) (2022-03-15)
 
 
