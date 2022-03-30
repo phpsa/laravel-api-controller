@@ -1,10 +1,10 @@
 <?php
 
-namespace DummyNamespace;
+namespace {{ namespace }};
 
 use Phpsa\LaravelApiController\Http\Resources\ApiResource;
 
-class DummyClass extends ApiResource
+class {{ class }} extends ApiResource
 {
 
     /**
@@ -39,7 +39,7 @@ class DummyClass extends ApiResource
      * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return array
+     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
     public function toArray($request)
     {

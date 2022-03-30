@@ -42,21 +42,6 @@ class ApiModelMakeCommand extends Command
     }
 
     /**
-     * Create a migration file for the model.
-     *
-     * @return void
-     */
-    protected function createMigration()
-    {
-        $table = Str::snake(Str::pluralStudly(class_basename(/** @scrutinizer ignore-type */ $this->argument('name'))));
-
-        $this->call('make:migration', [
-            'name'     => "create_{$table}_table",
-            '--create' => $table,
-        ]);
-    }
-
-    /**
      * Create a seeder file for the model.
      *
      * @return void
@@ -65,35 +50,11 @@ class ApiModelMakeCommand extends Command
     {
         $name = Str::studly(class_basename($this->getNameInput()));
         $modelName = ($this->qualifyClass($this->getNameInput()));
-        $policy = rtrim($modelName, $name).'Policies\\'.$name;
 
         $this->call('make:api:policy', [
-            'name'    => "{$policy}Policy",
+            'name'    => "{$name}Policy",
             '--model' => $modelName,
         ]);
-    }
-
-    /**
-     * Get the stub file for the generator.
-     *
-     * @return string
-     */
-    protected function getStub()
-    {
-        return $this->resolveStubPath('/stubs/model.stub');
-    }
-
-    /**
-     * Resolve the fully-qualified path to the stub.
-     *
-     * @param  string  $stub
-     * @return string
-     */
-    protected function resolveStubPath($stub)
-    {
-        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
-        ? $customPath
-        : __DIR__.$stub;
     }
 
     protected function getOptions()
