@@ -11,11 +11,12 @@ use {{ namespacedParentModel }};
 
 class {{ class }} extends Controller
 {
-
     protected string $resourceModel = {{ model }}::class;
+    protected string $parentModel = {{ parentModel }}::class;
+
     protected $resourceSingle = {{ resourceSingle }}::class;
     protected $resourceCollection = {{ resourceCollection }}::class;
-    protected string $parentModel = Viewing::class;
+
     /**
      * Display a listing of the resource.
      *
