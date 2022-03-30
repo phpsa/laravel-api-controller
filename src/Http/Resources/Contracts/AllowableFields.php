@@ -55,23 +55,23 @@ trait AllowableFields
         $fields =  Helpers::camelCaseArray(
             $this->filterUserViewableFields($request)
         );
-
         $data = $this->mapFieldData($request, $fields);
 
         $resources = array_filter($data, function ($key) use ($fields) {
             return in_array(Helpers::camel($key), $fields);
         }, ARRAY_FILTER_USE_KEY);
 
-        return $this->mapRelatedResources($resources, $request);
+        return $this->mapRelatedResources($resources, $fields);
     }
 
-     protected function mapRelatedResources($resources, $request)
+    protected function mapRelatedResources($resources, $fields)
     {
         if (empty(static::$mapResources)) {
             return $resources;
         }
 
         foreach(static::$mapResources as $field => $related){
+            if (! in_array($field, $fields)) { continue; }
 
             $resources[$field] = $related::make(is_array($this->resource)
             ? $this->resource[$field]
