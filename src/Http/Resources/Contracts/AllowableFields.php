@@ -87,7 +87,7 @@ trait AllowableFields
         });
 
         foreach ($missing as $field) {
-          $data[Helpers::snake($field)] = $this->resource->getAttribute($field);
+          $data[Helpers::snake($field)] = is_array($this->resource) ? null : $this->resource->getAttribute($field);
         }
 
         return $data;
