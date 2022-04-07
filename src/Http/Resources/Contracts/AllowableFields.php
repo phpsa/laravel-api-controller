@@ -75,7 +75,7 @@ trait AllowableFields
 
             $resources[$field] = $related::make(is_array($this->resource)
             ? $this->resource[$field]
-            : $this->resource->getAttribute($field)->toArray()
+            : $this->resource->getAttribute($field)
         );
 
 
