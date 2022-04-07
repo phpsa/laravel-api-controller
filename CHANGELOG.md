@@ -1,3 +1,10 @@
+## [4.0.4](https://git.customd.com/composer/laravel-api-controller/compare/v4.0.3...v4.0.4) (2022-04-07)
+
+
+### Bug Fixes
+
+* resource to Array should be a manual call ([15badb7](https://git.customd.com/composer/laravel-api-controller/commit/15badb79c99c8111478b24a108aa47b572c54b92))
+
 ## [4.0.3](https://git.customd.com/composer/laravel-api-controller/compare/v4.0.2...v4.0.3) (2022-03-30)
 
 
