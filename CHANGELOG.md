@@ -1,3 +1,10 @@
+# [4.1.0](https://git.customd.com/composer/laravel-api-controller/compare/v4.0.4...v4.1.0) (2022-04-11)
+
+
+### Features
+
+* extends filterUserField to pass the resource to all fieldGates, so that gates with context-dependent logic can be used. ([dfed357](https://git.customd.com/composer/laravel-api-controller/commit/dfed357bb4eecd2d0fbb7aee0fd470127c9d67ea))
+
 ## [4.0.4](https://git.customd.com/composer/laravel-api-controller/compare/v4.0.3...v4.0.4) (2022-04-07)
 
 
