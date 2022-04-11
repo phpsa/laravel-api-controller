@@ -191,7 +191,7 @@ trait AllowableFields
     {
         foreach (static::$fieldGates as $gate => $fields) {
             if (in_array($field, $fields)) {
-                return Gate::forUser($user)->check($gate);
+                return Gate::forUser($user)->check($gate, $this->resource);
             }
         }
         return true;

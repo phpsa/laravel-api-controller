@@ -160,9 +160,41 @@ By default all fields are returned, you can limit that to specific fields in the
 
 - Api Controller parameter `$defaultFields` default as `protected $defaultFields = ['*'];` - switch to include an array of fields
 - fields param in url querystring: ie `fields=id,name,age` = will only return those, this will also override the above.
-- in your response resource you can set the static::allowedFields to lock down which fields are returnable
+- in your response resource you can set the static::allowedFields to lock down which fields are returnable.
+  - This also controls which related resources are returnable. Include the key that is used in `$mapResources` (see "Relationships" below).
 - `addfields` and `removefields` params in url querystring will work with these.
 - Use laravel [eloquent model `$appends`](https://laravel.com/docs/6.x/eloquent-serialization#appending-values-to-json) property to automatically include custom attribute accessors.
+
+### Gated Response Fields
+
+Gates can be used to control access to fields and related resources, by defining `$gatedFields`:
+
+```
+protected static array $fieldGates = [
+    'gate-one' => [
+        'fieldA',
+        'fieldB',
+     ],
+     'gate-two' => [
+       'fieldA',
+       'fieldC,
+       'relatedResourceD'
+     ]
+];
+```
+
+Each specified gate will be used to determine whether that set of fields will be included.
+
+Each gate will be passed the resource as well as the user, so it can test whether the user should be allowed to access that specific resource.
+
+Example gate definition:
+
+```
+  Gate::define(
+      'supervises-the-group',
+      fn ($user, Group $group) => (int) $user->id === $group->supervisor_id
+  );
+```
 
 ## Relationships
 
@@ -178,6 +210,7 @@ Simply add a `protected static $mapResources` to your `Resource` to define which
 ```
 
 - You can automatically update and create related records for most types of relationships. Just include the related resource name in your POST or PUT request.
+- Important: if you are using `$defaultFields` and/or `$allowedFields` in your resource, the related resource key from `$mapResources` must also be included in those lists for that related resource to be included.
 
 For `BelongsToMany` or `MorphToMany` relationships, you can choose the sync strategy. By default, this will take an _additive_ strategy. That is to say, related records sent will be ADDED to any existing related records. On a request-by-request basis, you can opt for a _sync_ strategy which will remove the pivot for any related records not listed in the request. Note the actual related record will not be removed, just the pivot entry.
 
