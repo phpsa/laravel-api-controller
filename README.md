@@ -164,6 +164,37 @@ By default all fields are returned, you can limit that to specific fields in the
 - `addfields` and `removefields` params in url querystring will work with these.
 - Use laravel [eloquent model `$appends`](https://laravel.com/docs/6.x/eloquent-serialization#appending-values-to-json) property to automatically include custom attribute accessors.
 
+### Gated Response Fields
+
+Gates can be used to control access to fields and related resources, by defining `$gatedFields`:
+
+```
+protected static array $fieldGates = [
+    'gate-one' => [
+        'fieldA',
+        'fieldB',
+     ],
+     'gate-two' => [
+       'fieldA',
+       'fieldC,
+       'relatedResourceD'
+     ]
+];
+```
+
+Each specified gate will be used to determine whether that set of fields will be included.
+
+Each gate will be passed the resource as well as the user, so it can test whether the user should be allowed to access that specific resource.
+
+Example gate definition:
+
+```
+  Gate::define(
+      'supervises-the-group',
+      fn ($user, Group $group) => (int) $user->id === $group->supervisor_id
+  );
+```
+
 ## Relationships
 
 - Using the relationships defined in your models, you can pass a comma delimited list eg `include=join1,join2` which will return those joins (one or many).
