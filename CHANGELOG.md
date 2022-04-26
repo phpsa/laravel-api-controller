@@ -1,3 +1,10 @@
+## [4.1.1](https://git.customd.com/composer/laravel-api-controller/compare/v4.1.0...v4.1.1) (2022-04-26)
+
+
+### Bug Fixes
+
+* missing pivot option ([102591d](https://git.customd.com/composer/laravel-api-controller/commit/102591d0632822ede30afa506b0dad2d48cc14c6))
+
 # [4.1.0](https://git.customd.com/composer/laravel-api-controller/compare/v4.0.4...v4.1.0) (2022-04-11)
 
 
