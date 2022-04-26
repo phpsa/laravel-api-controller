@@ -71,7 +71,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
                 $opts['--seed'] = $this->confirm("Create a new seed for the model", false);
                 $opts['--factory'] = $this->confirm("Create a new factory for the model?", false);
 
-                $this->call('make:model', $opts);
+                $this->call('make:api:model', $opts);
             }
         }
 
