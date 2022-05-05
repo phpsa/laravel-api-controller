@@ -82,7 +82,7 @@ trait HasResources
 
             if ($this->request->has($snake) || $this->request->has($camel)) {
                 $value = $this->parseScopeValue($this->request->has($snake) ? $this->request->get($snake) : $this->request->get($camel));
-                call_user_func([$this->builder, $camel], $value);
+                call_user_func([$this->getBuilder(), $camel], $value);
             }
         }
     }

@@ -57,7 +57,7 @@ class HasResourcesTest extends TestCase
         $class = Mockery::mock(UserController::class)->makePartial()->shouldAllowMockingProtectedMethods();
         app()->instance(UserController::class, $class);
         $class->shouldReceive('parseScopeValue')->once()->andReturn(true);
-        $class->__construct();
+        new $class();
 
        // $class = App::make($class);
         $request = $this->createRequest('GET', '/?has2Fa=1&notCallable=0');
@@ -73,7 +73,7 @@ class HasResourcesTest extends TestCase
         $class = Mockery::mock(ProjectController::class)->makePartial()->shouldAllowMockingProtectedMethods();
         app()->instance(ProjectController::class, $class);
         $class->shouldReceive('parseScopeValue')->never();
-        $class->__construct();
+        new $class();
 
         $this->assertInstanceOf(ProjectController::class, $class);
 

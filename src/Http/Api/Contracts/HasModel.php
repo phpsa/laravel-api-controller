@@ -15,6 +15,9 @@ trait HasModel
 
     use HasQueryBuilder;
 
+    /**
+     * @var string|class-string
+     */
     protected string $resourceModel;
 
     /**
@@ -41,7 +44,7 @@ trait HasModel
     /**
      * Eloquent model.
      *
-     * @return string (model classname)
+     * @return class-string (model classname)
      */
     protected function model()
     {
@@ -51,22 +54,23 @@ trait HasModel
 
     /**
      * @throws ApiException
+     * @deprecated 4.x
      */
     protected function makeModel(): void
     {
-        try {
-            /** @var \Illuminate\Database\Eloquent\Model|object $model */
-            $model = resolve($this->model());
-            throw_unless($model instanceof Model);
-        } catch (Throwable) {
-            throw new ApiException("Class {$this->model()} must be an instance of ".Model::class);
-        }
-
-        self::$model = $model;
-
-        $this->initBuilder();
+        $this->getBuilder();
     }
 
+    protected function getModel(): Model
+    {
+        return static::$model ??= resolve($this->model());
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @return class-string
+     */
     public function getPostmanModel(): string
     {
         return $this->model();
@@ -78,7 +82,7 @@ trait HasModel
     protected function unguardIfNeeded()
     {
         if ($this->unguard) {
-            self::$model->unguard();
+            $this->getModel()::unguard();
         }
     }
 
@@ -93,7 +97,7 @@ trait HasModel
     protected function addTableData(array $data = [], ?Model $model = null): array
     {
         if (is_null($model)) {
-            $model = self::$model;
+            $model = $this->getModel();
         }
 
         $columns = $this->getTableColumns($model);
@@ -116,7 +120,7 @@ trait HasModel
     protected function getUnqualifiedTableName(?Model $model = null): string
     {
         if (is_null($model)) {
-            $model = self::$model;
+            $model = $this->getModel();
         }
         $table = explode('.', $model->getTable());
 
@@ -131,7 +135,7 @@ trait HasModel
     protected function setTableColumns(?Model $model = null): void
     {
         if (is_null($model)) {
-            $model = self::$model;
+            $model = $this->getModel();
         }
         $table = $this->getUnqualifiedTableName($model);
         $this->tableColumns[$table] = Schema::connection($model->getConnectionName())->getColumnListing($table);
@@ -147,7 +151,7 @@ trait HasModel
     protected function getTableColumns(?Model $model = null): array
     {
         if (is_null($model)) {
-            $model = self::$model;
+            $model = $this->getModel();
         }
 
         $table = $this->getUnqualifiedTableName($model);
@@ -170,6 +174,6 @@ trait HasModel
     {
         $with = Helpers::camel($name);
 
-        return self::$model->{$with}()->getRelated();
+        return $this->getModel()->{$with}()->getRelated();
     }
 }

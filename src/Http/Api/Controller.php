@@ -60,15 +60,6 @@ abstract class Controller extends BaseController
      */
     protected $maximumLimit = 0;
 
-
-    /**
-     * Constructor.
-     */
-    public function __construct()
-    {
-        $this->makeModel();
-    }
-
     /**
      * Display a listing of the resource.
      * GET /api/{resource}.
@@ -81,7 +72,7 @@ abstract class Controller extends BaseController
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
 
-        $items = $limit > 0 ? $this->builder->paginate($limit, $fields)->appends($this->originalQueryParams) : $this->builder->get($fields);
+        $items = $limit > 0 ? $this->getBuilder()->paginate($limit, $fields)->appends($this->originalQueryParams) : $this->getBuilder()->get($fields);
 
         return $this->handleIndexResponse($items);
     }
@@ -92,7 +83,7 @@ abstract class Controller extends BaseController
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
 
-        $items = $limit > 0 ? $this->builder->paginateRaw($limit, $fields)->appends($this->originalQueryParams) : $this->builder->getRaw($fields);
+        $items = $limit > 0 ? $this->getBuilder()->paginateRaw($limit, $fields)->appends($this->originalQueryParams) : $this->getBuilder()->getRaw($fields);
 
         return $this->handleIndexResponse($items);
     }
@@ -118,7 +109,7 @@ abstract class Controller extends BaseController
 
     public function handleStoreOrUpdateAction($request, array $extraParams = [])
     {
-        $key = self::$model->getKeyName();
+        $key = $this->getModel()->getKeyName();
         $id = $request->input($key, null) ?? data_get($extraParams, $key, null);
 
         return $id ? $this->handleUpdateAction($id, $request, $extraParams) : $this->handleStoreAction($request, $extraParams);
@@ -149,7 +140,7 @@ abstract class Controller extends BaseController
         DB::beginTransaction();
 
         try {
-            $item = self::$model->create($insert);
+            $item = $this->getModel()->create($insert);
 
             $this->storeRelated($item, $diff, $data);
 
@@ -183,7 +174,7 @@ abstract class Controller extends BaseController
         $this->qualifyItemQuery();
 
         try {
-            $item = $this->builder->whereKey($id)->firstOrFail($fields);
+            $item = $this->getBuilder()->whereKey($id)->firstOrFail($fields);
 
             $this->authoriseUserAction('view', $item);
         } catch (ModelNotFoundException $exception) {
@@ -208,7 +199,7 @@ abstract class Controller extends BaseController
         $this->handleCommonActions($this->request);
 
         try {
-            $item = $this->builder->whereKey($id)->firstOrFail();
+            $item = $this->getBuilder()->whereKey($id)->firstOrFail();
             $this->authoriseUserAction('update', $item);
         } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record does not exist');
@@ -222,9 +213,9 @@ abstract class Controller extends BaseController
 
         $diff = array_diff(array_keys($data), array_keys($updates));
 
-        $this->unguardIfNeeded();
-
         DB::beginTransaction();
+
+        $item->unguardIfNeeded();
 
         try {
             $item->fill($updates);
@@ -258,7 +249,7 @@ abstract class Controller extends BaseController
         $this->qualifyItemQuery();
 
         try {
-            $item = $this->builder->whereKey($id)->firstOrFail();
+            $item = $this->getBuilder()->whereKey($id)->firstOrFail();
             $this->authoriseUserAction('delete', $item);
             $item->delete();
             event(new Deleted($item, $this->request));
