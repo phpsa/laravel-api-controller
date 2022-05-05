@@ -30,9 +30,6 @@ class HasModelTest extends TestCase
         $model = self::getProperty($class, 'model');
         $this->assertInstanceOf(User::class, $model->getValue($class));
 
-        $builder = self::getProperty($class, 'builder');
-        $this->assertNull($builder->getValue($class));
-
         $builder = self::getMethod($class, 'getBuilder');
         $this->assertInstanceOf(Builder::class, $builder->invoke($class));
 
@@ -55,8 +52,8 @@ class HasModelTest extends TestCase
         $model = self::getProperty($class, 'model');
         $this->assertInstanceOf(User::class, $model->getValue($class));
 
-        $builder = self::getProperty($class, 'getBuilder');
-        $this->assertInstanceOf(Builder::class, $builder->getValue($class));
+        $builder = self::getMethod($class, 'getBuilder');
+        $this->assertInstanceOf(Builder::class, $builder->invoke($class));
 
         $addTableData = self::getMethod($class, 'addTableData');
 

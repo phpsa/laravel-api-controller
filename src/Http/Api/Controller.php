@@ -215,7 +215,7 @@ abstract class Controller extends BaseController
 
         DB::beginTransaction();
 
-        $item->unguardIfNeeded();
+        $this->unguardIfNeeded();
 
         try {
             $item->fill($updates);

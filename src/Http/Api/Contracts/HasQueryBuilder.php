@@ -10,7 +10,7 @@ trait HasQueryBuilder
     /**
      * @var \Illuminate\Database\Eloquent\Builder
      */
-    protected $builder;
+    protected Builder $builder;
 
     protected function getBuilder(): Builder
     {
