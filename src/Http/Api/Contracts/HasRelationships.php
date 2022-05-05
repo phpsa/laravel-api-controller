@@ -27,7 +27,7 @@ trait HasRelationships
             $type = class_basename(get_class($relation));
             $relatedRecords = $data[Helpers::snake($with)];
 
-            $this->builder->with($with);
+            $this->getBuilder()->with($with);
 
             switch ($type) {
                 case 'HasOne':

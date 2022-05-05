@@ -116,7 +116,7 @@ trait HasParser
                 continue;
             }
 
-            $this->builder->orderBy($sortF, $sortD);
+            $this->getBuilder()->orderBy($sortF, $sortD);
         }
 
         if ($withSorts->count() > 0) {
@@ -126,17 +126,17 @@ trait HasParser
 
     protected function parseJoinSorts(Collection $sorts)
     {
-        $currentTable = self::$model->getTable();
+        $currentTable = $this->getModel()->getTable();
 
         $fields = array_map(function ($field) use ($currentTable) {
             return $currentTable . '.' . $field;
         }, $this->parseFieldParams());
 
-        $this->builder->select($fields);
+        $this->getBuilder()->select($fields);
 
         foreach ($sorts as $sortF => $sortD) {
             [$with, $key] = explode('.', $sortF);
-            $relation = self::$model->{Helpers::camel($with)}();
+            $relation = $this->getModel()->{Helpers::camel($with)}();
             $type = class_basename(get_class($relation));
 
             if ($type === 'HasOne') {
@@ -155,8 +155,8 @@ trait HasParser
 
             $withTableName = strpos($withTable, '.') === false ? $withConnection . '.' . $withTable : $withTable;
 
-            $this->builder->leftJoin($withTableName, "{$withTableName}.{$foreignKey}", "{$currentTable}.{$localKey}");
-            $this->builder->orderBy("{$withTableName}.{$key}", $sortD);
+            $this->getBuilder()->leftJoin($withTableName, "{$withTableName}.{$foreignKey}", "{$currentTable}.{$localKey}");
+            $this->getBuilder()->orderBy("{$withTableName}.{$key}", $sortD);
         }
     }
 
@@ -190,7 +190,7 @@ trait HasParser
 
         /** @scrutinizer ignore-call */
         $tableColumns = $this->getTableColumns();
-        $table = self::$model->getTable();
+        $table = $this->getModel()->getTable();
 
         foreach ($where as $whr) {
             if (strpos($whr['key'], '.') > 0) {
@@ -199,7 +199,7 @@ trait HasParser
             } elseif (! in_array($whr['key'], $tableColumns)) {
                 continue;
             }
-            $this->/** @scrutinizer ignore-call */setQueryBuilderWhereStatement($this->builder, $table . '.' . $whr['key'], $whr);
+            $this->/** @scrutinizer ignore-call */setQueryBuilderWhereStatement($this->getBuilder(), $table . '.' . $whr['key'], $whr);
         }
     }
 

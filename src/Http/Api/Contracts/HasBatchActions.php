@@ -56,7 +56,7 @@ trait HasBatchActions
             $data = $this->qualifyStoreQuery($item);
             $insert = $this->addTableData($data);
             $diff = array_diff(array_keys($data), array_keys($insert));
-            $item = self::$model->create($insert);
+            $item = $this->getModel()->create($insert);
 
             $this->storeRelated($item, $diff, $data);
 
@@ -103,10 +103,10 @@ trait HasBatchActions
     {
         return $items->map(function ($item) {
 
-            $key = self::$model->getKeyName();
+            $key = $this->getModel()->getKeyName();
 
             $id = $item[$key];
-            $existing = $this->builder->where($key, $id)->firstOrFail();
+            $existing = $this->getBuilder()->where($key, $id)->firstOrFail();
             $this->authoriseUserAction('update', $existing);
 
             $data = $this->qualifyUpdateQuery($item);
@@ -137,7 +137,7 @@ trait HasBatchActions
         $this->validateRequestType($request);
         $this->addCustomParams($extraParams);
 
-        $key = self::$model->getKeyName();
+        $key = $this->getModel()->getKeyName();
         $records = $this->getBatchData();
 
         DB::beginTransaction();

@@ -18,6 +18,27 @@ use Phpsa\LaravelApiController\Tests\Controllers\UserController;
 class HasModelTest extends TestCase
 {
 
+    public function test_model_init_when_called()
+    {
+        $class = App::make(UserController::class);
+        $model = self::getProperty($class, 'model');
+        $this->assertNull($model->getValue($class));
+
+        $model = self::getMethod($class, 'getModel');
+        $this->assertInstanceOf(User::class, $model->invoke($class));
+
+        $model = self::getProperty($class, 'model');
+        $this->assertInstanceOf(User::class, $model->getValue($class));
+
+        $builder = self::getProperty($class, 'builder');
+        $this->assertNull($builder->getValue($class));
+
+        $builder = self::getMethod($class, 'getBuilder');
+        $this->assertInstanceOf(Builder::class, $builder->invoke($class));
+
+        $builder = self::getProperty($class, 'builder');
+        $this->assertInstanceOf(Builder::class, $builder->getValue($class));
+    }
 
     public function test_controller_makes_model_query_builder()
     {
@@ -28,13 +49,13 @@ class HasModelTest extends TestCase
         $class = App::make(UserController::class);
         $this->assertInstanceOf(UserController::class, $class);
 
-        $makeModel = self::getMethod($class, 'makeModel');
+        $makeModel = self::getMethod($class, 'getModel');
         $makeModel->invoke($class);
 
         $model = self::getProperty($class, 'model');
         $this->assertInstanceOf(User::class, $model->getValue($class));
 
-        $builder = self::getProperty($class, 'builder');
+        $builder = self::getProperty($class, 'getBuilder');
         $this->assertInstanceOf(Builder::class, $builder->getValue($class));
 
         $addTableData = self::getMethod($class, 'addTableData');

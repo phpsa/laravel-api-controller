@@ -2,7 +2,7 @@
 
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
-use Gate;
+use Illuminate\Support\Facades\Gate;
 
 trait HasPolicies
 {
@@ -13,10 +13,10 @@ trait HasPolicies
     protected function qualifyCollectionQuery(): void
     {
         $user = auth()->user();
-        $modelPolicy = Gate::getPolicyFor(self::$model);
+        $modelPolicy = Gate::getPolicyFor($this->model());
 
         if ($modelPolicy && method_exists($modelPolicy, 'qualifyCollectionQueryWithUser')) {
-            $modelPolicy->qualifyCollectionQueryWithUser($user, $this->builder);
+            $modelPolicy->qualifyCollectionQueryWithUser($user, $this->getBuilder());
         }
     }
 
@@ -28,10 +28,10 @@ trait HasPolicies
     protected function qualifyItemQuery(): void
     {
         $user = auth()->user();
-        $modelPolicy = Gate::getPolicyFor(self::$model);
+        $modelPolicy = Gate::getPolicyFor($this->model());
 
         if ($modelPolicy && method_exists($modelPolicy, 'qualifyItemQueryWithUser')) {
-            $modelPolicy->qualifyItemQueryWithUser($user, $this->builder);
+            $modelPolicy->qualifyItemQueryWithUser($user, $this->getBuilder());
         }
     }
 
@@ -45,7 +45,7 @@ trait HasPolicies
     protected function qualifyStoreQuery(array $data): array
     {
         $user = auth()->user();
-        $modelPolicy = Gate::getPolicyFor(self::$model);
+        $modelPolicy = Gate::getPolicyFor($this->model());
 
         if ($modelPolicy && method_exists($modelPolicy, 'qualifyStoreDataWithUser')) {
             $data = $modelPolicy->qualifyStoreDataWithUser($user, $data);
@@ -64,7 +64,7 @@ trait HasPolicies
     protected function qualifyUpdateQuery(array $data): array
     {
         $user = auth()->user();
-        $modelPolicy = Gate::getPolicyFor(self::$model);
+        $modelPolicy = Gate::getPolicyFor($this->model());
 
         if ($modelPolicy && method_exists($modelPolicy, 'qualifyUpdateDataWithUser')) {
             $data = $modelPolicy->qualifyUpdateDataWithUser($user, $data);
@@ -103,9 +103,10 @@ trait HasPolicies
      */
     protected function testUserPolicyAction(string $ability, $arguments = null, bool $excludeMissing = false): bool
     {
+
         // If no arguments are specified, set it to the controller's model (default)
         if ($arguments === null) {
-            $arguments = self::$model;
+            $arguments = $this->model();
         }
 
         // Get policy for model
@@ -116,8 +117,9 @@ trait HasPolicies
         }
 
         $modelPolicy = Gate::getPolicyFor($model);
+
         // If no policy exists for this model, then there's nothing to check
-        if (is_null($modelPolicy) || ($excludeMissing && !method_exists($modelPolicy, $ability)) ) {
+        if (is_null($modelPolicy) || ($excludeMissing && ! method_exists($modelPolicy, $ability))) {
             return true;
         }
 

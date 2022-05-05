@@ -72,7 +72,7 @@ class HasPoliciesTest extends TestCase
 
         $authoriseUserAction = self::getMethod($class, 'authoriseUserAction');
 
-        $res = $authoriseUserAction->invokeArgs($class, ['view']);
+        $res = $authoriseUserAction->invokeArgs($class, ['view', User::first()]);
         assertTrue($res);
     }
 }

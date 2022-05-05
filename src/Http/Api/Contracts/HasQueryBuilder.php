@@ -12,14 +12,14 @@ trait HasQueryBuilder
      */
     protected $builder;
 
-    protected function initBuilder(): void
+    protected function getBuilder(): Builder
     {
-        $this->builder = $this->getNewQuery();
+        return $this->builder ??= resolve($this->model())->newQuery();
     }
 
     protected function getNewQuery(): Builder
     {
-        return self::$model->newQuery();
+        return resolve($this->model())->newQuery();
     }
 
     protected function setWhereHasClause(array $where): void
@@ -36,7 +36,7 @@ trait HasQueryBuilder
         }
         $subKey = $sub->qualifyColumn($key);
 
-        $this->builder->whereHas(Helpers::camel($with), function ($q) use ($where, $subKey) {
+        $this->getBuilder()->whereHas(Helpers::camel($with), function ($q) use ($where, $subKey) {
             $this->setQueryBuilderWhereStatement($q, $subKey, $where);
         });
     }

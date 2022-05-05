@@ -54,7 +54,7 @@ trait HasIncludes
     protected function filterAllowedIncludes(array $includes): array
     {
         return array_filter(Helpers::camelCaseArray($includes), function ($item) {
-            $callable = method_exists(self::$model, $item);
+            $callable = method_exists($this->model(), $item);
 
             if (! $callable) {
                 return false;
@@ -104,7 +104,7 @@ trait HasIncludes
             $withs[$with] = $this->setWithQuery($this->mapWith($with, $sub), $fields);
         }
 
-        $this->builder->with($withs);
+        $this->getBuilder()->with($withs);
     }
 
     protected function mapWith(string $with, $sub): array
