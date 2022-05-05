@@ -1,3 +1,15 @@
+# [4.2.0](https://git.customd.com/composer/laravel-api-controller/compare/v4.1.1...v4.2.0) (2022-05-05)
+
+
+### Bug Fixes
+
+* builder should be initialised ([e0de920](https://git.customd.com/composer/laravel-api-controller/commit/e0de9205bc9274dd36b7612528a24320cddf7459))
+
+
+### Features
+
+* upgrade to construct models on first call instead of on controller instansiation ([742b47e](https://git.customd.com/composer/laravel-api-controller/commit/742b47eb7ed7323c2f324e51e05057f78739ffb1))
+
 ## [4.1.1](https://git.customd.com/composer/laravel-api-controller/compare/v4.1.0...v4.1.1) (2022-04-26)
 
 
