@@ -1,3 +1,10 @@
+## [4.2.1](https://git.customd.com/composer/laravel-api-controller/compare/v4.2.0...v4.2.1) (2022-05-10)
+
+
+### Bug Fixes
+
+* Breaking model holding onto incorrect static bindings ([01019e8](https://git.customd.com/composer/laravel-api-controller/commit/01019e8741865a65da9fea414853e9e27451c05b))
+
 # [4.2.0](https://git.customd.com/composer/laravel-api-controller/compare/v4.1.1...v4.2.0) (2022-05-05)
 
 
