@@ -25,7 +25,7 @@ trait HasModel
      *
      * @var mixed|Model instance
      */
-    protected static $model;
+    protected Model $model;
 
     /**
      * Do we need to unguard the model before create/update?
