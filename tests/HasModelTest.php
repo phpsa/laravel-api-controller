@@ -21,8 +21,6 @@ class HasModelTest extends TestCase
     public function test_model_init_when_called()
     {
         $class = App::make(UserController::class);
-        $model = self::getProperty($class, 'model');
-        $this->assertNull($model->getValue($class));
 
         $model = self::getMethod($class, 'getModel');
         $this->assertInstanceOf(User::class, $model->invoke($class));

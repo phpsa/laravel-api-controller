@@ -23,7 +23,7 @@ trait HasModel
     /**
      * Eloquent model instance.
      *
-     * @var mixed|Model instance
+     * @var Model instance
      */
     protected Model $model;
 
@@ -63,7 +63,7 @@ trait HasModel
 
     protected function getModel(): Model
     {
-        return static::$model ??= resolve($this->model());
+        return $this->model ??= resolve($this->model());
     }
 
     /**
