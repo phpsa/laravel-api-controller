@@ -70,14 +70,13 @@ trait AllowableFields
             return $resources;
         }
 
-        foreach(static::$mapResources as $field => $related){
+        foreach(Helpers::camelCaseArrayKeys(static::$mapResources) as $field => $related){
             if (! in_array($field, $fields)) { continue; }
 
-            $resources[$field] = $related::make(is_array($this->resource)
+            $resources[Helpers::snake($field)] = $related::make(is_array($this->resource)
             ? $this->resource[$field]
             : $this->resource->getAttribute($field)
         );
-
 
         }
 
