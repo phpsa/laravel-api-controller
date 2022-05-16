@@ -1,3 +1,10 @@
+## [4.2.2](https://git.customd.com/composer/laravel-api-controller/compare/v4.2.1...v4.2.2) (2022-05-16)
+
+
+### Bug Fixes
+
+* make sure case of keys is correct ([3bc2adc](https://git.customd.com/composer/laravel-api-controller/commit/3bc2adcd4d450d6ab52ac02ccaa1578bda1282fb))
+
 ## [4.2.1](https://git.customd.com/composer/laravel-api-controller/compare/v4.2.0...v4.2.1) (2022-05-10)
 
 
