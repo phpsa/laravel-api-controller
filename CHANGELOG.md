@@ -1,3 +1,10 @@
+## [4.2.3](https://git.customd.com/composer/laravel-api-controller/compare/v4.2.2...v4.2.3) (2022-05-23)
+
+
+### Bug Fixes
+
+* update namespace for batch actions ([c41ac90](https://git.customd.com/composer/laravel-api-controller/commit/c41ac90f9f13e2b8ee4632c440838a26c45a25e6))
+
 ## [4.2.2](https://git.customd.com/composer/laravel-api-controller/compare/v4.2.1...v4.2.2) (2022-05-16)
 
 
