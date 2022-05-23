@@ -22,6 +22,15 @@ trait HasQueryBuilder
         return resolve($this->model())->newQuery();
     }
 
+    protected function resolveRouteBinding(mixed $id): Builder
+    {
+        $routeKeyName = $this->getModel()->getRouteKeyName();
+
+        return $id instanceof Model
+        ? $this->getBuilder()->where($routeKeyName, $id->getAttribute($routeKeyName))
+        : $this->getBuilder()->where($routeKeyName, $id);
+    }
+
     protected function setWhereHasClause(array $where): void
     {
         [$with, $key] = explode('.', $where['key']);
