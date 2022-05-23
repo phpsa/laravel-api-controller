@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Contracts;
+namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
