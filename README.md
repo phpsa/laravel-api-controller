@@ -28,7 +28,7 @@ php artisan vendor:publish --provider="Phpsa\LaravelApiController\ServiceProvide
 
 **CLI Commands**
 
-* `artisan make:api:controller {ControllerName}` to generate the controller
+* `artisan make:api:controller {ControllerName} -m {Model}` to generate the controller
 * `artisan make:api:policy` to generate a policy file
 * `artisan make:api:resource` to geneate the response resource
 
