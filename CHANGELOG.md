@@ -1,3 +1,15 @@
+# [4.3.0](https://git.customd.com/composer/laravel-api-controller/compare/v4.2.2...v4.3.0) (2022-05-24)
+
+
+### Bug Fixes
+
+* update namespace for batch actions ([c41ac90](https://git.customd.com/composer/laravel-api-controller/commit/c41ac90f9f13e2b8ee4632c440838a26c45a25e6))
+
+
+### Features
+
+* allow usage of Laravel Route Binding ([2cde22e](https://git.customd.com/composer/laravel-api-controller/commit/2cde22ee79ea32e454e6473ac9ad22b03f9f0733))
+
 ## [4.2.3](https://git.customd.com/composer/laravel-api-controller/compare/v4.2.2...v4.2.3) (2022-05-23)
 
 
