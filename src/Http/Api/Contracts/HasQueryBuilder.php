@@ -4,6 +4,7 @@ namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
 use Phpsa\LaravelApiController\Helpers;
+use Illuminate\Database\Eloquent\Model;
 
 trait HasQueryBuilder
 {
