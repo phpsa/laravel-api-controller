@@ -4,6 +4,7 @@ namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
 use Phpsa\LaravelApiController\Helpers;
+use Illuminate\Database\Eloquent\Model;
 
 trait HasQueryBuilder
 {
@@ -20,6 +21,15 @@ trait HasQueryBuilder
     protected function getNewQuery(): Builder
     {
         return resolve($this->model())->newQuery();
+    }
+
+    protected function resolveRouteBinding(mixed $id): Builder
+    {
+        $routeKeyName = $this->getModel()->getRouteKeyName();
+
+        return $id instanceof Model
+        ? $this->getBuilder()->where($routeKeyName, $id->getAttribute($routeKeyName))
+        : $this->getBuilder()->where($routeKeyName, $id);
     }
 
     protected function setWhereHasClause(array $where): void

@@ -174,7 +174,7 @@ abstract class Controller extends BaseController
         $this->qualifyItemQuery();
 
         try {
-            $item = $this->getBuilder()->whereKey($id)->firstOrFail($fields);
+            $item = $this->resolveRouteBinding($id)->firstOrFail($fields);
 
             $this->authoriseUserAction('view', $item);
         } catch (ModelNotFoundException $exception) {
@@ -199,7 +199,7 @@ abstract class Controller extends BaseController
         $this->handleCommonActions($this->request);
 
         try {
-            $item = $this->getBuilder()->whereKey($id)->firstOrFail();
+            $item = $this->resolveRouteBinding($id)->firstOrFail();
             $this->authoriseUserAction('update', $item);
         } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record does not exist');
@@ -249,7 +249,7 @@ abstract class Controller extends BaseController
         $this->qualifyItemQuery();
 
         try {
-            $item = $this->getBuilder()->whereKey($id)->firstOrFail();
+            $item = $this->resolveRouteBinding($id)->firstOrFail();
             $this->authoriseUserAction('delete', $item);
             $item->delete();
             event(new Deleted($item, $this->request));
