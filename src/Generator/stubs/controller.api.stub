@@ -14,7 +14,7 @@ class {{ class }} extends Controller
     protected $resourceSingle = {{ resourceSingle }}::class;
     protected $resourceCollection = {{ resourceCollection }}::class;
 
-     /**
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -32,7 +32,7 @@ class {{ class }} extends Controller
      */
     public function store({{ storeRequest }} $request)
     {
-         return $this->handleStoreAction($request);
+        return $this->handleStoreAction($request);
     }
 
     /**
@@ -46,7 +46,7 @@ class {{ class }} extends Controller
         return $this->handleShowAction(${{ modelVariable }});
     }
 
-   /**
+    /**
      * Update the specified resource in storage.
      *
      * @param  \{{ namespacedUpdateRequest }}  $request
@@ -70,5 +70,3 @@ class {{ class }} extends Controller
     }
 
 }
-
-
