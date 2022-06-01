@@ -82,7 +82,7 @@ trait AllowableFields
             Str::of(Helpers::snake($field ) .  ".")
                 ->when(
                     $this->fieldKey,
-                    fn($str) => $str->prepend("{$this->fieldKey}.")
+                    fn($str) => $str->prepend("{$this->fieldKey}")
                 )->toString()
             );
 
