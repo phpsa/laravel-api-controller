@@ -124,12 +124,34 @@ class Helpers
         return Str::camel($value);
     }
 
+
+    protected static function filterExtraFields(array $fields, ?string $fieldKey): array
+    {
+        return collect($fields)->when(
+            $fieldKey === null,
+            fn($collection) => $collection->filter(fn($str) => ! Str::of($str)->contains(".")),
+            fn($collection) => $collection->filter(fn($str) => Str::of($str)->startsWith($fieldKey))
+        )->when(
+            $fieldKey !== null,
+            fn($collection) => $collection->map(
+                fn($str) => Str::of($str)->replace($fieldKey, "")->toString()
+            )
+        )->toArray();
+    }
+
+    protected static function fetchRequestFieldValues($request, string $field, ?string $fieldKey = null): ?array
+    {
+        if(!$request->has($field)){
+            return null;
+        }
+        return self::filterExtraFields(explode(",", $request->input($field)), $fieldKey);
+    }
     /**
      * Combines,defaults, added, excluded and specifically set field params.
      *
      * @return array
      */
-    public static function filterFieldsFromRequest($request, ?array $defaultFields, ?array $extraFields = []): array
+    public static function filterFieldsFromRequest($request, ?array $defaultFields, ?array $extraFields = [], ?string $fieldKey = null): array
     {
         $config = config('laravel-api-controller.parameters');
         $fieldParam = $config['fields'] ?? 'fields';
@@ -137,23 +159,22 @@ class Helpers
         $removeFieldParam = $config['removefields'] ?? 'removefields';
         $includeFieldParam = $config['include'] ?? 'include';
 
-        $defaults = $defaultFields ?? [];
-
-        $fields = $request->has($fieldParam) ? explode(',', $request->input($fieldParam)) : $defaults;
+        $fields = self::fetchRequestFieldValues($request, $fieldParam, $fieldKey) ?? $defaultFields ?? [];
 
         //extra fields
-        $extra = $request->has($addFieldParam) ? explode(',', $request->input($addFieldParam)) : [];
+        $extra = self::fetchRequestFieldValues($request, $addFieldParam, $fieldKey) ?? [];
         $fields = array_merge($fields, $extra);
 
         //include fields
-        $extra = $request->has($includeFieldParam) ? explode(',', $request->input($includeFieldParam)) : [];
+        $extra = self::fetchRequestFieldValues($request, $includeFieldParam, $fieldKey) ?? [];
         $fields = array_merge($fields, $extra);
 
         //put || post
-
         $fields = array_merge($fields, self::fieldsFromPutPost($request, $fields));
 
-        $excludes = $request->has($removeFieldParam) ? explode(',', $request->input($removeFieldParam)) : [];
+
+        $excludes =  self::fetchRequestFieldValues($request, $removeFieldParam, $fieldKey) ?? [];
+
         $remaining = self::excludeArrayValues($fields, $excludes, $extraFields);
 
         return array_unique($remaining);
