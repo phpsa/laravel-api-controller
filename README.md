@@ -29,8 +29,8 @@ php artisan vendor:publish --provider="Phpsa\LaravelApiController\ServiceProvide
 **CLI Commands**
 
 * `artisan make:api:controller {ControllerName}` to generate the controller
-* `artisan make:api:policy` to generate a policy file
-* `artisan make:api:resource` to geneate the response resource
+* `artisan make:api:policy {PolicyName} -m {Model}` to generate a policy file
+* `artisan make:api:resource {ResourceName|CollectionName}` to geneate the response resource
 
 
 This will create a Api/ModelNameController for you and you will have the basic routes in place as follows:
@@ -73,7 +73,7 @@ Query/Data modifiers in policies for the api endpoints
 Resources: https://laravel.com/docs/6.x/eloquent-resources
 
 Generate with
-`php artisan make:apiresource UserResource` and `php artisan make:resource UserCollection`
+`php artisan make:apiresource UserResource` and `php artisan make:api:resource UserCollection`
 
 Change the Resource to extend from:
 
