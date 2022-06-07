@@ -1,3 +1,18 @@
+# [4.3.0](https://git.customd.com/composer/laravel-api-controller/compare/v4.2.2...v4.3.0) (2022-06-07)
+
+
+### Bug Fixes
+
+* documentation ([ffa8678](https://git.customd.com/composer/laravel-api-controller/commit/ffa8678b161e0e544433977b01f258279c6e9753))
+* fix whitespace formatting ([b48c638](https://git.customd.com/composer/laravel-api-controller/commit/b48c638f629dcfbbd1d67bcb254f48c3191b1a24))
+* update namespace for batch actions ([c41ac90](https://git.customd.com/composer/laravel-api-controller/commit/c41ac90f9f13e2b8ee4632c440838a26c45a25e6))
+
+
+### Features
+
+* allow usage of Laravel Route Binding ([2cde22e](https://git.customd.com/composer/laravel-api-controller/commit/2cde22ee79ea32e454e6473ac9ad22b03f9f0733))
+* Included resources should not inherit parent ([a6e11d3](https://git.customd.com/composer/laravel-api-controller/commit/a6e11d3fe2902d382a9d98956d5a23a52a2a1a03))
+
 # [4.3.0](https://git.customd.com/composer/laravel-api-controller/compare/v4.2.2...v4.3.0) (2022-06-05)
 
 
