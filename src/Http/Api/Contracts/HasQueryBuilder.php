@@ -53,7 +53,6 @@ trait HasQueryBuilder
 
     protected function setWithQuery(?array $where = null, ?array $fields = null): callable
     {
-        //dd($fields);
         return function ($query) use ($where, $fields) {
             if ($fields !== null && count($fields) > 0) {
                 $query->select(array_unique($fields));

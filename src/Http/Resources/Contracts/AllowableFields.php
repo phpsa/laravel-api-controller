@@ -2,6 +2,7 @@
 
 namespace Phpsa\LaravelApiController\Http\Resources\Contracts;
 
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Gate;
 use Phpsa\LaravelApiController\Helpers;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -55,6 +56,7 @@ trait AllowableFields
         $fields =  Helpers::camelCaseArray(
             $this->filterUserViewableFields($request)
         );
+
         $data = $this->mapFieldData($request, $fields);
 
         $resources = array_filter($data, function ($key) use ($fields) {
@@ -76,7 +78,13 @@ trait AllowableFields
             $resources[Helpers::snake($field)] = $related::make(is_array($this->resource)
             ? $this->resource[$field]
             : $this->resource->getAttribute($field)
-        );
+        )->setFieldKey(
+            Str::of(Helpers::snake($field ) .  ".")
+                ->when(
+                    $this->fieldKey,
+                    fn($str) => $str->prepend("{$this->fieldKey}")
+                )->toString()
+            );
 
         }
 
@@ -108,9 +116,10 @@ trait AllowableFields
     protected function mapFields($request): array
     {
         $map = self::getDefaultFields($request);
+
         $defaultFields = $map === ['*'] ? array_keys($this->getResourceFields()) : $map;
         $allowedFields = static::$allowedFields ?? [];
-        $fields = Helpers::filterFieldsFromRequest($request, $defaultFields, $allowedFields);
+        $fields = Helpers::filterFieldsFromRequest($request, $defaultFields, $allowedFields, $this->fieldKey);
 
         return $this->filterAllowedFields($fields);
     }
