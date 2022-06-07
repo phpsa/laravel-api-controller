@@ -245,10 +245,6 @@ see https://laravel.com/docs/5.8/validation#conditionally-adding-rules
 ## Defaults
 
 The following parameters are set in the Base Api controller and can be overwritten by your Controller on a case by case basis:
-
-- **DEPRECATED** `protected $resourceKeySingular = 'data';`
-- **DEPRECATED** `protected $resourceKeyPlural = 'data';`
-
 - `protected $resourceSingle = JsonResource::class;` Collection to use for your single resource
 - `protected $resourceCollection = ResourceCollection::class;` Collection to use for your resource collection
 - `protected $defaultFields = ['*'];` Default Fields to respond with
