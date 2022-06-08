@@ -48,10 +48,11 @@ abstract class Controller extends BaseController
     /**
      * Number of items displayed at once if not specified.
      * There is no limit if it is 0 or false.
+     * null defaults to the model limit parameters
      *
      * @var int
      */
-    protected $defaultLimit = 25;
+    protected $defaultLimit = null;
 
     /**
      * Maximum limit that can be set via $_GET['limit'].

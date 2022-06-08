@@ -229,8 +229,6 @@ trait HasParser
         return $fields;
     }
 
-
-
     /**
      * parses the limit value.
      *
@@ -239,12 +237,17 @@ trait HasParser
     protected function parseLimitParams(): int
     {
         $limitField = config('laravel-api-controller.parameters.limit') ?? 'limit';
-        $limit = $this->request->has($limitField) ? intval($this->request->input($limitField)) : $this->defaultLimit;
+        $limit = $this->request->has($limitField) ? intval($this->request->input($limitField)) : $this->getDefaultLimit();
 
         if ($this->maximumLimit && ($limit > $this->maximumLimit || ! $limit)) {
             $limit = $this->maximumLimit;
         }
 
         return $limit;
+    }
+
+    protected function getDefaultLimit(): ?int
+    {
+        return $this->defaultLimit ?? $this->getModel()->getPerPage();
     }
 }
