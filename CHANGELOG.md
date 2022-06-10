@@ -1,3 +1,15 @@
+# [5.1.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.0.0...v5.1.0) (2022-06-10)
+
+
+### Bug Fixes
+
+* use model page size definition by default ([93fa9b6](https://git.customd.com/composer/laravel-api-controller/commit/93fa9b6cda7b4fd4e3c45c01378ba4c228ae7258))
+
+
+### Features
+
+* use model defaults for pagination size unless overwritten ([669ba7d](https://git.customd.com/composer/laravel-api-controller/commit/669ba7df511c7c24041d5f2e151949cd5fb89bbb))
+
 # [4.3.0](https://git.customd.com/composer/laravel-api-controller/compare/v4.2.2...v4.3.0) (2022-06-07)
 
 
