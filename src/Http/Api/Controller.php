@@ -50,7 +50,7 @@ abstract class Controller extends BaseController
      * There is no limit if it is 0 or false.
      * null defaults to the model limit parameters
      *
-     * @var int
+     * @var ?int
      */
     protected $defaultLimit = null;
 
