@@ -1,3 +1,10 @@
+# [5.2.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.1.0...v5.2.0) (2022-07-14)
+
+
+### Features
+
+* allow forcing selection of columns not for display ([01b31b8](https://git.customd.com/composer/laravel-api-controller/commit/01b31b8dfb43aa601ae4ef182a09e3ba13a5f4cf))
+
 # [5.1.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.0.0...v5.1.0) (2022-06-10)
 
 
