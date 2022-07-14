@@ -55,6 +55,18 @@ trait HasResources
     }
 
     /**
+     * Gets our fields that should always be included in the select query
+     *
+     * @return array<int, string>
+     */
+    protected function getAlwaysSelectFields(): array
+    {
+        $resource = $this->getResourceSingle();
+
+        return (method_exists($resource, 'getAlwaysSelectFields')) ? ($resource)::getAlwaysSelectFields() : [];
+    }
+
+    /**
      * Gets the allowed scopes for our query.
      *
      * @return array

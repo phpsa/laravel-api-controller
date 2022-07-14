@@ -38,6 +38,15 @@ trait AllowableFields
     protected static $allowedScopes = null;
 
     /**
+     * There are times where we need to select specific fields that are required
+     * but should not be in the response, ie relationship id or calculated
+     * attribute dependencies for display under a different name
+     *
+     * @var array
+     */
+    protected static array $alwaysSelectFields = [];
+
+    /**
      * which gates to apply to the list of fields available
      *
      * @var array|null
@@ -176,6 +185,16 @@ trait AllowableFields
         }
 
         return static::$allowedScopes ?? [];
+    }
+
+    /**
+     * which fields are we using for the select in the actual DB query
+     *
+     * @return array<int, string>
+     */
+    public static function getAlwaysSelectFields(): array
+    {
+        return static::$alwaysSelectFields;
     }
 
     /**

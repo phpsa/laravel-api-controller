@@ -151,7 +151,7 @@ class Helpers
      *
      * @return array
      */
-    public static function filterFieldsFromRequest($request, ?array $defaultFields, ?array $extraFields = [], ?string $fieldKey = null): array
+    public static function filterFieldsFromRequest($request, ?array $defaultFields, ?array $allowedFields = [], ?string $fieldKey = null): array
     {
         $config = config('laravel-api-controller.parameters');
         $fieldParam = $config['fields'] ?? 'fields';
@@ -172,10 +172,9 @@ class Helpers
         //put || post
         $fields = array_merge($fields, self::fieldsFromPutPost($request, $fields));
 
-
         $excludes =  self::fetchRequestFieldValues($request, $removeFieldParam, $fieldKey) ?? [];
 
-        $remaining = self::excludeArrayValues($fields, $excludes, $extraFields);
+        $remaining = self::excludeArrayValues($fields, $excludes, $allowedFields);
 
         return array_unique($remaining);
     }

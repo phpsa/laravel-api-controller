@@ -212,12 +212,16 @@ trait HasParser
      */
     protected function parseFieldParams(): array
     {
-        /** @scrutinizer ignore-call */
-        $fields = Helpers::filterFieldsFromRequest($this->request, $this->
-        /** @scrutinizer ignore-call */
-        getDefaultFields());
+        $default = $this->getDefaultFields();
+        if($default !== ['*']){
+            $default = array_merge( $default, $this->getAlwaysSelectFields());
+        }
 
-        /** @scrutinizer ignore-call */
+        $fields = Helpers::filterFieldsFromRequest(
+            $this->request,
+            $default
+        );
+
         $tableColumns = $this->getTableColumns();
         foreach ($fields as $key => $field) {
             if ($field === '*' || in_array($field, $tableColumns)) {
