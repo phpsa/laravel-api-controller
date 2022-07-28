@@ -104,12 +104,20 @@ trait AllowableFields
     {
         $data = parent::toArray($request);
 
-        $missing = array_filter($fields, function ($field) use ($data) {
-            return array_key_exists(Helpers::camel($field), $data) || array_key_exists(Helpers::snake($field), $data) ? false : true;
-        });
+        $hidden =  collect(is_array($this->resource) ? [] : $this->resource->getHidden())->filter(
+            fn($field) => !in_array(Helpers::snake($field),  static::$allowedFields ?? []) && !in_array(Helpers::camel($field), static::$allowedFields ?? [])
+        )->toArray();
+
+        $missing = collect($fields)
+        ->filter(
+            fn($field) => !in_array(Helpers::snake($field),  $hidden) && !in_array(Helpers::camel($field), $hidden)
+            )
+        ->filter(
+            fn($field) => array_key_exists(Helpers::camel($field), $data) || array_key_exists(Helpers::snake($field), $data) ? false : true
+        )->toArray();
 
         foreach ($missing as $field) {
-          $data[Helpers::snake($field)] = is_array($this->resource) ? null : $this->resource->getAttribute($field);
+            $data[Helpers::snake($field)] = is_array($this->resource) ? null : $this->resource->getAttribute($field);
         }
 
         return $data;
