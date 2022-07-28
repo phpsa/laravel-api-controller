@@ -1,3 +1,15 @@
+# [5.2.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.1.0...v5.2.0) (2022-07-28)
+
+
+### Bug Fixes
+
+* hidden fields should be hidden by default unless allowed ([0bd653a](https://git.customd.com/composer/laravel-api-controller/commit/0bd653a953266439c0a6cce6064a0870fefbc95c))
+
+
+### Features
+
+* allow forcing selection of columns not for display ([01b31b8](https://git.customd.com/composer/laravel-api-controller/commit/01b31b8dfb43aa601ae4ef182a09e3ba13a5f4cf))
+
 # [5.2.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.1.0...v5.2.0) (2022-07-14)
 
 
