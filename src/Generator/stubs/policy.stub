@@ -95,8 +95,8 @@ class {{ class }}
     /**
      * Add query to the index (getall) endpoint for this endpoint call.
      *
-     * @param \App\Model\User $user
-     * @param mixed $builder
+     * @param  \{{ namespacedUserModel }}  $user
+     * @param  mixed $builder
      *
      * @return void
      */
@@ -108,8 +108,8 @@ class {{ class }}
     /**
      * Add query to the show (get) endpoint for this endpoint call.
      *
-     * @param \App\Model\User $user
-     * @param mixed $builder
+     * @param  \{{ namespacedUserModel }}  $user
+     * @param  mixed $builder
      *
      * @return void
      */
@@ -121,8 +121,8 @@ class {{ class }}
     /**
      * allows you to manipulate the data for the store endpoint
      *
-     * @param \App\Model\User $user
-     * @param array $data
+     * @param  \{{ namespacedUserModel }}  $user
+     * @param  array $data
      *
      * @return array
      */
@@ -134,8 +134,8 @@ class {{ class }}
     /**
      * allows you to manipulate the data for the update endpoint
      *
-     * @param \App\Model\User $user
-     * @param array $data
+     * @param  \{{ namespacedUserModel }}  $user
+     * @param  array $data
      *
      * @return array
      */
