@@ -32,15 +32,15 @@ trait HasRelationships
             switch ($type) {
                 case 'HasOne':
                 case 'MorphOne':
-                    $this->processHasOneRelation($relation, $relatedRecords, $item);
+                    $this->processHasOneRelation($relation, $relatedRecords, $item, $with);
                     break;
                 case 'HasMany':
                 case 'MorphMany':
-                    $this->processHasRelation($relation, $relatedRecords, $item);
+                    $this->processHasRelation($relation, $relatedRecords, $item, $with);
                     break;
                 case 'BelongsTo':
                 case 'MorphTo':
-                    $this->processBelongsToRelation($relation, $relatedRecords, $item, $data);
+                    $this->processBelongsToRelation($relation, $relatedRecords, $item, $data, $with);
                     break;
                 case 'BelongsToMany':
                 case 'MorphToMany':
@@ -54,7 +54,7 @@ trait HasRelationships
         }
     }
 
-    protected function processHasOneRelation($relation, array $collection, $item): void
+    protected function processHasOneRelation($relation, array $collection, $item, string $with): void
     {
         $foreignKey = $relation->getForeignKeyName();
         $localKey = $relation->getLocalKeyName();
@@ -67,7 +67,7 @@ trait HasRelationships
         $relation->updateOrCreate($existanceCheck, $collection);
     }
 
-    protected function processHasRelation($relation, array $relatedRecords, $item): void
+    protected function processHasRelation($relation, array $relatedRecords, $item, string $with): void
     {
         $localKey = $relation->getLocalKeyName();
         $foreignKey = $relation->getForeignKeyName();
@@ -80,9 +80,9 @@ trait HasRelationships
             if (isset($relatedRecord[$localKey])) {
                 $existanceCheck = [$localKey => $relatedRecord[$localKey]];
 
-                $model->updateOrCreate($existanceCheck, $relatedRecord);
+                $item->{$with}()->updateOrCreate($existanceCheck, $relatedRecord);
             } else {
-                $model->create($relatedRecord);
+                $item->{$with}()->create($relatedRecord);
             }
         }
     }
