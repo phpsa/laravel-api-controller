@@ -1,3 +1,10 @@
+## [5.3.1](https://git.customd.com/composer/laravel-api-controller/compare/v5.3.0...v5.3.1) (2022-08-06)
+
+
+### Bug Fixes
+
+* **stubs:** fix policy stub having hardcoded namespace and model for some functions ([f58d5d3](https://git.customd.com/composer/laravel-api-controller/commit/f58d5d3b3faa0cb088aa5fe03c4f0f6dacc4de7b))
+
 # [5.2.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.1.0...v5.2.0) (2022-08-06)
 
 
