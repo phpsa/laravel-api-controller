@@ -40,7 +40,7 @@ trait HasRelationships
                     break;
                 case 'BelongsTo':
                 case 'MorphTo':
-                    $this->processBelongsToRelation($relation, $relatedRecords, $item, $data, $with);
+                    $this->processBelongsToRelation($relation, $relatedRecords, $item, $data);
                     break;
                 case 'BelongsToMany':
                 case 'MorphToMany':
