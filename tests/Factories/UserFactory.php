@@ -4,6 +4,9 @@ use Illuminate\Support\Str;
 use Phpsa\LaravelApiController\Tests\Models\User;
 use Faker\Generator as Faker;
 
+
+//@TODO move to laravel 9 style
+
 $factory->define(User::class, function (Faker $faker) {
     return [
         'name'              => $faker->name,
