@@ -2,16 +2,23 @@
 
 namespace Phpsa\LaravelApiController\Tests\Models;
 
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Builder;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Phpsa\LaravelApiController\Tests\Models\Avatar;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Phpsa\LaravelApiController\Tests\Factories\UserFactory;
 use Phpsa\LaravelApiController\Tests\Factories\UserFactory as FactoriesUserFactory;
 
 class User extends Authenticatable
 {
-
-    use  Notifiable;
+    use HasFactory;
+    use Notifiable;
 
     protected $table = 'users';
 
@@ -45,6 +52,25 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    protected static function newFactory()
+    {
+        return UserFactory::new();
+    }
+
+    public function profile(): HasOne
+    {
+        return $this->hasOne(UserProfile::class);
+    }
+
+    public function avatar(): MorphOne
+    {
+        return $this->morphOne(Avatar::class, 'avatarable');
+    }
+
+    public function projects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class)->withPivot('team_leader');
+    }
 
     public function scopeHas2Fa(Builder $builder, ?bool $on = null)
     {

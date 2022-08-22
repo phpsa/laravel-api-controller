@@ -3,9 +3,9 @@
 namespace Phpsa\LaravelApiController\Tests\Resources;
 
 use Phpsa\LaravelApiController\Http\Resources\ApiResource;
-use Phpsa\LaravelApiController\Tests\Resources\UserProfileResource;
+use Phpsa\LaravelApiController\Tests\Resources\UserResource;
 
-class UserResource extends ApiResource
+class UserProfileResource extends ApiResource
 {
 
     /**
@@ -14,7 +14,7 @@ class UserResource extends ApiResource
      * @var array|null
      */
     protected static $mapResources = [
-        'profile' => UserProfileResource::class,
+        'user' => UserResource::class,
     ];
 
     /**
@@ -23,24 +23,8 @@ class UserResource extends ApiResource
      * @var array|null
      */
     protected static $defaultFields = [
-        'name',
-        'email',
-    ];
-
-    /**
-     * Allowable fields to be used.
-     *
-     * @var array|null
-     */
-    protected static $allowedFields = null;
-
-    /**
-     * Allowable scopes to be used.
-     *
-     * @var array|null
-     */
-    protected static $allowedScopes = [
-        'scopeHas2Fa'
+        'phone',
+        'address',
     ];
 
     /**
@@ -52,5 +36,6 @@ class UserResource extends ApiResource
      */
     protected static array $alwaysSelectFields = [
         'id',
+        'user_id',
     ];
 }

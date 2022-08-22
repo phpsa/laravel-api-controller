@@ -2,16 +2,16 @@
 
 namespace Phpsa\LaravelApiController\Tests\Controllers;
 
-use Phpsa\LaravelApiController\Tests\Models\User;
 use Phpsa\LaravelApiController\Http\Api\Controller;
-use Phpsa\LaravelApiController\Tests\Requests\UserRequest;
-use Phpsa\LaravelApiController\Tests\Resources\UserResource;
-use Phpsa\LaravelApiController\Tests\Resources\UserResourceCollection;
+use Phpsa\LaravelApiController\Tests\Models\UserProfile;
+use Phpsa\LaravelApiController\Tests\Requests\UserProfileRequest;
+use Phpsa\LaravelApiController\Tests\Resources\UserProfileResource;
+use Phpsa\LaravelApiController\Tests\Resources\UserProfileResourceCollection;
 
-class UserController extends Controller
+class UserProfileController extends Controller
 {
-    protected $resourceSingle = UserResource::class;
-    protected $resourceCollection = UserResourceCollection::class;
+    protected $resourceSingle = UserProfileResource::class;
+    protected $resourceCollection = UserProfileResourceCollection::class;
 
       /**
      * Display a listing of the resource.
@@ -27,10 +27,10 @@ class UserController extends Controller
      * Store a newly created resource in storage.
      *
      * @see self::handleStoreOrUpdateAction to do magic insert / update
-     * @param  \Phpsa\LaravelApiController\Tests\Requests\UserRequest  $request
+     * @param  \Phpsa\LaravelApiController\Tests\Requests\UserProfileRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UserRequest $request)
+    public function store(UserProfileRequest $request)
     {
         return $this->handleStoreAction($request);
     }
@@ -49,11 +49,11 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Phpsa\LaravelApiController\Tests\Requests\UserRequest  $request
+     * @param  \Phpsa\LaravelApiController\Tests\Requests\UserProfileRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UserRequest $request, $id)
+    public function update(UserProfileRequest $request, $id)
     {
         return $this->handleUpdateAction($id, $request);
     }
@@ -76,6 +76,6 @@ class UserController extends Controller
      */
     protected function model()
     {
-        return User::class;
+        return UserProfile::class;
     }
 }

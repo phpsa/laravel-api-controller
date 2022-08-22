@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('projects', function (Blueprint $table) {
+        Schema::create('avatars', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('description');
-            $table->double('cost_per_hour')->nullable();
-            $table->timestamps();
+            $table->string('url');
+            $table->string('alttext')->nullable(); // For testing setting null
+            $table->foreignId('avatarable_id');
+            $table->string('avatarable_type');
         });
     }
 
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('projects');
+        Schema::dropIfExists('avatars');
     }
 };

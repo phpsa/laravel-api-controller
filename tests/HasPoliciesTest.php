@@ -18,7 +18,7 @@ class HasPoliciesTest extends TestCase
     public function test_policy_logic()
     {
 
-        factory(User::class, 1)->create([
+        User::factory()->createOne([
             'email' => 'api@laravel.dev'
         ]);
         $this->actingAs(User::first());
@@ -60,7 +60,7 @@ class HasPoliciesTest extends TestCase
 
     public function test_autorize_policy_allows()
     {
-        factory(User::class, 1)->create([
+        User::factory()->createOne([
             'email' => 'api@laravel.dev'
         ]);
         $this->actingAs(User::first());

@@ -16,9 +16,9 @@ class UserControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        factory(User::class, 100)->create();
-        factory(User::class, 1)->create([
-            'email' => 'api@laravel.dev'
+        User::factory(100)->create();
+        User::factory()->createOne([
+            'email' => 'api@laravel.dev',
         ]);
     }
 

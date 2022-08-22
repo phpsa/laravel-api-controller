@@ -3,9 +3,9 @@
 namespace Phpsa\LaravelApiController\Tests\Resources;
 
 use Phpsa\LaravelApiController\Http\Resources\ApiResource;
-use Phpsa\LaravelApiController\Tests\Resources\UserProfileResource;
+use Phpsa\LaravelApiController\Tests\Resources\TaskResourceCollection;
 
-class UserResource extends ApiResource
+class ProjectResource extends ApiResource
 {
 
     /**
@@ -14,7 +14,7 @@ class UserResource extends ApiResource
      * @var array|null
      */
     protected static $mapResources = [
-        'profile' => UserProfileResource::class,
+        'tasks' => TaskResourceCollection::class,
     ];
 
     /**
@@ -24,23 +24,8 @@ class UserResource extends ApiResource
      */
     protected static $defaultFields = [
         'name',
-        'email',
-    ];
-
-    /**
-     * Allowable fields to be used.
-     *
-     * @var array|null
-     */
-    protected static $allowedFields = null;
-
-    /**
-     * Allowable scopes to be used.
-     *
-     * @var array|null
-     */
-    protected static $allowedScopes = [
-        'scopeHas2Fa'
+        'description',
+        'cost_per_hour',
     ];
 
     /**

@@ -2,14 +2,12 @@
 
 namespace Phpsa\LaravelApiController\Tests\Controllers;
 
-use Phpsa\LaravelApiController\Tests\Models\User;
 use Phpsa\LaravelApiController\Http\Api\Controller;
+use Phpsa\LaravelApiController\Tests\Models\Project;
 use Phpsa\LaravelApiController\Tests\Requests\UserRequest;
 
 class ProjectController extends Controller
 {
-
-
       /**
      * Display a listing of the resource.
      *
@@ -73,6 +71,6 @@ class ProjectController extends Controller
      */
     protected function model()
     {
-        return User::class;
+        return Project::class;
     }
 }
