@@ -4,15 +4,13 @@ namespace Phpsa\LaravelApiController\Http\Api;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Bus\DispatchesJobs;
-use Phpsa\LaravelApiController\Events\Created;
-use Phpsa\LaravelApiController\Events\Updated;
-use Phpsa\LaravelApiController\Events\Deleted;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasModel;
+use Phpsa\LaravelApiController\Http\Api\Contracts\HasEvents;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasParser;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasIncludes;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasPolicies;
@@ -37,6 +35,7 @@ abstract class Controller extends BaseController
     use HasParser;
     use HasRelationships;
     use HasIncludes;
+    use HasEvents;
 
     /**
      * Set the default sorting for queries.
@@ -145,7 +144,7 @@ abstract class Controller extends BaseController
 
             $this->storeRelated($item, $diff, $data);
 
-            event(new Created($item, $this->request));
+            $this->triggerCreatedEvent($item);
 
             DB::commit();
 
@@ -224,7 +223,7 @@ abstract class Controller extends BaseController
 
             $this->storeRelated($item, $diff, $data);
 
-            event(new Updated($item, $this->request));
+            $this->triggerUpdatedEvent($item);
 
             DB::commit();
 
@@ -253,7 +252,7 @@ abstract class Controller extends BaseController
             $item = $this->resolveRouteBinding($id)->firstOrFail();
             $this->authoriseUserAction('delete', $item);
             $item->delete();
-            event(new Deleted($item, $this->request));
+            $this->triggerDeletedEvent($item);
         } catch (ModelNotFoundException $exception) {
             return $this->errorNotFound('Record not found');
         }
