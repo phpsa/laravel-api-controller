@@ -83,6 +83,7 @@ abstract class Controller extends BaseController
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
 
+        /** @phpstan-ignore-next-line */
         $items = $limit > 0 ? $this->getBuilder()->paginateRaw($limit, $fields)->appends($this->originalQueryParams) : $this->getBuilder()->getRaw($fields);
 
         return $this->handleIndexResponse($items);
