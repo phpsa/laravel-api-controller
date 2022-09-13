@@ -1,3 +1,10 @@
+# [5.4.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.3.1...v5.4.0) (2022-09-13)
+
+
+### Features
+
+* **events:** add new trait wrap events ([84b0ed7](https://git.customd.com/composer/laravel-api-controller/commit/84b0ed7e6f2c417b6c370d40c77ea34c20bf8e45))
+
 ## [5.3.1](https://git.customd.com/composer/laravel-api-controller/compare/v5.3.0...v5.3.1) (2022-08-06)
 
 
