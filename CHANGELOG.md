@@ -1,3 +1,10 @@
+## [5.4.1](https://git.customd.com/composer/laravel-api-controller/compare/v5.4.0...v5.4.1) (2022-09-27)
+
+
+### Bug Fixes
+
+* relation needs resource available ([9d0ec0b](https://git.customd.com/composer/laravel-api-controller/commit/9d0ec0b93cdca45c91ef77d6e302de59d779ca5a))
+
 # [5.4.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.3.1...v5.4.0) (2022-09-13)
 
 
