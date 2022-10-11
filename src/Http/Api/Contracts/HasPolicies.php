@@ -6,6 +6,12 @@ use Illuminate\Support\Facades\Gate;
 
 trait HasPolicies
 {
+
+    /**
+     * @var class-string|null $resourcePolicy
+     */
+    protected ?string $resourcePolicy = null;
+
     /**
      * Qualifies the collection query to allow you to add params vai the policy
      * ie to limit to a specific user id mapping.
@@ -116,7 +122,7 @@ trait HasPolicies
             $model = $arguments;
         }
 
-        $modelPolicy = Gate::getPolicyFor($model);
+        $modelPolicy = $this->resourcePolicy ?? Gate::getPolicyFor($model);
 
         // If no policy exists for this model, then there's nothing to check
         if (is_null($modelPolicy) || ($excludeMissing && ! method_exists($modelPolicy, $ability))) {
