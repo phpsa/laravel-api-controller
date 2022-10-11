@@ -1,3 +1,10 @@
+## [5.5.1](https://git.customd.com/composer/laravel-api-controller/compare/v5.5.0...v5.5.1) (2022-10-11)
+
+
+### Bug Fixes
+
+* parent policy mapping ([a7101a9](https://git.customd.com/composer/laravel-api-controller/commit/a7101a96f8f30437898ef1c8b00ece28555c64fe))
+
 # [5.5.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.4.1...v5.5.0) (2022-10-11)
 
 
