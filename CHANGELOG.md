@@ -1,3 +1,10 @@
+# [5.5.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.4.1...v5.5.0) (2022-10-11)
+
+
+### Features
+
+* add ability to use custom policy on a controller ([25ac102](https://git.customd.com/composer/laravel-api-controller/commit/25ac1027207c2d25e9746706360ddf6068bf99f6))
+
 ## [5.4.1](https://git.customd.com/composer/laravel-api-controller/compare/v5.4.0...v5.4.1) (2022-09-27)
 
 
