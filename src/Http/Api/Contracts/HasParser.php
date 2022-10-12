@@ -75,16 +75,24 @@ trait HasParser
 
         $parentPolicy = Gate::getPolicyFor($routeRelation);
 
-        if(!is_null($parentPolicy)){
+        if (! is_null($parentPolicy)) {
             $this->authorize('view', $routeRelation);
         }
 
+        $relation = $child->{$key}();
+        $type = class_basename(get_class($relation));
+        $filterKey = match ($type) {
+            'HasOne' => $relation->getLocalKeyName(),
+            'BelongsToMany' => $key . '.' . $relation->getRelatedKeyName(),
+            default => $child->{$key}()->getQualifiedForeignKeyName(),
+        };
+
         if ($this->request->isMethod('get') || $this->request->isMethod('options')) {
-            return [
+            return $filterKey ? [
                 'filter' => [
-                    $child->{$key}()->getForeignKeyName() => $routeRelation->getKey()
+                    $filterKey => $routeRelation->getKey()
                 ]
-            ];
+            ] : [] ;
         }
 
         if ($this->request->isMethod('post') || $this->request->isMethod('put') || $this->request->isMethod('patch')) {
@@ -218,8 +226,8 @@ trait HasParser
     protected function parseFieldParams(): array
     {
         $default = $this->getDefaultFields();
-        if($default !== ['*']){
-            $default = array_merge( $default, $this->getAlwaysSelectFields());
+        if ($default !== ['*']) {
+            $default = array_merge($default, $this->getAlwaysSelectFields());
         }
 
         $fields = Helpers::filterFieldsFromRequest(
