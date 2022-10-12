@@ -11,7 +11,6 @@ use Phpsa\LaravelApiController\UriParser;
 /**
  * @property \Illuminate\Http\Request $request
  * @property string|array<string,string>|null $parentModel
- * @property string|null $parentPolicy
  */
 trait HasParser
 {
@@ -74,7 +73,8 @@ trait HasParser
             $routeRelation = $child->{$key}()->getRelated()->where($bindingField, $routeRelation)->firstOrFail();
         }
 
-        $parentPolicy = $this->parentPolicy ?? Gate::getPolicyFor($routeRelation);
+        $parentPolicy = Gate::getPolicyFor($routeRelation);
+
         if(!is_null($parentPolicy)){
             $this->authorize('view', $routeRelation);
         }
