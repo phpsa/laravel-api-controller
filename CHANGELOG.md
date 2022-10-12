@@ -1,3 +1,31 @@
+## [5.5.1](https://git.customd.com/composer/laravel-api-controller/compare/v5.5.0...v5.5.1) (2022-10-11)
+
+
+### Bug Fixes
+
+* parent policy mapping ([a7101a9](https://git.customd.com/composer/laravel-api-controller/commit/a7101a96f8f30437898ef1c8b00ece28555c64fe))
+
+# [5.5.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.4.1...v5.5.0) (2022-10-11)
+
+
+### Features
+
+* add ability to use custom policy on a controller ([25ac102](https://git.customd.com/composer/laravel-api-controller/commit/25ac1027207c2d25e9746706360ddf6068bf99f6))
+
+## [5.4.1](https://git.customd.com/composer/laravel-api-controller/compare/v5.4.0...v5.4.1) (2022-09-27)
+
+
+### Bug Fixes
+
+* relation needs resource available ([9d0ec0b](https://git.customd.com/composer/laravel-api-controller/commit/9d0ec0b93cdca45c91ef77d6e302de59d779ca5a))
+
+# [5.4.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.3.1...v5.4.0) (2022-09-13)
+
+
+### Features
+
+* **events:** add new trait wrap events ([84b0ed7](https://git.customd.com/composer/laravel-api-controller/commit/84b0ed7e6f2c417b6c370d40c77ea34c20bf8e45))
+
 ## [5.3.1](https://git.customd.com/composer/laravel-api-controller/compare/v5.3.0...v5.3.1) (2022-08-06)
 
 

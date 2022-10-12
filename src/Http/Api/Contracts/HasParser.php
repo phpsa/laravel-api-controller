@@ -3,6 +3,7 @@
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Model;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\UriParser;
@@ -57,7 +58,7 @@ trait HasParser
 
         if (is_array($parent)) {
             $key = key($parent);
-            $param = reset($parent);
+            $param = strtolower(class_basename(reset($parent)));
         } else {
             $key = strtolower(class_basename($parent));
             $param = $key;
@@ -72,7 +73,11 @@ trait HasParser
             $routeRelation = $child->{$key}()->getRelated()->where($bindingField, $routeRelation)->firstOrFail();
         }
 
-        $this->authoriseUserAction('view', $routeRelation);
+        $parentPolicy = Gate::getPolicyFor($routeRelation);
+
+        if(!is_null($parentPolicy)){
+            $this->authorize('view', $routeRelation);
+        }
 
         if ($this->request->isMethod('get') || $this->request->isMethod('options')) {
             return [
