@@ -85,6 +85,15 @@ trait HasParser
             default => $child->{$key}()->getForeignKeyName(),
         };
 
+
+        if ($this->request->isMethod('get') || $this->request->isMethod('options')) {
+            return [
+                'filter' => [
+                    $filter => $routeRelation->getKey()
+                ]
+            ];
+        }
+
         if ($this->request->isMethod('post') || $this->request->isMethod('put') || $this->request->isMethod('patch')) {
             return [
                 $filter => $routeRelation->getKey()
