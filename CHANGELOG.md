@@ -1,3 +1,10 @@
+## [5.6.1](https://git.customd.com/composer/laravel-api-controller/compare/v5.6.0...v5.6.1) (2022-10-13)
+
+
+### Bug Fixes
+
+* **nested:** fixes automatic filtering on hasOne ([d876fc9](https://git.customd.com/composer/laravel-api-controller/commit/d876fc90b7f02685192d48c9aef6f27068bb8449))
+
 # [5.6.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.5.1...v5.6.0) (2022-10-13)
 
 
