@@ -79,11 +79,21 @@ trait HasParser
             $this->authorize('view', $routeRelation);
         }
 
-         $filter = match (class_basename(get_class($child->{$key}()))) {
+          $filter = match (class_basename(get_class($child->{$key}()))) {
             'HasOne' => $child->{$key}()->getLocalKeyName(),
             'BelongsToMany' => $key . '.' . $child->{$key}()->getRelatedKeyName(),
             default => $child->{$key}()->getForeignKeyName(),
         };
+
+
+        if ($this->request->isMethod('get') || $this->request->isMethod('options')) {
+            return [
+                'filter' => [
+                    $filter => $routeRelation->getKey()
+                ]
+            ];
+        }
+
 
         if ($this->request->isMethod('post') || $this->request->isMethod('put') || $this->request->isMethod('patch')) {
             return [
