@@ -87,7 +87,7 @@ trait HasParser
 
         if ($this->request->isMethod('post') || $this->request->isMethod('put') || $this->request->isMethod('patch')) {
             return [
-                $child->{$key}()->getForeignKeyName() => $routeRelation->getKey()
+                $filter => $routeRelation->getKey()
             ];
         }
 
