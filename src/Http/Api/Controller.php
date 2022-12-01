@@ -260,4 +260,28 @@ abstract class Controller extends BaseController
 
         return $this->handleDestroyResponse($id);
     }
+
+    /**
+     * Remove the specified resource from storage.
+     * PATCH /api/{resource}/{id}.
+     *
+     * @param \Illuminate\Database\Eloquent\Model|int|string $id Model id / model instance for the record                                                             $id
+     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest|null $request
+     */
+    public function handleRestoreAction($id, $request = null)
+    {
+        $this->handleCommonActions($request);
+        $this->qualifyItemQuery();
+
+        try {
+            $item = $this->resolveRouteBinding($id)->onlyTrashed()->firstOrFail();
+            $this->authoriseUserAction('restore', $item);
+            $item->restore();
+            $this->triggerRestoredEvent($item);
+        } catch (ModelNotFoundException $exception) {
+            return $this->errorNotFound('Record not found');
+        }
+
+        return $this->handleRestoreResponse($item);
+    }
 }

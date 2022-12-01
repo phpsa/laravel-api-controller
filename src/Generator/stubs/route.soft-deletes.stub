@@ -1,0 +1,2 @@
+Route::apiresource('{{route.name}}', {{route.controller}});
+Route::patch('{{route.name}}.restore', {{route.controller}} . '@restore');

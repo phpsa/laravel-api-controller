@@ -252,4 +252,9 @@ trait HasResponse
     {
         return $this->respondNoContent();
     }
+
+    protected function handleRestoreResponse($item)
+    {
+        return $this->respondWithOne($item);
+    }
 }
