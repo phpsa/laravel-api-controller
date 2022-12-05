@@ -1,3 +1,15 @@
+# [5.7.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.6.0...v5.7.0) (2022-12-05)
+
+
+### Bug Fixes
+
+* **nested:** fixes automatic filtering on hasOne ([d876fc9](https://git.customd.com/composer/laravel-api-controller/commit/d876fc90b7f02685192d48c9aef6f27068bb8449))
+
+
+### Features
+
+* add restore route for soft deletes ([650a66a](https://git.customd.com/composer/laravel-api-controller/commit/650a66a24f11efe8effe7dc82b244ec183c552ec))
+
 ## [5.6.1](https://git.customd.com/composer/laravel-api-controller/compare/v5.6.0...v5.6.1) (2022-10-13)
 
 
