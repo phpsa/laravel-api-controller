@@ -70,7 +70,7 @@ class HasModelTest extends TestCase
     public function test_db_macros()
     {
 
-        factory(User::class, 100)->create();
+        User::factory(100)->create();
         $result = User::where('id', '<', 10)->getRaw();
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertEquals(9, $result->count());

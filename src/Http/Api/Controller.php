@@ -83,7 +83,6 @@ abstract class Controller extends BaseController
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
 
-        /** @phpstan-ignore-next-line */
         $items = $limit > 0 ? $this->getBuilder()->paginateRaw($limit, $fields)->appends($this->originalQueryParams) : $this->getBuilder()->getRaw($fields);
 
         return $this->handleIndexResponse($items);
@@ -274,6 +273,7 @@ abstract class Controller extends BaseController
         $this->qualifyItemQuery();
 
         try {
+            //@phpstan-ignore-next-line
             $item = $this->resolveRouteBinding($id)->onlyTrashed()->firstOrFail();
             $this->authoriseUserAction('restore', $item);
             $item->restore();

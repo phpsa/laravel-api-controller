@@ -20,7 +20,6 @@
   },
   "require-dev": {
     "doctrine/dbal": ">=2.3",
-    "laravel/legacy-factories": ">=1.0.4",
     "mockery/mockery": "^1.0",
     "nunomaduro/larastan": "^1.0|^2.0",
     "orchestra/testbench": "^6.0|^7.0",
@@ -41,7 +40,8 @@
   },
   "scripts": {
     "phpunit": "phpunit",
-    "test": "phpunit"
+    "test": "phpunit",
+    "phpstan": "phpstan"
   },
   "extra": {
     "laravel": {
