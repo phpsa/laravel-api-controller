@@ -5,20 +5,23 @@ namespace Phpsa\LaravelApiController\Tests;
 use ReflectionClass;
 use Illuminate\Http\Request;
 use Orchestra\Testbench\Concerns\WithFactories;
-use Orchestra\Testbench\TestCase as BaseTestCase;
-use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 use Phpsa\LaravelApiController\ServiceProvider;
+use Orchestra\Testbench\TestCase as BaseTestCase;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 
 class TestCase extends BaseTestCase
 {
 
-    use WithFactories;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
-        $this->withFactories(__DIR__.'/Factories');
+
+        Factory::guessFactoryNamesUsing(function ($class) {
+            return '\\Phpsa\\LaravelApiController\\Tests\Factories\\' . class_basename($class) . 'Factory';
+        });
     }
 
 

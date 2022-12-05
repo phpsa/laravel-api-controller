@@ -1,0 +1,91 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ namespacedModel }};
+use Phpsa\LaravelApiController\Http\Api\Controller;
+use {{ namespacedRequests }}
+use {{ useResourceSingle }};
+use {{ useResourceCollection }};
+use {{ namespacedParentModel }};
+
+class {{ class }} extends Controller
+{
+    protected string $resourceModel = {{ model }}::class;
+    protected string $parentModel = {{ parentModel }}::class;
+
+    protected $resourceSingle = {{ resourceSingle }}::class;
+    protected $resourceCollection = {{ resourceCollection }}::class;
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param  \{{ namespacedParentModel }}  ${{ parentModelVariable }}
+     * @return \Illuminate\Http\Response
+     */
+    public function index({{ parentModel }} ${{ parentModelVariable }})
+    {
+        return $this->handleIndexAction();
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \{{ namespacedStoreRequest }}  $request
+     * @param  \{{ namespacedParentModel }}  ${{ parentModelVariable }}
+     * @return \Illuminate\Http\Response
+     */
+    public function store({{ storeRequest }} $request, {{ parentModel }} ${{ parentModelVariable }})
+    {
+        return $this->handleStoreAction($request);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \{{ namespacedParentModel }}  ${{ parentModelVariable }}
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
+     * @return \Illuminate\Http\Response
+     */
+    public function show({{ parentModel }} ${{ parentModelVariable }}, {{ model }} ${{ modelVariable }})
+    {
+        return $this->handleShowAction(${{ modelVariable }});
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \{{ namespacedUpdateRequest }}  $request
+     * @param  \{{ namespacedParentModel }}  ${{ parentModelVariable }}
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
+     * @return \Illuminate\Http\Response
+     */
+    public function update({{ updateRequest }} $request, {{ parentModel }} ${{ parentModelVariable }}, {{ model }} ${{ modelVariable }})
+    {
+        return $this->handleUpdateAction(${{ modelVariable }}, $request);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \{{ namespacedParentModel }}  ${{ parentModelVariable }}
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy({{ parentModel }} ${{ parentModelVariable }}, {{ model }} ${{ modelVariable }})
+    {
+        return $this->handleDestroyAction(${{ modelVariable }});
+    }
+
+        /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \{{ namespacedParentModel }}  ${{ parentModelVariable }}
+     * @param  \{{ namespacedModel }}  ${{ modelVariable }}
+     * @return \Illuminate\Http\Response
+     */
+    public function restore({{ parentModel }} ${{ parentModelVariable }}, {{ model }} ${{ modelVariable }})
+    {
+        return $this->handleRestoreAction(${{ modelVariable }});
+    }
+}

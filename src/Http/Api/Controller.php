@@ -83,7 +83,6 @@ abstract class Controller extends BaseController
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
 
-        /** @phpstan-ignore-next-line */
         $items = $limit > 0 ? $this->getBuilder()->paginateRaw($limit, $fields)->appends($this->originalQueryParams) : $this->getBuilder()->getRaw($fields);
 
         return $this->handleIndexResponse($items);
@@ -259,5 +258,30 @@ abstract class Controller extends BaseController
         }
 
         return $this->handleDestroyResponse($id);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     * PATCH /api/{resource}/{id}.
+     *
+     * @param \Illuminate\Database\Eloquent\Model|int|string $id Model id / model instance for the record                                                             $id
+     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest|null $request
+     */
+    public function handleRestoreAction($id, $request = null)
+    {
+        $this->handleCommonActions($request);
+        $this->qualifyItemQuery();
+
+        try {
+            //@phpstan-ignore-next-line
+            $item = $this->resolveRouteBinding($id)->onlyTrashed()->firstOrFail();
+            $this->authoriseUserAction('restore', $item);
+            $item->restore();
+            $this->triggerRestoredEvent($item);
+        } catch (ModelNotFoundException $exception) {
+            return $this->errorNotFound('Record not found');
+        }
+
+        return $this->handleRestoreResponse($item);
     }
 }
