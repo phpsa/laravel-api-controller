@@ -32,14 +32,17 @@ php artisan vendor:publish --provider="Phpsa\LaravelApiController\ServiceProvide
 * `artisan make:api:policy {PolicyName} -m {Model}` to generate a policy file
 * `artisan make:api:resource {ResourceName|CollectionName}` to geneate the response resource
 
-
 This will create a Api/ModelNameController for you and you will have the basic routes in place as follows:
 
 - GET `api/v1/{model_name}` - list all/paged/filtered (class::index)
 - GET `api/v1/{model_name}/$id` - Show a specified id (class::show)
 - POST `api/v1/{model_name}` - Insert a new record (class::store)
-- PUT `api/v1/{model_name}/$id` - Update an existing record (class::update)
+- PUT `api/v1/{model_name}/$id` - Replace an existing record (class::update)
+- PATCH `api/v1/{model_name}/$id` - Update an existing record (class::update)
 - DELETE `api/v1/{model_name}/$id` - Delete an existing record (class::destroy)
+
+If you specify `--soft-deletes` option on `make:api:controller` it will also create an additional `restore` controller endpoint & route:
+- PATCH `api/v1/{model_name}/$id` - Restore a soft-deleted record (class::restore). This only works for models with Soft Deletes enabled.
 
 You can override the methods by simply putting in your own methods to override - method names in braces above
 

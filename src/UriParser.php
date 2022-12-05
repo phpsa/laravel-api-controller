@@ -144,7 +144,7 @@ class UriParser
             return;
         }
         $operator = $matches[0];
-        [$key, $value] = explode($operator, $parameter);
+        [$key, $value] = explode($operator, $parameter); //@phpstan-ignore-line
 
         $isAnIn = strpos($value, '||');
 

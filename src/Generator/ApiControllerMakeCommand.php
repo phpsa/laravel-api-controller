@@ -114,8 +114,14 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
     {
         $stub = 'controller.api.stub';
 
+        if ($this->option('parent') && $this->option('soft-deletes')) {
+            $stub = 'controller.nested.api.soft-deletes.stub';
+        }
         if ($this->option('parent')) {
             $stub = 'controller.nested.api.stub';
+        }
+        if($this->option('soft-deletes')) {
+            $stub = 'controller.api.soft-deletes.stub';
         }
 
         return $this->resolveStubPath($stub);
@@ -148,7 +154,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
 
     protected function addRoutes(): void
     {
-        $stub = $this->resolveStubPath('route.stub');
+        $stub = $this->resolveStubPath($this->option('soft-deletes') ? 'route.soft-deletes.stub' : 'route.stub');
         $routesFile = app_path(config('laravel-api-controller.routes_file'));
 
         $name = $this->qualifyClass($this->getNameInput());

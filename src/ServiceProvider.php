@@ -62,10 +62,12 @@ class ServiceProvider extends BaseServiceProvider
             $result = $this->toBase()
             ->paginate($limit, $columns, $pageName, $page);
 
+            //@phpstan-ignore-next-line
             $collection = $result->getCollection()->map(function ($row) {
                 return (array) $row;
             });
 
+            //@phpstan-ignore-next-line
             $result->setCollection($collection);
 
             return $result;
