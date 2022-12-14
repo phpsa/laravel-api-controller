@@ -236,11 +236,51 @@ trait HasParser
                $key => [ 'equals' => $value]
             ]
         );
+
+
     }
 
     protected function buildQuery(string $column, string $comparison, mixed $value, mixed $builder = null): void
     {
         $builder ??= $this->getBuilder();
+
+        $model = $builder->getModel();
+
+        if(str($column)->contains(".") === true){
+            [$relation, $key] = str($column)->explode(".");
+            if ($model->isRelation($relation)) {
+
+
+                $value = match($comparison) {
+                    'is','equals','=' => [
+                            $key => $value
+                        ],
+                    '!equals','not_equals','!is','not_is','!','!=','<>' => [
+                        $key  => $value
+
+                        ],
+                    default => [
+                        $key => [
+                            $comparison => $value
+                            ]
+                        ]
+                };
+
+                $comparison = match($comparison){
+                    'is','equals','=' => 'has',
+                    '!equals','not_equals','!is','not_is','!','!=','<>' => 'not_has',
+                    default => $comparison
+                };
+
+                $column = $relation;
+            }
+        }
+
+        if ($model->isRelation($column)) {
+            if ($comparison !== 'has' && $comparison !== 'not_has') {
+                $comparison = is_array($value) || filter_var($value, FILTER_VALIDATE_BOOL) === true ? 'has' : 'not_has';
+            }
+        }
 
         match($comparison){
             'ends_with', '$' => $builder->where($column, 'like',  "%{$value}"),
@@ -274,6 +314,7 @@ trait HasParser
     protected function filtersHasClause(string $relation, string $method, mixed $value, mixed $builder): void
     {
 
+
         $rel = Helpers::camel($relation);
         $relatedModel = $builder->getModel()->$rel()->getModel();
         $callback = is_array($value);
@@ -287,6 +328,7 @@ trait HasParser
                     )
                 : null
         );
+
     }
 
 

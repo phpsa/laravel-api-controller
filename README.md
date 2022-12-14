@@ -175,7 +175,8 @@ where json_unquote(json_extract(`meta\`, '$."seo"')) = 'enabled'
 ```
 
 * Relations: `filters[relationName][has]` or `filters[relationName][!has]` or `filters[relation_name][not_has]`
-* Relations filtering `filters[tags][has][slug]=my_slug` 
+* Relations filtering `filters[tags][has][slug]=my_slug`
+* Relations `filters[tags]=true` or `filters['tags.slug']=myslug` `filters[tags.slug][!]=myslug` `filters[tags.slug][!][contains]=money`
 
 ## Scopes
 
