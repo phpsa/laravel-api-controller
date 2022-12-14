@@ -151,7 +151,7 @@ Add to your allowedScopes and can then be called in url as `?ageNull=1` for wher
 | Seperator | Description                                     | Example                | Result                                    |
 | --------- | ----------------------------------------------- | ---------------------- | ----------------------------------------- |
 | empty / _`=`_ / `is` / `equals`    | Equals                                          | ?filters[field]=hello / ?filters[field][is]=hello  | select ... where field = 'hello'          |
-| _`!=`_ / `!is` / `!equals`   | Not Equals                                      | ?filter[field][!is]=hello  | select ... where field != 'hello'         |
+| _`!=`_ / `!is` / `!equals` / `not_equals`  | Not Equals                                      | ?filter[field][!is]=hello  | select ... where field != 'hello'         |
 | _`>`_ / `greater_than`    | Greater Than                                    | ?filter[field][greater_than]=5      | select ... where field > 5                |
 | _`>=`_ / `greater_than_or_equal_to` / `greater_or_equal`  | Greater Or Equal to                             | ?filter[field][greater_or_equal]=5     | select ... where field >= 5               |
 | _`<`_  / `less_than`   | Less Than                                       | ?filter[field][<]=5      | select ... where field <> 5               |
@@ -159,11 +159,13 @@ Add to your allowedScopes and can then be called in url as `?ageNull=1` for wher
 | _`~`_  / `contains`   | Contains (LIKE with wildcard on both sides)     | ?filter[field][contains]=hello  | select ... where field like '%hello%'     |
 | _`^`_  / `starts_with`   | Starts with (LIKE with wildcard on end)         | ?filter[field][starts_with]=hello  | select ... where field like 'hello%'      |
 | _`$`_  / `ends_with`   | Ends with (LIKE with wildcard on start)         | ?filter[field][ends_with]=hello  | select ... where field like 'hello%'      |
-| _`!~`_ / `!contains`   | Not Contains (LIKE with wildcard on both sides) | ?filter[field][!contains]=hello | select ... where field not like '%hello%' |
-| _`!^`_ / `!starts_with`   | Not Starts with (LIKE with wildcard on end)     | ?filter[field][!^]=hello | select ... where field not like 'hello%'  |
-| _`!$`_ / `!ends_with`   | Not Ends with (LIKE with wildcard on start)     | ?filter[field][!$]=hello | select ... where field not like 'hello%'  |
+| _`!~`_ / `!contains` / `not_contains`  | Not Contains (LIKE with wildcard on both sides) | ?filter[field][!contains]=hello | select ... where field not like '%hello%' |
+| _`!^`_ / `!starts_with` / `not_starts_with`   | Not Starts with (LIKE with wildcard on end)     | ?filter[field][!^]=hello | select ... where field not like 'hello%'  |
+| _`!$`_ / `!ends_with` /   `not_ends_with`   | Not Ends with (LIKE with wildcard on start)     | ?filter[field][!$]=hello | select ... where field not like 'hello%'  |
 | `in`   | in    | ?filter[field][in]=1,2,3 | select ... where field in(1,2,3)  |
-| `not_in`   | NOT in    | ?filter[field][in]=1,2,3 | select ... where field not in(1,2,3)  |
+| `not_in`  / `!in`  | NOT in    | ?filter[field][in]=1,2,3 | select ... where field not in(1,2,3)  |
+| `has`   | has    | ?filter[field][has] | select ... where exists(field join)  |
+| `not_has`  / `!has`  | NOT has    | ?filter[field][!has] | select ... where not exists (field join)  |
 
 * Null = `filters[age]=NULL` will generate `where age is null`
 
@@ -171,6 +173,9 @@ Add to your allowedScopes and can then be called in url as `?ageNull=1` for wher
 ```
 where json_unquote(json_extract(`meta\`, '$."seo"')) = 'enabled'
 ```
+
+* Relations: `filters[relationName][has]` or `filters[relationName][!has]` or `filters[relation_name][not_has]`
+* Relations filtering `filters[tags][has][slug]=my_slug` 
 
 ## Scopes
 

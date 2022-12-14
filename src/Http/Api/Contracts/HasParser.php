@@ -5,6 +5,7 @@ namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 use RuntimeException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\UriParser;
@@ -222,21 +223,25 @@ trait HasParser
 
     protected function parseFilters(): void
     {
-
-        collect($this->request->input('filters', []))
-
-        ->mapWithKeys(fn($value, $key) => is_array($value) ? [$key => $value] : [
-               $key => [ 'equals' => $value]
-            ]
-        )
-        ->each(fn($filter, $column) => collect($filter)->each(fn($value, $comparison) => $this->buildQuery($column, $comparison, $value))
-        );
-
+        $this->parseFiltersArray($this->request->input('filters', []))
+            ->each(
+                fn($filter, $column) => collect($filter)->each(fn($value, $comparison) => $this->buildQuery($column, $comparison, $value))
+            );
     }
 
-    protected function buildQuery(string $column, string $comparison, mixed $value): void
+    protected function parseFiltersArray(array $filters = []): Collection
     {
-        $builder = $this->getBuilder();
+        return collect($filters)
+            ->mapWithKeys(fn($value, $key) => is_array($value) ? [$key => $value] : [
+               $key => [ 'equals' => $value]
+            ]
+        );
+    }
+
+    protected function buildQuery(string $column, string $comparison, mixed $value, mixed $builder = null): void
+    {
+        /** @var \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder $builder */
+        $builder ??= $this->getBuilder();
 
         match($comparison){
             'ends_with', '$' => $builder->where($column, 'like',  "%{$value}"),
@@ -260,11 +265,29 @@ trait HasParser
             'in' => $builder->whereIn($column, is_array($value) ? $value : str($value)->replace(["||","|"], ",")->explode(",")->filter()),
             'not_in',"!in" => $builder->whereNotIn($column, is_array($value) ? $value : str($value)->replace(["||","|"], ",")->explode(",")->filter()),
 
-            'has' => '', //@todo
-            'not_has' => '', //@todo
+            'has' => $this->filtersHasClause($column, 'whereHas', $value, $builder),
+            'not_has', '!has' =>  $this->filtersHasClause($column, 'whereDoesntHave', $value, $builder),
 
             default => throw new RuntimeException("Unknown comparison operator {$comparison}"),
         };
+    }
+
+    protected function filtersHasClause(string $relation, string $method, mixed $value, mixed $builder): void
+    {
+
+        $rel = Helpers::camel($relation);
+        $relatedModel = $builder->getModel()->$rel()->getModel();
+        $callback = is_array($value);
+
+        $builder->{$method}(
+            $rel,
+            $callback
+                ? fn($q) =>  $this->parseFiltersArray($value)
+                    ->each(
+                        fn($filter, $column) => collect($filter)->each(fn($subvalue, $comparison) => $this->buildQuery($relatedModel->qualifyColumn($column), $comparison, $subvalue, $q))
+                    )
+                : null
+        );
     }
 
 
