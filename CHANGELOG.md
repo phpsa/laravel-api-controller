@@ -1,6 +1,18 @@
 # [5.8.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.7.0...v5.8.0) (2022-12-14)
 
 
+### Bug Fixes
+
+* added has / not_has to filters experimental area ([ab66270](https://git.customd.com/composer/laravel-api-controller/commit/ab662700c9c000ac31a394e97df82745b7dccb92))
+
+
+### Features
+
+* experimental new filtering engine ([1b109df](https://git.customd.com/composer/laravel-api-controller/commit/1b109df4bdee37568418b4b98530efeebb69c3d2))
+
+# [5.8.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.7.0...v5.8.0) (2022-12-14)
+
+
 ### Features
 
 * experimental new filtering engine ([1b109df](https://git.customd.com/composer/laravel-api-controller/commit/1b109df4bdee37568418b4b98530efeebb69c3d2))
