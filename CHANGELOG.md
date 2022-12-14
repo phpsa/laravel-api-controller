@@ -1,3 +1,10 @@
+## [5.8.2](https://git.customd.com/composer/laravel-api-controller/compare/v5.8.1...v5.8.2) (2022-12-14)
+
+
+### Bug Fixes
+
+* alternate for where Has notHas ([4043407](https://git.customd.com/composer/laravel-api-controller/commit/4043407c70a6e1fbe554f726673998c5241d5205))
+
 # [5.8.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.7.0...v5.8.0) (2022-12-14)
 
 
