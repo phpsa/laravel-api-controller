@@ -240,7 +240,6 @@ trait HasParser
 
     protected function buildQuery(string $column, string $comparison, mixed $value, mixed $builder = null): void
     {
-        /** @var \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder $builder */
         $builder ??= $this->getBuilder();
 
         match($comparison){
