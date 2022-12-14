@@ -97,6 +97,12 @@ in your controller override the following params:
 
 ## Filtering
 
+
+
+
+
+ ### stable option that will be removed once experimental stable
+
 For the get command you can filter by using the following url patterns
 
 | Seperator | Description                                     | Example                | Result                                    |
@@ -135,6 +141,36 @@ public function scopeAgeNull(Builder $builder, $isNull = true){
 ```
 
 Add to your allowedScopes and can then be called in url as `?ageNull=1` for where null and `?ageNull=0` for where age not null
+
+
+
+### Experimental v5 currently
+
+- use the url pattern `filters[column][operator]=value` eg `filters[age][>]=18&filters[title][contains]=testing`
+
+| Seperator | Description                                     | Example                | Result                                    |
+| --------- | ----------------------------------------------- | ---------------------- | ----------------------------------------- |
+| empty / _`=`_ / `is` / `equals`    | Equals                                          | ?filters[field]=hello / ?filters[field][is]=hello  | select ... where field = 'hello'          |
+| _`!=`_ / `!is` / `!equals`   | Not Equals                                      | ?filter[field][!is]=hello  | select ... where field != 'hello'         |
+| _`>`_ / `greater_than`    | Greater Than                                    | ?filter[field][greater_than]=5      | select ... where field > 5                |
+| _`>=`_ / `greater_than_or_equal_to` / `greater_or_equal`  | Greater Or Equal to                             | ?filter[field][greater_or_equal]=5     | select ... where field >= 5               |
+| _`<`_  / `less_than`   | Less Than                                       | ?filter[field][<]=5      | select ... where field <> 5               |
+| _`<=`_ / `less_than_or_equal_to` / `less_or_equal`  | Less Or Equal to                                | ?filter[field][less_or_equal]=5     | select ... where field <= 5               |
+| _`~`_  / `contains`   | Contains (LIKE with wildcard on both sides)     | ?filter[field][contains]=hello  | select ... where field like '%hello%'     |
+| _`^`_  / `starts_with`   | Starts with (LIKE with wildcard on end)         | ?filter[field][starts_with]=hello  | select ... where field like 'hello%'      |
+| _`$`_  / `ends_with`   | Ends with (LIKE with wildcard on start)         | ?filter[field][ends_with]=hello  | select ... where field like 'hello%'      |
+| _`!~`_ / `!contains`   | Not Contains (LIKE with wildcard on both sides) | ?filter[field][!contains]=hello | select ... where field not like '%hello%' |
+| _`!^`_ / `!starts_with`   | Not Starts with (LIKE with wildcard on end)     | ?filter[field][!^]=hello | select ... where field not like 'hello%'  |
+| _`!$`_ / `!ends_with`   | Not Ends with (LIKE with wildcard on start)     | ?filter[field][!$]=hello | select ... where field not like 'hello%'  |
+| `in`   | in    | ?filter[field][in]=1,2,3 | select ... where field in(1,2,3)  |
+| `not_in`   | NOT in    | ?filter[field][in]=1,2,3 | select ... where field not in(1,2,3)  |
+
+* Null = `filters[age]=NULL` will generate `where age is null`
+
+* Json columns = `filters[meta->seo][is]=enabled` will generate
+```
+where json_unquote(json_extract(`meta\`, '$."seo"')) = 'enabled'
+```
 
 ## Scopes
 

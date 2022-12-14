@@ -2,6 +2,7 @@
 
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
+use RuntimeException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Model;
@@ -195,6 +196,9 @@ trait HasParser
      */
     protected function parseFilterParams(): void
     {
+
+        $this->parseFilters();
+
         $where = $this->uriParser->whereParameters();
 
         if (empty($where)) {
@@ -214,6 +218,53 @@ trait HasParser
             }
             $this->/** @scrutinizer ignore-call */setQueryBuilderWhereStatement($this->getBuilder(), $table . '.' . $whr['key'], $whr);
         }
+    }
+
+    protected function parseFilters(): void
+    {
+
+        collect($this->request->input('filters', []))
+
+        ->mapWithKeys(fn($value, $key) => is_array($value) ? [$key => $value] : [
+               $key => [ 'equals' => $value]
+            ]
+        )
+        ->each(fn($filter, $column) => collect($filter)->each(fn($value, $comparison) => $this->buildQuery($column, $comparison, $value))
+        );
+
+    }
+
+    protected function buildQuery(string $column, string $comparison, mixed $value): void
+    {
+        $builder = $this->getBuilder();
+
+        match($comparison){
+            'ends_with', '$' => $builder->where($column, 'like',  "%{$value}"),
+            '!ends_with','not_ends_with', '!$' => $builder->where($column, 'not like',  "%{$value}"),
+
+            'starts_with', '^' => $builder->where($column, 'like',  "{$value}%"),
+            '!starts_with','not_starts_with', '!^' => $builder->where($column, 'not like',  "{$value}%"),
+
+            'less','less_than', '<' => $builder->where($column, '<', $value),
+            'less_than_or_equal_to','less_or_equal', '<=' => $builder->where($column, '<=', $value),
+
+            'greater','greater_than', '>' => $builder->where($column, '>', $value),
+            'greater_than_or_equal_to','greater_or_equal', '>=' => $builder->where($column, '>=', $value),
+
+            'contains','~' => $builder->where($column, 'like',  "%{$value}%"),
+            '!contains','not_contains','!~' => $builder->where($column, 'not like',  "%{$value}%"),
+
+            'is','equals','=' => $builder->where($column, str($value)->upper()->exactly('NULL') ? null : $value),
+            '!equals','not_equals','!is','not_is','!','!=','<>' => $builder->where($column, '!=', str($value)->upper()->exactly('NULL') ? null : $value),
+
+            'in' => $builder->whereIn($column, is_array($value) ? $value : str($value)->replace(["||","|"], ",")->explode(",")->filter()),
+            'not_in',"!in" => $builder->whereNotIn($column, is_array($value) ? $value : str($value)->replace(["||","|"], ",")->explode(",")->filter()),
+
+            'has' => '', //@todo
+            'not_has' => '', //@todo
+
+            default => throw new RuntimeException("Unknown comparison operator {$comparison}"),
+        };
     }
 
 
