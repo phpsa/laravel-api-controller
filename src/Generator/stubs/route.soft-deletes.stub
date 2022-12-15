@@ -1,0 +1,2 @@
+Route::patch('{{route.name}}/restore/{{{modelVariable}}}', [{{route.controller}} , 'restore')]->withTrashed();
+Route::apiresource('{{route.name}}', {{route.controller}});

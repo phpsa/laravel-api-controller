@@ -36,7 +36,6 @@ class UserControllerTest extends TestCase
 
     public function test_user_policy_all_approved()
     {
-      //  factory(User::class, 100)->create();
 
         assertEquals(101, User::count());
 
@@ -58,7 +57,6 @@ class UserControllerTest extends TestCase
 
     public function test_user_policy_not_allowed()
     {
-        //factory(User::class, 100)->create();
 
         $policy = Mockery::mock(UserPolicy::class)->makePartial();
         app()->instance(UserPolicy::class, $policy);
@@ -73,10 +71,6 @@ class UserControllerTest extends TestCase
 
     public function test_filtering()
     {
-        // factory(User::class, 100)->create();
-        // factory(User::class, 100)->create([
-        //     'email' => 'api@laravel.dev'
-        // ]);
 
         assertEquals(1, User::where('email', 'api@laravel.dev')->count());
         $this->actingAs(User::first());
@@ -90,8 +84,6 @@ class UserControllerTest extends TestCase
 
         $response = $this->getJson($url);
 
-    //    dd($response->request);
-
         $response->assertStatus(200);
 
         $json = $response->decodeResponseJson();
@@ -103,16 +95,6 @@ class UserControllerTest extends TestCase
 
     public function test_calls_scopes()
     {
-
-        //scopeHas2Fa
-        // factory(User::class, 100)->create();
-        // factory(User::class, 100)->create([
-        //     'email' => 'api@laravel.dev'
-        // ]);
-        //User::factory(100)->create();
-        // User::factory()->create([
-        //     'email' => 'api@laravel.dev'
-        // ]);
 
         assertEquals(1, User::where('email', 'api@laravel.dev')->count());
 

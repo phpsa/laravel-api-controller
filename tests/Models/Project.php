@@ -2,6 +2,7 @@
 
 namespace Phpsa\LaravelApiController\Tests\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Phpsa\LaravelApiController\Tests\Models\User;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,6 +12,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Project extends Model
 {
+
+    use HasFactory;
+
     protected $table = 'projects';
 
     /**

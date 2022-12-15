@@ -40,7 +40,8 @@
   },
   "scripts": {
     "phpunit": "phpunit",
-    "test": "phpunit"
+    "test": "phpunit",
+    "phpstan": "phpstan"
   },
   "extra": {
     "laravel": {

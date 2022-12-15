@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
+/**
+ * @deprecated will be removed
+ */
 class UriParser
 {
     /**
@@ -144,7 +147,7 @@ class UriParser
             return;
         }
         $operator = $matches[0];
-        [$key, $value] = explode($operator, $parameter);
+        [$key, $value] = explode($operator, $parameter); //@phpstan-ignore-line
 
         $isAnIn = strpos($value, '||');
 

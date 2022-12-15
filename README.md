@@ -32,14 +32,17 @@ php artisan vendor:publish --provider="Phpsa\LaravelApiController\ServiceProvide
 * `artisan make:api:policy {PolicyName} -m {Model}` to generate a policy file
 * `artisan make:api:resource {ResourceName|CollectionName}` to geneate the response resource
 
-
 This will create a Api/ModelNameController for you and you will have the basic routes in place as follows:
 
 - GET `api/v1/{model_name}` - list all/paged/filtered (class::index)
 - GET `api/v1/{model_name}/$id` - Show a specified id (class::show)
 - POST `api/v1/{model_name}` - Insert a new record (class::store)
-- PUT `api/v1/{model_name}/$id` - Update an existing record (class::update)
+- PUT `api/v1/{model_name}/$id` - Replace an existing record (class::update)
+- PATCH `api/v1/{model_name}/$id` - Update an existing record (class::update)
 - DELETE `api/v1/{model_name}/$id` - Delete an existing record (class::destroy)
+
+If you specify `--soft-deletes` option on `make:api:controller` it will also create an additional `restore` controller endpoint & route:
+- PATCH `api/v1/{model_name}/$id` - Restore a soft-deleted record (class::restore). This only works for models with Soft Deletes enabled.
 
 You can override the methods by simply putting in your own methods to override - method names in braces above
 
@@ -94,6 +97,12 @@ in your controller override the following params:
 
 ## Filtering
 
+
+
+
+
+ ### stable option that will be removed once experimental stable
+
 For the get command you can filter by using the following url patterns
 
 | Seperator | Description                                     | Example                | Result                                    |
@@ -132,6 +141,42 @@ public function scopeAgeNull(Builder $builder, $isNull = true){
 ```
 
 Add to your allowedScopes and can then be called in url as `?ageNull=1` for where null and `?ageNull=0` for where age not null
+
+
+
+### Experimental v5 currently
+
+- use the url pattern `filters[column][operator]=value` eg `filters[age][>]=18&filters[title][contains]=testing`
+
+| Seperator | Description                                     | Example                | Result                                    |
+| --------- | ----------------------------------------------- | ---------------------- | ----------------------------------------- |
+| empty / _`=`_ / `is` / `equals`    | Equals                                          | ?filters[field]=hello / ?filters[field][is]=hello  | select ... where field = 'hello'          |
+| _`!=`_ / `!is` / `!equals` / `not_equals`  | Not Equals                                      | ?filter[field][!is]=hello  | select ... where field != 'hello'         |
+| _`>`_ / `greater_than`    | Greater Than                                    | ?filter[field][greater_than]=5      | select ... where field > 5                |
+| _`>=`_ / `greater_than_or_equal_to` / `greater_or_equal`  | Greater Or Equal to                             | ?filter[field][greater_or_equal]=5     | select ... where field >= 5               |
+| _`<`_  / `less_than`   | Less Than                                       | ?filter[field][<]=5      | select ... where field <> 5               |
+| _`<=`_ / `less_than_or_equal_to` / `less_or_equal`  | Less Or Equal to                                | ?filter[field][less_or_equal]=5     | select ... where field <= 5               |
+| _`~`_  / `contains`   | Contains (LIKE with wildcard on both sides)     | ?filter[field][contains]=hello  | select ... where field like '%hello%'     |
+| _`^`_  / `starts_with`   | Starts with (LIKE with wildcard on end)         | ?filter[field][starts_with]=hello  | select ... where field like 'hello%'      |
+| _`$`_  / `ends_with`   | Ends with (LIKE with wildcard on start)         | ?filter[field][ends_with]=hello  | select ... where field like 'hello%'      |
+| _`!~`_ / `!contains` / `not_contains`  | Not Contains (LIKE with wildcard on both sides) | ?filter[field][!contains]=hello | select ... where field not like '%hello%' |
+| _`!^`_ / `!starts_with` / `not_starts_with`   | Not Starts with (LIKE with wildcard on end)     | ?filter[field][!^]=hello | select ... where field not like 'hello%'  |
+| _`!$`_ / `!ends_with` /   `not_ends_with`   | Not Ends with (LIKE with wildcard on start)     | ?filter[field][!$]=hello | select ... where field not like 'hello%'  |
+| `in`   | in    | ?filter[field][in]=1,2,3 | select ... where field in(1,2,3)  |
+| `not_in`  / `!in`  | NOT in    | ?filter[field][in]=1,2,3 | select ... where field not in(1,2,3)  |
+| `has`   | has    | ?filter[field][has] | select ... where exists(field join)  |
+| `not_has`  / `!has`  | NOT has    | ?filter[field][!has] | select ... where not exists (field join)  |
+
+* Null = `filters[age]=NULL` will generate `where age is null`
+
+* Json columns = `filters[meta->seo][is]=enabled` will generate
+```
+where json_unquote(json_extract(`meta\`, '$."seo"')) = 'enabled'
+```
+
+* Relations: `filters[relationName][has]` or `filters[relationName][!has]` or `filters[relation_name][not_has]`
+* Relations filtering `filters[tags][has][slug]=my_slug`
+* Relations `filters[tags]=true` or `filters['tags.slug']=myslug` `filters[tags.slug][!]=myslug` `filters[tags.slug][!][contains]=money`
 
 ## Scopes
 

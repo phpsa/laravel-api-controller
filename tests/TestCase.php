@@ -5,8 +5,8 @@ namespace Phpsa\LaravelApiController\Tests;
 use ReflectionClass;
 use Illuminate\Http\Request;
 use Orchestra\Testbench\TestCase as BaseTestCase;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factory as EloquentFactory;
-use Phpsa\LaravelApiController\ServiceProvider;
 
 class TestCase extends BaseTestCase
 {
@@ -14,6 +14,10 @@ class TestCase extends BaseTestCase
     {
         parent::setUp();
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
+
+        Factory::guessFactoryNamesUsing(function ($class) {
+            return '\\Phpsa\\LaravelApiController\\Tests\Factories\\' . class_basename($class) . 'Factory';
+        });
     }
 
 

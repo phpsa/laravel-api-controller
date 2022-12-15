@@ -1,3 +1,41 @@
+## [5.8.2](https://git.customd.com/composer/laravel-api-controller/compare/v5.8.1...v5.8.2) (2022-12-14)
+
+
+### Bug Fixes
+
+* alternate for where Has notHas ([4043407](https://git.customd.com/composer/laravel-api-controller/commit/4043407c70a6e1fbe554f726673998c5241d5205))
+
+# [5.8.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.7.0...v5.8.0) (2022-12-14)
+
+
+### Bug Fixes
+
+* added has / not_has to filters experimental area ([ab66270](https://git.customd.com/composer/laravel-api-controller/commit/ab662700c9c000ac31a394e97df82745b7dccb92))
+
+
+### Features
+
+* experimental new filtering engine ([1b109df](https://git.customd.com/composer/laravel-api-controller/commit/1b109df4bdee37568418b4b98530efeebb69c3d2))
+
+# [5.8.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.7.0...v5.8.0) (2022-12-14)
+
+
+### Features
+
+* experimental new filtering engine ([1b109df](https://git.customd.com/composer/laravel-api-controller/commit/1b109df4bdee37568418b4b98530efeebb69c3d2))
+
+# [5.7.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.6.0...v5.7.0) (2022-12-05)
+
+
+### Bug Fixes
+
+* **nested:** fixes automatic filtering on hasOne ([d876fc9](https://git.customd.com/composer/laravel-api-controller/commit/d876fc90b7f02685192d48c9aef6f27068bb8449))
+
+
+### Features
+
+* add restore route for soft deletes ([650a66a](https://git.customd.com/composer/laravel-api-controller/commit/650a66a24f11efe8effe7dc82b244ec183c552ec))
+
 ## [5.6.1](https://git.customd.com/composer/laravel-api-controller/compare/v5.6.0...v5.6.1) (2022-10-13)
 
 
