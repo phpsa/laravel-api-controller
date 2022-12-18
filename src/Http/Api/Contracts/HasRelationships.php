@@ -4,6 +4,7 @@ namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Helpers;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 trait HasRelationships
 {
@@ -24,6 +25,9 @@ trait HasRelationships
 
         foreach ($filteredRelateds as $with) {
             $relation = $item->$with();
+            if($relation instanceOf Relation === false){
+                continue;
+            }
             $type = class_basename(get_class($relation));
             $relatedRecords = $data[Helpers::snake($with)];
 
