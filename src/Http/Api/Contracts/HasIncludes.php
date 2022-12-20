@@ -54,11 +54,6 @@ trait HasIncludes
     protected function filterAllowedIncludes(array $includes): array
     {
         return array_filter(Helpers::camelCaseArray($includes), function ($item) {
-            $callable = method_exists($this->model(), $item);
-
-            if (! $callable) {
-                return false;
-            }
 
             //check if in the allowed includes array:
             if (in_array($item, Helpers::camelCaseArray($this->getIncludesWhitelist()))) {
@@ -69,7 +64,9 @@ trait HasIncludes
                 return false;
             }
 
-            return empty($this->getIncludesWhitelist()) && ! Str::startsWith($item, '_');
+            $callable = resolve($this->model())->isRelation($item);
+
+            return $callable && empty($this->getIncludesWhitelist()) && ! Str::startsWith($item, '_');
         });
     }
 

@@ -24,12 +24,27 @@ trait HasRelationships
         $filteredRelateds = $this->filterAllowedIncludes($includes);
 
         foreach ($filteredRelateds as $with) {
-            $relation = $item->$with();
-            if($relation instanceOf Relation === false){
-                continue;
+
+            $relation = resolve($this->model())->$with();
+
+            if ($relation instanceof Relation === false) {
+                if (is_null($relation)) {
+                    throw new LogicException(sprintf(
+                        '%s::%s must return a relationship instance, but "null" was returned. Was the "return" keyword used?', $this->model(), $with
+                    ));
+                }
+
+                throw new LogicException(sprintf(
+                    '%s::%s must return a relationship instance.', $this->model(), $with
+                ));
             }
+
             $type = class_basename(get_class($relation));
             $relatedRecords = $data[Helpers::snake($with)];
+
+            if($relatedRecords === null){
+                continue;
+            }
 
             $this->getBuilder()->with($with);
 
