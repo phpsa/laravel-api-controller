@@ -15,7 +15,7 @@ trait HasQueryBuilder
 
     protected function getBuilder(): Builder
     {
-        return $this->builder ??= resolve($this->model())->newQuery();
+        return $this->builder ??= $this->getNewQuery();
     }
 
     protected function getNewQuery(): Builder
