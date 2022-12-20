@@ -104,7 +104,7 @@ trait HasModel
         $diff = array_diff(array_keys($data), $columns);
 
         foreach ($diff as $key) {
-            if ($model->hasSetMutator($key)) {
+            if ($model->hasSetMutator($key) || $model->hasAttributeSetMutator($key)) {
                 $columns[] = $key;
             }
         }
