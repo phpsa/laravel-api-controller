@@ -5,6 +5,7 @@ namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Helpers;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use LogicException;
 
 trait HasRelationships
 {
