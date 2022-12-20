@@ -178,6 +178,15 @@ where json_unquote(json_extract(`meta\`, '$."seo"')) = 'enabled'
 * Relations filtering `filters[tags][has][slug]=my_slug`
 * Relations `filters[tags]=true` or `filters['tags.slug']=myslug` `filters[tags.slug][!]=myslug` `filters[tags.slug][!][contains]=money`
 
+Enforced scopes / query filters on a controller override the
+```
+protected function getNewQuery(): Builder
+    {
+        return resolve($this->model())->newQuery();
+    }
+```
+method in your controller to include any additional queries / scopes etc.
+
 ## Scopes
 
 In addition to filtering, you can use Laravel's Eloquent [Query Scopes](https://laravel.com/docs/6.x/eloquent#local-scopes) to do more complex searches or filters.
