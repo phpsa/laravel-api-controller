@@ -1,3 +1,10 @@
+## [5.8.4](https://git.customd.com/composer/laravel-api-controller/compare/v5.8.3...v5.8.4) (2022-12-20)
+
+
+### Bug Fixes
+
+* getBuilder should call getNewQuery by default if not set ([da058a9](https://git.customd.com/composer/laravel-api-controller/commit/da058a972b9b132a57fc0db2ee93c38dac50743d))
+
 ## [5.8.3](https://git.customd.com/composer/laravel-api-controller/compare/v5.8.2...v5.8.3) (2022-12-20)
 
 
