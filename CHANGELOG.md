@@ -1,3 +1,10 @@
+## [5.8.3](https://git.customd.com/composer/laravel-api-controller/compare/v5.8.2...v5.8.3) (2022-12-20)
+
+
+### Bug Fixes
+
+* patch ability to call include method on model that is not a relationshiop ([8cdba5c](https://git.customd.com/composer/laravel-api-controller/commit/8cdba5c923384bb252613631c8e9cc1823b96d3c))
+
 ## [5.8.2](https://git.customd.com/composer/laravel-api-controller/compare/v5.8.1...v5.8.2) (2022-12-14)
 
 
