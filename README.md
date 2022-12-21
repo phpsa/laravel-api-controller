@@ -1,5 +1,7 @@
 # Laravel Api Controller
 
+[[_TOC_]]
+
 [![For Laravel 8.7 to 9][badge_laravel]](https://github.com/phpsa/laravel-api-controller/issues)
 [![Build Status](https://api.travis-ci.com/phpsa/laravel-api-controller.svg?branch=master)](https://travis-ci.com/phpsa/laravel-api-controller)
 [![Coverage Status](https://coveralls.io/repos/github/phpsa/laravel-api-controller/badge.svg?branch=master)](https://coveralls.io/github/phpsa/laravel-api-controller?branch=master)
@@ -205,6 +207,27 @@ Given the above `$allowedScopes` array, your API consumers will now be able to r
 ## Filtering on related models
 
 You can easily filter using any related model that is configured for `include`. Simply specify `?filter[model.field]=123` in your query string. The same filter options above apply to related fields.
+
+## Grouped Filtering Scopes
+
+`filter_by_relation_group[a][name]=weight&filter_by_relation_group[a][value][>]=900&filter_by_relation_group[b][name]=color&filter_by_relation_group[b][value]=color`
+
+```
+ public function scopeFilterByRelationGroup(Builder $builder, array $wheres): void
+    {
+        $where =  collect($wheres)->map(fn ($child) =>
+           $this->parseFiltersArray($child)
+        )->each(
+            fn($group, $key) => $builder->whereHas('Relation', function ($subQ) use ($group, $key) {
+                $group->each(
+                    fn($filter, $column) => collect($filter)->each(fn($value, $comparison) => $this->buildQuery($column, $comparison, $value, $subQ))
+                );
+            }
+            )
+        );
+
+    }
+  ```
 
 # Fields, Relationships, Sorting & Pagination
 
