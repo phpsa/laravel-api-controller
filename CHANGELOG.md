@@ -1,3 +1,10 @@
+## [5.9.1](https://git.customd.com/composer/laravel-api-controller/compare/v5.9.0...v5.9.1) (2022-12-21)
+
+
+### Bug Fixes
+
+* morph relation not updated correctly ([8d55c99](https://git.customd.com/composer/laravel-api-controller/commit/8d55c992da547865ad9db25c578c7228f2fc1491))
+
 # [5.9.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.8.4...v5.9.0) (2022-12-21)
 
 
