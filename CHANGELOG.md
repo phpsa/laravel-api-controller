@@ -1,3 +1,10 @@
+# [5.9.0](https://git.customd.com/composer/laravel-api-controller/compare/v5.8.4...v5.9.0) (2022-12-21)
+
+
+### Features
+
+* query parser trait can be used for custom scope ([99b1cfd](https://git.customd.com/composer/laravel-api-controller/commit/99b1cfd4bd7bb7f39402c1eb7f7f51a60bdf546a))
+
 ## [5.8.4](https://git.customd.com/composer/laravel-api-controller/compare/v5.8.3...v5.8.4) (2022-12-20)
 
 
