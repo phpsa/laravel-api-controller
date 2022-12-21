@@ -40,6 +40,10 @@ trait HasRelationships
                 ));
             }
 
+            // We now know that $with is a relation that exists on the model,
+            // so we are safe to … ?
+            $relation = $item->$with();
+
             $type = class_basename(get_class($relation));
             $relatedRecords = $data[Helpers::snake($with)];
 
