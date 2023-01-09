@@ -80,15 +80,15 @@ trait HasRelationships
 
     protected function processHasOneRelation($relation, array $collection, $item, string $with): void
     {
-        $foreignKey = $relation->getForeignKeyName();
-        $localKey = $relation->getLocalKeyName();
-        if (isset($collection[$foreignKey])) {
-            $existanceCheck = [$foreignKey => $collection[$foreignKey]];
-        } else {
-            $collection[$foreignKey] = $item->getAttribute($localKey);
-            $existanceCheck = [$foreignKey => $item->getAttribute($localKey)];
+        $relatedRecord = $relation->firstOrNew();
+
+        if( $relatedRecord->exists() === false){
+            $defaults = $relation->getResults();
+            if($defaults){
+                $relatedRecord->fill($defaults->toArray());
+            }
         }
-        $relation->updateOrCreate($existanceCheck, $collection);
+        $relatedRecord->fill($collection)->save();
     }
 
     protected function processHasRelation($relation, array $relatedRecords, $item, string $with): void
