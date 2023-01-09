@@ -4,6 +4,8 @@ namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Helpers;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use LogicException;
 
@@ -78,17 +80,10 @@ trait HasRelationships
         }
     }
 
-    protected function processHasOneRelation($relation, array $collection, $item, string $with): void
+    protected function processHasOneRelation(HasOne|MorphOne $relation, array $data): void
     {
-        $relatedRecord = $relation->firstOrNew();
-
-        if( $relatedRecord->exists() === false){
-            $defaults = $relation->getResults();
-            if($defaults){
-                $relatedRecord->fill($defaults->toArray());
-            }
-        }
-        $relatedRecord->fill($collection)->save();
+        $relatedRecord = $relation->getResults() ?? $relation->make();
+        $relatedRecord->fill($data)->save();
     }
 
     protected function processHasRelation($relation, array $relatedRecords, $item, string $with): void
