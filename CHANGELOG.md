@@ -1,3 +1,10 @@
+## [5.9.2](https://git.customd.com/composer/laravel-api-controller/compare/v5.9.1...v5.9.2) (2023-01-09)
+
+
+### Bug Fixes
+
+* for new hasOne Relations created, where withDefault is set, use the defaults ([a439e24](https://git.customd.com/composer/laravel-api-controller/commit/a439e24ce984458bc41844f849fccf7b7ca2a6f2))
+
 ## [5.9.1](https://git.customd.com/composer/laravel-api-controller/compare/v5.9.0...v5.9.1) (2022-12-21)
 
 
