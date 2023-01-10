@@ -58,7 +58,7 @@ trait HasRelationships
             switch ($type) {
                 case 'HasOne':
                 case 'MorphOne':
-                    $this->processHasOneRelation($relation, $relatedRecords, $item, $with);
+                    $this->processHasOneRelation($relation, $relatedRecords);
                     break;
                 case 'HasMany':
                 case 'MorphMany':
