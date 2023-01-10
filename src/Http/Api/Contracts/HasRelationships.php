@@ -6,6 +6,8 @@ use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Helpers;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use LogicException;
 
@@ -58,11 +60,11 @@ trait HasRelationships
             switch ($type) {
                 case 'HasOne':
                 case 'MorphOne':
-                    $this->processHasOneRelation($relation, $relatedRecords, $item, $with);
+                    $this->processHasOneRelation($relation, $relatedRecords);
                     break;
                 case 'HasMany':
                 case 'MorphMany':
-                    $this->processHasRelation($relation, $relatedRecords, $item, $with);
+                    $this->processHasRelation($relation, $relatedRecords);
                     break;
                 case 'BelongsTo':
                 case 'MorphTo':
@@ -84,6 +86,22 @@ trait HasRelationships
     {
         $relatedRecord = $relation->getResults() ?? $relation->make();
         $relatedRecord->fill($data)->save();
+    }
+
+    protected function processHasRelation(HasMany|MorphMany $relation, array $relatedRecords): void
+    {
+        $existingRecords = $relation->getResults();
+        $localKey = $relation->getLocalKeyName();
+        collect($relatedRecords)->each(
+            function ($data) use ($existingRecords, $localKey, $relation) {
+                $relatedRecord = null;
+                if (isset($data[$localKey]) && !blank($data[$localKey])) {
+                    $relatedRecord = $existingRecords->firstWhere($localKey, $data[$localKey]);
+                }
+                $relatedRecord ??= $relation->make();
+                $relatedRecord->fill($data)->save();
+            }
+    );
     }
 
     protected function processHasRelation($relation, array $relatedRecords, $item, string $with): void
