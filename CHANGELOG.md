@@ -1,3 +1,10 @@
+## [5.9.4](https://git.customd.com/composer/laravel-api-controller/compare/v5.9.3...v5.9.4) (2023-03-06)
+
+
+### Bug Fixes
+
+* laravel 10 ([27c66cd](https://git.customd.com/composer/laravel-api-controller/commit/27c66cd0e28141bd1cc06325e4718e9aee3985aa))
+
 ## [5.9.3](https://git.customd.com/composer/laravel-api-controller/compare/v5.9.2...v5.9.3) (2023-01-10)
 
 
