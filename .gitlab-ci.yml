@@ -3,6 +3,7 @@ include:
     file: "php-packages.gitlab-ci.yml"
 
 variables:
+  TEST_PHP_8_0: "1"
   TEST_PHP_8_1: "1"
   PHP_IMAGE: "chialab/php-dev"
   PHP_PRIMARY_VERSION: '8.2'
