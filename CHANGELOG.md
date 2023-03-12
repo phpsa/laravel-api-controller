@@ -1,3 +1,10 @@
+## [5.9.6](https://git.customd.com/composer/laravel-api-controller/compare/v5.9.5...v5.9.6) (2023-03-12)
+
+
+### Bug Fixes
+
+* restores support for PHP 8.0 ([e5df3b6](https://git.customd.com/composer/laravel-api-controller/commit/e5df3b699a4a4c1c77a0390788b61c2d27521672))
+
 ## [5.9.5](https://git.customd.com/composer/laravel-api-controller/compare/v5.9.4...v5.9.5) (2023-03-12)
 
 
