@@ -88,11 +88,11 @@ trait AllowableFields
             ? $this->resource[$field]
             : $this->resource->getAttribute($field)
         )->setFieldKey(
-            Str::of(Helpers::snake($field ) .  ".")
+            (string) Str::of(Helpers::snake($field ) .  ".")
                 ->when(
                     $this->fieldKey,
                     fn($str) => $str->prepend("{$this->fieldKey}")
-                )->toString()
+                )
             );
 
         }
