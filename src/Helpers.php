@@ -134,14 +134,14 @@ class Helpers
         )->when(
             $fieldKey !== null,
             fn($collection) => $collection->map(
-                fn($str) => Str::of($str)->replace($fieldKey, "")->toString()
+                fn($str) => (string) Str::of($str)->replace($fieldKey, "")
             )
         )->toArray();
     }
 
     protected static function fetchRequestFieldValues($request, string $field, ?string $fieldKey = null): ?array
     {
-        if(!$request->has($field)){
+        if (! $request->has($field)) {
             return null;
         }
         return self::filterExtraFields(explode(",", $request->input($field)), $fieldKey);
