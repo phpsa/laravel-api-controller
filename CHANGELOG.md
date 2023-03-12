@@ -1,3 +1,10 @@
+## [5.9.5](https://git.customd.com/composer/laravel-api-controller/compare/v5.9.4...v5.9.5) (2023-03-12)
+
+
+### Bug Fixes
+
+* **lara8:** changes invalid toString() calls on Stringable objects, to string casts. ([8862c57](https://git.customd.com/composer/laravel-api-controller/commit/8862c5730b75e6866d791cb09fb9d79817cecc8b))
+
 ## [5.9.4](https://git.customd.com/composer/laravel-api-controller/compare/v5.9.3...v5.9.4) (2023-03-06)
 
 
