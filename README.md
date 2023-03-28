@@ -189,6 +189,24 @@ protected function getNewQuery(): Builder
 ```
 method in your controller to include any additional queries / scopes etc.
 
+## Requests
+
+We have added a request macro to enable you to set these on your request as needed:
+
+eg:
+```php
+    public function index(Request $request)
+    {
+
+        $request->apiFilter('user_id', auth()->id());
+        $request->apiFilter('owner_id', 'not_equals', auth()->id());
+        $request->apiFilter('age', '>=', 5);
+        $request->apiFilter('age', '<=', 10);
+
+```
+
+method is `apiFilter($column, $value)` or `apiFilter($column, $operator, $value)`
+
 ## Scopes
 
 In addition to filtering, you can use Laravel's Eloquent [Query Scopes](https://laravel.com/docs/6.x/eloquent#local-scopes) to do more complex searches or filters.
