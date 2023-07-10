@@ -168,14 +168,13 @@ trait HasParser
                 continue;
             }
 
-            $withConnection = $relation->getRelated()->getConnection()->getDatabaseName();
+            $this->getBuilder()->orderBy(
+                $relation->getRelated()->select($key)
+                    ->whereColumn(
+                        $relation->getRelated()->qualifyColumn($foreignKey),
+                        $this->getBuilder()->qualifyColumn($localKey),
+                    )->orderBy($key)->limit(1), $sortD);
 
-            $withTable = $relation->getRelated()->getTable();
-
-            $withTableName = strpos($withTable, '.') === false ? $withConnection . '.' . $withTable : $withTable;
-
-            $this->getBuilder()->leftJoin($withTableName, "{$withTableName}.{$foreignKey}", "{$currentTable}.{$localKey}");
-            $this->getBuilder()->orderBy("{$withTableName}.{$key}", $sortD);
         }
     }
 
