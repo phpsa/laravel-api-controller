@@ -4,7 +4,6 @@ include:
 
 variables:
   TEST_PHP_8_1: "1"
-  PHP_IMAGE: "chialab/php-dev"
   PHP_PRIMARY_VERSION: '8.2'
 
 test:codecoverage:
