@@ -2,7 +2,7 @@
 
 [[_TOC_]]
 
-[![For Laravel 8.7 to 9][badge_laravel]](https://github.com/phpsa/laravel-api-controller/issues)
+[![For Laravel 9 to 10][badge_laravel]](https://github.com/phpsa/laravel-api-controller/issues)
 [![Build Status](https://api.travis-ci.com/phpsa/laravel-api-controller.svg?branch=master)](https://travis-ci.com/phpsa/laravel-api-controller)
 [![Coverage Status](https://coveralls.io/repos/github/phpsa/laravel-api-controller/badge.svg?branch=master)](https://coveralls.io/github/phpsa/laravel-api-controller?branch=master)
 [![Packagist](https://img.shields.io/packagist/v/phpsa/laravel-api-controller.svg)](https://packagist.org/packages/phpsa/laravel-api-controller)
@@ -188,6 +188,24 @@ protected function getNewQuery(): Builder
     }
 ```
 method in your controller to include any additional queries / scopes etc.
+
+## Requests
+
+We have added a request macro to enable you to set these on your request as needed:
+
+eg:
+```php
+    public function index(Request $request)
+    {
+
+        $request->apiFilter('user_id', auth()->id());
+        $request->apiFilter('owner_id', 'not_equals', auth()->id());
+        $request->apiFilter('age', '>=', 5);
+        $request->apiFilter('age', '<=', 10);
+
+```
+
+method is `apiFilter($column, $value)` or `apiFilter($column, $operator, $value)`
 
 ## Scopes
 

@@ -120,7 +120,7 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
         if ($this->option('parent')) {
             $stub = 'controller.nested.api.stub';
         }
-        if($this->option('soft-deletes')) {
+        if ($this->option('soft-deletes')) {
             $stub = 'controller.api.soft-deletes.stub';
         }
 
@@ -205,5 +205,17 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
         fwrite($fileResource, implode('', $lines));
         fclose($fileResource);
         $this->info('Routes added successfully.');
+    }
+
+    /**
+     * Get the console command options.
+     *
+     * @return array
+     */
+    protected function getOptions()
+    {
+        $options = parent::getOptions();
+        $options[] =  ['soft-deletes', null, InputOption::VALUE_NONE, 'Enable Soft Deletes'];
+        return $options;
     }
 }

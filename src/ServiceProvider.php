@@ -8,6 +8,7 @@ use Phpsa\LaravelApiController\Generator\ApiModelMakeCommand;
 use Phpsa\LaravelApiController\Generator\ApiPolicyMakeCommand;
 use Phpsa\LaravelApiController\Generator\ApiResourceMakeCommand;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Http\Request;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -19,6 +20,7 @@ class ServiceProvider extends BaseServiceProvider
             self::CONFIG_PATH => config_path('laravel-api-controller.php'),
         ], 'config');
         $this->addDbMacros();
+        $this->addRequestMacros();
     }
 
     public function register()
@@ -71,6 +73,23 @@ class ServiceProvider extends BaseServiceProvider
             $result->setCollection($collection);
 
             return $result;
+        });
+    }
+
+    protected function addRequestMacros(): void
+    {
+          /** @macro \Illuminate\Http\Request */
+        Request::macro('apiFilter', function (string $column, $operator, $value = null) {
+            /** @var Request $this */
+            [$value, $operator] =  func_num_args() === 2 ? [$operator, '='] : [$value, $operator];
+
+            $filters = $this->input('filters', []);
+            $filters[$column] ??= [];
+            $filters[$column][$operator] = $value;
+
+            return $this->merge([
+                'filters' => $filters,
+            ]);
         });
     }
 }
