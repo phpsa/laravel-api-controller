@@ -62,7 +62,7 @@ trait HasRelationships
             switch ($type) {
                 case 'HasOne':
                 case 'MorphOne':
-                case 'HasOneThrough'
+                case 'HasOneThrough':
                     $this->processHasOneRelation($relation, $relatedRecords);
                     break;
                 case 'HasMany':
@@ -105,28 +105,9 @@ trait HasRelationships
                 $relatedRecord ??= $relation->make();
                 $relatedRecord->fill($data)->save();
             }
-    );
+        );
     }
 
-    protected function processHasRelation($relation, array $relatedRecords, $item, string $with): void
-    {
-        $localKey = $relation->getLocalKeyName();
-        $foreignKey = $relation->getForeignKeyName();
-
-        foreach ($relatedRecords as $relatedRecord) {
-            $model = $relation->getRelated();
-
-            $relatedRecord[$foreignKey] = $item->getAttribute($localKey);
-
-            if (isset($relatedRecord[$localKey])) {
-                $existanceCheck = [$localKey => $relatedRecord[$localKey]];
-
-                $item->{$with}()->updateOrCreate($existanceCheck, $relatedRecord);
-            } else {
-                $item->{$with}()->create($relatedRecord);
-            }
-        }
-    }
 
     protected function processBelongsToRelation($relation, $relatedRecord, $item, array $data): void
     {
