@@ -23,9 +23,9 @@ class ApiResource extends JsonResource
      * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return array
+     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
-    public function toArray($request)
+    public function toArray(Request $request)
     {
         $data = $this->onlyAllowed($request);
         return $this->caseFormat($request, $data);

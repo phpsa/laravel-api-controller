@@ -21,13 +21,13 @@ class ApiCollection extends ResourceCollection
         return $this;
     }
 
-     /**
+    /**
      * Transform the resource into a JSON array.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
-    public function toArray($request)
+    public function toArray(Request $request)
     {
         return $this->collection->map(
             fn($item) => $item->setFieldKey($this->fieldKey)->toArray($request)
