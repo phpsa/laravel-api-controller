@@ -5,6 +5,7 @@ namespace Phpsa\LaravelApiController\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Phpsa\LaravelApiController\Http\Resources\Contracts\AllowableFields;
 use Phpsa\LaravelApiController\Http\Resources\Contracts\CaseFormat;
+use Illuminate\Http\Request;
 
 class ApiResource extends JsonResource
 {

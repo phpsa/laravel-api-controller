@@ -4,6 +4,7 @@ namespace Phpsa\LaravelApiController\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 class ApiCollection extends ResourceCollection
 {
