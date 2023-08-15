@@ -1,3 +1,10 @@
+## [7.0.2](https://git.customd.com/composer/laravel-api-controller/compare/v7.0.1...v7.0.2) (2023-08-15)
+
+
+### Bug Fixes
+
+* load is slow on larger data-sets, unsetting and reloading the relationship manually is a lot faster. ([afae9c6](https://git.customd.com/composer/laravel-api-controller/commit/afae9c69941438d4ca723a7fca88255e1aea4204))
+
 ## [5.9.4](https://git.customd.com/composer/laravel-api-controller/compare/v5.9.3...v5.9.4) (2023-03-06)
 
 
