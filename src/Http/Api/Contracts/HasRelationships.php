@@ -76,7 +76,8 @@ trait HasRelationships
                     throw new ApiException("$type mapping not implemented yet");
                 break;
             }
-            $item->load($with);
+            $item->wasRecentlyCreated = true;
+            $item->unsetRelation($with)->getRelationValue($with);
         }
     }
 
