@@ -207,6 +207,8 @@ eg:
 
 method is `apiFilter($column, $value)` or `apiFilter($column, $operator, $value)`
 
+in your controller, if we generally use request->all for the filling of models, should you wish to use a more strict option ,  you can opt into using validated values only by calling `$this->setOnlyValidated()` in your controller.
+
 ## Scopes
 
 In addition to filtering, you can use Laravel's Eloquent [Query Scopes](https://laravel.com/docs/6.x/eloquent#local-scopes) to do more complex searches or filters.
