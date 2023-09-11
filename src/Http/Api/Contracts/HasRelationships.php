@@ -6,6 +6,7 @@ use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Phpsa\LaravelApiController\Helpers;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use LogicException;
 
@@ -58,6 +59,7 @@ trait HasRelationships
             switch ($type) {
                 case 'HasOne':
                 case 'MorphOne':
+                case 'HasOneThrough'
                     $this->processHasOneRelation($relation, $relatedRecords);
                     break;
                 case 'HasMany':
@@ -76,11 +78,12 @@ trait HasRelationships
                     throw new ApiException("$type mapping not implemented yet");
                 break;
             }
-            $item->load($with);
+            $item->wasRecentlyCreated = true;
+            $item->unsetRelation($with)->getRelationValue($with);
         }
     }
 
-    protected function processHasOneRelation(HasOne|MorphOne $relation, array $data): void
+    protected function processHasOneRelation(HasOne|MorphOne|HasOneThrough $relation, array $data): void
     {
         $relatedRecord = $relation->getResults() ?? $relation->make();
         $relatedRecord->fill($data)->save();
