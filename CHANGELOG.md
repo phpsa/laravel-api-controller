@@ -1,3 +1,17 @@
+# [7.1.0](https://git.customd.com/composer/laravel-api-controller/compare/v7.0.1...v7.1.0) (2023-10-31)
+
+
+### Bug Fixes
+
+* load is slow on larger data-sets, unsetting and reloading the relationship manually is a lot faster. ([afae9c6](https://git.customd.com/composer/laravel-api-controller/commit/afae9c69941438d4ca723a7fca88255e1aea4204))
+
+
+### Features
+
+* add apiAddFields method ([cd10f4a](https://git.customd.com/composer/laravel-api-controller/commit/cd10f4ae7d27835ec673db0d82e3947041e4a2c4))
+* add request macro to force include relations ([96d0af0](https://git.customd.com/composer/laravel-api-controller/commit/96d0af09135b61435dde2b9f85e0aae9f54fe02d))
+* allow setting only validated ([e2958b8](https://git.customd.com/composer/laravel-api-controller/commit/e2958b899b241b1d44eac642f6bf2d4e99acf30d))
+
 ## [7.0.2](https://git.customd.com/composer/laravel-api-controller/compare/v7.0.1...v7.0.2) (2023-08-15)
 
 
