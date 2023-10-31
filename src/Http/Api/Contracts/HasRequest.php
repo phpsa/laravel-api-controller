@@ -2,6 +2,9 @@
 
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
+use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Illuminate\Http\Request;
+
 trait HasRequest
 {
 

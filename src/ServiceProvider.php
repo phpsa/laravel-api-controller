@@ -91,5 +91,21 @@ class ServiceProvider extends BaseServiceProvider
                 'filters' => $filters,
             ]);
         });
+
+        Request::macro('apiInclude', function (string|array $relations) {
+            /** @var Request $this */
+
+            $field = config('laravel-api-controller.parameters.include', 'include');
+
+            $relations = (array) $relations;
+
+            $existing = $this->input($field,'');
+            $includes = explode(',', $existing);
+
+
+            return $this->merge([
+                $field => implode(",", array_filter([...$includes, ...$relations], fn($val) => filled($val))),
+            ]);
+        });
     }
 }

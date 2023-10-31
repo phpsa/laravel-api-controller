@@ -202,10 +202,15 @@ eg:
         $request->apiFilter('owner_id', 'not_equals', auth()->id());
         $request->apiFilter('age', '>=', 5);
         $request->apiFilter('age', '<=', 10);
+        $request->apiInclude(['owner','user']);
 
 ```
 
-method is `apiFilter($column, $value)` or `apiFilter($column, $operator, $value)`
+* filter method is `apiFilter($column, $value)` or `apiFilter($column, $operator, $value)`
+* include method is `apiInclude(array|string $relations)
+
+
+
 
 in your controller, if we generally use request->all for the filling of models, should you wish to use a more strict option ,  you can opt into using validated values only by calling `$this->setOnlyValidated()` in your controller.
 

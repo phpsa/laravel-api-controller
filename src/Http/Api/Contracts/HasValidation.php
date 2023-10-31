@@ -2,7 +2,7 @@
 
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
-use Illuminate\Http\Request;
+
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 
 
