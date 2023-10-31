@@ -10,6 +10,7 @@ use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasModel;
+use Phpsa\LaravelApiController\Http\Api\Contracts\HasRequest;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasEvents;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasParser;
 use Phpsa\LaravelApiController\Http\Api\Contracts\HasIncludes;
@@ -36,6 +37,7 @@ abstract class Controller extends BaseController
     use HasRelationships;
     use HasIncludes;
     use HasEvents;
+    use HasRequest;
 
     /**
      * Set the default sorting for queries.
@@ -129,7 +131,7 @@ abstract class Controller extends BaseController
 
         $this->validate($this->request, $this->rulesForCreate());
 
-        $data = $this->qualifyStoreQuery($this->request->all());
+        $data = $this->qualifyStoreQuery($this->getRequestArray());
 
         $insert = $this->addTableData($data);
 
@@ -207,7 +209,7 @@ abstract class Controller extends BaseController
 
         $this->validate($this->request, $this->rulesForUpdate($item->getKey()));
 
-        $data = $this->qualifyUpdateQuery($this->request->all());
+        $data = $this->qualifyUpdateQuery($this->getRequestArray());
 
         $updates = $this->addTableData($data);
 

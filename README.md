@@ -202,10 +202,19 @@ eg:
         $request->apiFilter('owner_id', 'not_equals', auth()->id());
         $request->apiFilter('age', '>=', 5);
         $request->apiFilter('age', '<=', 10);
+        $request->apiInclude(['owner','user']);
+        $request->apiAddFields(['x','y','z']);
 
 ```
 
-method is `apiFilter($column, $value)` or `apiFilter($column, $operator, $value)`
+* filter method is `apiFilter($column, $value)` or `apiFilter($column, $operator, $value)`
+* addfields method is `apiAddFields(array|string $fieldsOrAttributesToInclude)`
+* include method is `apiInclude(array|string $relations)`
+
+
+
+
+In your controller, we generally use `request->all()` for the filling of models. Should you wish to use a more strict option, you can opt into using validated values only by calling `$this->setOnlyValidated()` in your controller which will then use the `request->validated()` to get the data (Note: this means it will not take any merged information from postValidation).
 
 ## Scopes
 
