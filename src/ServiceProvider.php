@@ -95,16 +95,38 @@ class ServiceProvider extends BaseServiceProvider
         Request::macro('apiInclude', function (string|array $relations) {
             /** @var Request $this */
 
-            $field = config('laravel-api-controller.parameters.include', 'include');
+            $requestField = config('laravel-api-controller.parameters.include', 'include');
 
             $relations = (array) $relations;
 
-            $existing = $this->input($field,'');
+            $existing = $this->input($requestField,'');
             $includes = explode(',', $existing);
 
 
             return $this->merge([
-                $field => implode(",", array_filter([...$includes, ...$relations], fn($val) => filled($val))),
+                $requestField => implode(",", array_filter([...$includes, ...$relations], fn($val) => filled($val))),
+            ]);
+        });
+
+        Request::macro('apiAddFields', function (string|array $fieldsOrAttributes) {
+            /** @var Request $this */
+
+            $requestField = config('laravel-api-controller.parameters.addfields', 'addfields');
+
+            $fields = (array) $fieldsOrAttributes;
+
+            $existingAddFields = $this->input($requestField,'');
+            $existingAddFieldsArray = explode(',', $existingAddFields);
+
+
+            return $this->merge([
+                $requestField => implode(
+                    ",", 
+                    array_filter(
+                        [...$existingAddFieldsArray, ...$fields], 
+                        fn($val) => filled($val)
+                        )
+                    ),
             ]);
         });
     }
