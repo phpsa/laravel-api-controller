@@ -3,6 +3,7 @@
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Phpsa\LaravelApiController\Exceptions\ApiException;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 
 trait HasRequest
@@ -40,7 +41,7 @@ trait HasRequest
 
     protected function getRequestArray(): array
     {
-        return $this->onlyValidated ? $this->request->validated() : $this->request->all();
+        return $this->onlyValidated && is_a($this->request, FormRequest::class) ? $this->request->validated() : $this->request->all();
     }
 
     protected function setOnlyValidated(bool $option = true): self
