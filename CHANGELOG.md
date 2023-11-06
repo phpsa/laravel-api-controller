@@ -1,3 +1,10 @@
+## [7.1.1](https://git.customd.com/composer/laravel-api-controller/compare/v7.1.0...v7.1.1) (2023-11-06)
+
+
+### Bug Fixes
+
+* nested relations with camel cased methods ([9050b9a](https://git.customd.com/composer/laravel-api-controller/commit/9050b9ab8a34df87814944303e0193d7df835dcd))
+
 # [7.1.0](https://git.customd.com/composer/laravel-api-controller/compare/v7.0.1...v7.1.0) (2023-10-31)
 
 
