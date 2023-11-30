@@ -148,17 +148,18 @@ trait HasRelationships
         $sync = collect();
 
         foreach ($relatedRecords as $relatedRecord) {
+            $relatedRecordData = collect($relatedRecord)->except($pivots)->toArray();
             if (! isset($relatedRecord[$parentKey])) {
                 $relatedRecord[$parentKey] = $item->getAttribute($relatedKey);
             }
             if ($relatedRecord[$parentKey]) {
                 $existanceCheck = [$parentKey => $relatedRecord[$parentKey]];
-                $record = $model->updateOrCreate($existanceCheck, $relatedRecord);
+                $record = $model->updateOrCreate($existanceCheck, $relatedRecordData);
             } elseif (isset($data[$relatedKey])) {
                 $existanceCheck = [$parentKey => $data[$relatedKey]];
-                $record = $model->updateOrCreate($existanceCheck, $relatedRecord);
+                $record = $model->updateOrCreate($existanceCheck, $relatedRecordData);
             } else {
-                $record = $model->create($relatedRecord);
+                $record = $model->create($relatedRecordData);
             }
 
             $pvals = [];
