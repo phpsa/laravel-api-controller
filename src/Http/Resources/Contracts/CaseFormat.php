@@ -8,7 +8,7 @@ trait CaseFormat
 {
     protected function caseFormat($request, $data)
     {
-        switch (strtolower($request->header('X-Accept-Case-Type'))) {
+        switch (strtolower((string)$request->header('X-Accept-Case-Type'))) {
             case 'camel':
             case 'camel-case':
                 return Helpers::camelCaseArrayKeys($data);
