@@ -54,5 +54,3 @@ tooling:
       - rm -rf vendor composer.lock && composer install
       - composer phpunit
       - composer phpstan
-
-

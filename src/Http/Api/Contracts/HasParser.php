@@ -78,14 +78,14 @@ trait HasParser
         $relationName = Str::camel($param);
         $relation = $child->{$relationName}();
 
-        if (!$routeRelation instanceof Model) {
+        if (! $routeRelation instanceof Model) {
             $bindingField = $this->request->route()->bindingFieldFor($param) ?? $relation->getRelated()->getKeyName();
             $routeRelation = $relation->getRelated()->where($bindingField, $routeRelation)->firstOrFail();
         }
 
         $parentPolicy = Gate::getPolicyFor($routeRelation);
 
-        if (!is_null($parentPolicy)) {
+        if (! is_null($parentPolicy)) {
             $this->authorize('view', $routeRelation);
         }
 
@@ -95,7 +95,6 @@ trait HasParser
             default => $relation->getForeignKeyName(),
         };
 
-
         if ($this->request->isMethod('get') || $this->request->isMethod('options')) {
             return [
                 'filter' => [
@@ -103,7 +102,6 @@ trait HasParser
                 ]
             ];
         }
-
 
         if ($this->request->isMethod('post') || $this->request->isMethod('put') || $this->request->isMethod('patch')) {
             return [
@@ -126,7 +124,7 @@ trait HasParser
         foreach ($sorts as $sort) {
             $sortP = explode(' ', $sort);
             $sortF = $sortP[0];
-            $sortD = !empty($sortP[1]) && strtolower($sortP[1]) === 'desc' ? 'desc' : 'asc';
+            $sortD = ! empty($sortP[1]) && strtolower($sortP[1]) === 'desc' ? 'desc' : 'asc';
 
             if (strpos($sortF, '.') > 0) {
                 $withSorts[$sortF] = $sortD;
@@ -135,7 +133,7 @@ trait HasParser
             /** @scrutinizer ignore-call */
             $tableColumns = $this->getTableColumns();
 
-            if (empty($sortF) || !in_array($sortF, $tableColumns)) {
+            if (empty($sortF) || ! in_array($sortF, $tableColumns)) {
                 continue;
             }
 
@@ -193,7 +191,7 @@ trait HasParser
         $sortField = config('laravel-api-controller.parameters.sort');
         $sort = $this->request->has($sortField) ? $this->request->input($sortField) : $this->defaultSort;
 
-        if (!$sort) {
+        if (! $sort) {
             return [];
         }
 
@@ -224,7 +222,7 @@ trait HasParser
                 /** @scrutinizer ignore-call */
                 setWhereHasClause($whr);
                 continue;
-            } elseif (!in_array($whr['key'], $tableColumns)) {
+            } elseif (! in_array($whr['key'], $tableColumns)) {
                 continue;
             }
             $this->
@@ -249,14 +247,15 @@ trait HasParser
     protected function parseFieldParams(): array
     {
         $default = $this->getDefaultFields();
-        if ($default !== ['*']) {
-            $default = array_merge($default, $this->getAlwaysSelectFields());
-        }
 
         $fields = Helpers::filterFieldsFromRequest(
             $this->request,
             $default
         );
+
+        if (! in_array('*', $fields) && ! empty($this->getAlwaysSelectFields())) {
+            $fields = array_merge($fields, $this->getAlwaysSelectFields());
+        }
 
         $tableColumns = $this->getTableColumns();
         foreach ($fields as $key => $field) {
@@ -279,7 +278,7 @@ trait HasParser
         $limitField = config('laravel-api-controller.parameters.limit') ?? 'limit';
         $limit = $this->request->has($limitField) ? intval($this->request->input($limitField)) : $this->getDefaultLimit();
 
-        if ($this->maximumLimit && ($limit > $this->maximumLimit || !$limit)) {
+        if ($this->maximumLimit && ($limit > $this->maximumLimit || ! $limit)) {
             $limit = $this->maximumLimit;
         }
 
