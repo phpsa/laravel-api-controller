@@ -1,3 +1,13 @@
+## [7.1.3](https://git.customd.com/composer/laravel-api-controller/compare/v7.1.2...v7.1.3) (2024-01-15)
+
+
+### Bug Fixes
+
+* add deprecation for inline validation - should use formRquests instead ([1d192e5](https://git.customd.com/composer/laravel-api-controller/commit/1d192e5af0dbc75fc292584d74560545367a1ca6))
+* added studly case response option ([1eef478](https://git.customd.com/composer/laravel-api-controller/commit/1eef478837c42aa1d1eb4fa8d507f6c844d89ddd))
+* should use a new query for each batch updated record ([#115](https://git.customd.com/composer/laravel-api-controller/issues/115)) ([61027b3](https://git.customd.com/composer/laravel-api-controller/commit/61027b34444a1c61e92407ba50e44fc6f4519a6f))
+* tidy batch actions ([2c4271f](https://git.customd.com/composer/laravel-api-controller/commit/2c4271fe1fda809b71f8c03f40a4b5e6432984cb))
+
 ## [7.1.1](https://git.customd.com/composer/laravel-api-controller/compare/v7.1.0...v7.1.1) (2023-11-06)
 
 
