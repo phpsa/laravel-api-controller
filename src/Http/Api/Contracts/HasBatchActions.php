@@ -14,7 +14,7 @@ trait HasBatchActions
 
     public function getBatchData(): Collection
     {
-        return collect($this->request->get('data', []));
+        return collect($this->getRequestArray()['data'] ?? []);
     }
 
     /**
@@ -106,7 +106,7 @@ trait HasBatchActions
             $key = $this->getModel()->getKeyName();
 
             $id = $item[$key];
-            $existing = $this->getBuilder()->where($key, $id)->firstOrFail();
+            $existing = $this->getNewQuery()->where($key, $id)->firstOrFail();
             $this->authoriseUserAction('update', $existing);
 
             $data = $this->qualifyUpdateQuery($item);
