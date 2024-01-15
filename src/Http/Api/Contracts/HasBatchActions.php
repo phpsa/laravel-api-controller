@@ -12,6 +12,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Phpsa\LaravelApiController\Http\Resources\ApiResource;
+use Illuminate\Http\JsonResponse;
 
 trait HasBatchActions
 {
@@ -26,7 +27,7 @@ trait HasBatchActions
         return collect($this->getRequestArray()[$this->getBatchKey()] ?? []);
     }
 
-    public function handleBatchStoreAction(?Request $request, array $extraParams = []): ResourceCollection|JsonResource
+    public function handleBatchStoreAction(?Request $request, array $extraParams = []): JsonResponse
     {
         $this->validateRequestType($request);
         $this->addCustomParams($extraParams);
@@ -69,7 +70,7 @@ trait HasBatchActions
         });
     }
 
-    public function handleBatchUpdateAction(?Request $request, array $extraParams = []): ResourceCollection|JsonResource
+    public function handleBatchUpdateAction(?Request $request, array $extraParams = []): JsonResponse
     {
         $this->validateRequestType($request);
         $this->addCustomParams($extraParams);
@@ -125,7 +126,7 @@ trait HasBatchActions
     }
 
 
-    public function handleBatchStoreOrUpdateAction(?Request $request = null, array $extraParams = []): ResourceCollection|JsonResource
+    public function handleBatchStoreOrUpdateAction(?Request $request = null, array $extraParams = []): JsonResponse
     {
         $this->validateRequestType($request);
         $this->addCustomParams($extraParams);
@@ -161,17 +162,17 @@ trait HasBatchActions
     }
 
 
-    protected function handleBatchStoreResponse(Collection $items): ResourceCollection|JsonResource
+    protected function handleBatchStoreResponse(Collection $items): JsonResponse
     {
         return $this->respondWithResource($this->getResourceCollection(), $items, 201);
     }
 
-    protected function handleBatchUpdateResponse(Collection $items): ResourceCollection|JsonResource
+    protected function handleBatchUpdateResponse(Collection $items): JsonResponse
     {
         return $this->respondWithResource($this->getResourceCollection(), $items, 200);
     }
 
-    protected function handleBatchStoreOrUpdateResponse(Collection $items): ResourceCollection|JsonResource
+    protected function handleBatchStoreOrUpdateResponse(Collection $items): JsonResponse
     {
         return $this->respondWithResource($this->getResourceCollection(), $items, 200);
     }
