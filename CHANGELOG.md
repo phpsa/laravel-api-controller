@@ -1,3 +1,10 @@
+## [7.1.6](https://git.customd.com/composer/laravel-api-controller/compare/v7.1.5...v7.1.6) (2024-01-15)
+
+
+### Bug Fixes
+
+* resource always select should always be selected in controller even if removed via removefields in querystring ([22743b2](https://git.customd.com/composer/laravel-api-controller/commit/22743b227ba8c49bbd70225391dac943594aa43f))
+
 ## [7.1.3](https://git.customd.com/composer/laravel-api-controller/compare/v7.1.2...v7.1.3) (2024-01-15)
 
 
