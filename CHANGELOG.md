@@ -1,3 +1,10 @@
+## [7.1.3](https://git.customd.com/composer/laravel-api-controller/compare/v7.1.2...v7.1.3) (2024-01-15)
+
+
+### Bug Fixes
+
+* added studly case response option ([1eef478](https://git.customd.com/composer/laravel-api-controller/commit/1eef478837c42aa1d1eb4fa8d507f6c844d89ddd))
+
 ## [7.1.1](https://git.customd.com/composer/laravel-api-controller/compare/v7.1.0...v7.1.1) (2023-11-06)
 
 
