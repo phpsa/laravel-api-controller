@@ -2,28 +2,31 @@
 
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Phpsa\LaravelApiController\Events\Created;
 use Phpsa\LaravelApiController\Events\Updated;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Phpsa\LaravelApiController\Http\Resources\ApiResource;
 
 trait HasBatchActions
 {
 
-    public function getBatchData(): Collection
+    protected function getBatchKey(): string
     {
-        return collect($this->getRequestArray()['data'] ?? []);
+        return isset($this->batchKey) ? $this->batchKey : 'data';
     }
 
-    /**
-     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
-     * @param array $extraParams
-     *
-     * @return mixed
-     */
-    public function handleBatchStoreAction($request, array $extraParams = [])
+    public function getBatchData(): Collection
+    {
+        return collect($this->getRequestArray()[$this->getBatchKey()] ?? []);
+    }
+
+    public function handleBatchStoreAction(?Request $request, array $extraParams = []): ResourceCollection|JsonResource
     {
         $this->validateRequestType($request);
         $this->addCustomParams($extraParams);
@@ -66,12 +69,7 @@ trait HasBatchActions
         });
     }
 
-    /**
-     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
-     *
-     * @return mixed
-     */
-    public function handleBatchUpdateAction($request, array $extraParams = [])
+    public function handleBatchUpdateAction(?Request $request, array $extraParams = []): ResourceCollection|JsonResource
     {
         $this->validateRequestType($request);
         $this->addCustomParams($extraParams);
@@ -127,12 +125,7 @@ trait HasBatchActions
     }
 
 
-      /**
-     * @param \Illuminate\Http\Request|\Illuminate\Foundation\Http\FormRequest $request
-     *
-     * @return mixed
-     */
-    public function handleBatchStoreOrUpdateAction($request, array $extraParams = [])
+    public function handleBatchStoreOrUpdateAction(?Request $request = null, array $extraParams = []): ResourceCollection|JsonResource
     {
         $this->validateRequestType($request);
         $this->addCustomParams($extraParams);
@@ -168,27 +161,17 @@ trait HasBatchActions
     }
 
 
-
-    /**
-     * @return mixed Response|jsonResponse
-     */
-    protected function handleBatchStoreResponse(Collection $items)
+    protected function handleBatchStoreResponse(Collection $items): ResourceCollection|JsonResource
     {
-        return $this->respondWithResource($this->/** @scrutinizer ignore-call */getResourceCollection(), $items, 201);
+        return $this->respondWithResource($this->getResourceCollection(), $items, 201);
     }
 
-    /**
-     * @return mixed Response|jsonResponse
-     */
-    protected function handleBatchUpdateResponse(Collection $items)
+    protected function handleBatchUpdateResponse(Collection $items): ResourceCollection|JsonResource
     {
-        return $this->respondWithResource($this->/** @scrutinizer ignore-call */getResourceCollection(), $items, 200);
+        return $this->respondWithResource($this->getResourceCollection(), $items, 200);
     }
 
-    /**
-     * @return mixed Response|jsonResponse
-     */
-    protected function handleBatchStoreOrUpdateResponse(Collection $items)
+    protected function handleBatchStoreOrUpdateResponse(Collection $items): ResourceCollection|JsonResource
     {
         return $this->respondWithResource($this->getResourceCollection(), $items, 200);
     }
