@@ -193,11 +193,17 @@ trait HasBatchActions
         return $this->respondWithResource($this->getResourceCollection(), $items, 200);
     }
 
+    /**
+     * @deprecated use your FormRequest instead
+     */
     protected function rulesForBatchCreate(): array
     {
         return [];
     }
 
+    /**
+     * @deprecated use your FormRequest instead
+     */
     protected function rulesForBatchUpdate(): array
     {
         return [];

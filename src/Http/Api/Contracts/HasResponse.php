@@ -30,7 +30,7 @@ trait HasResponse
      */
     protected function respondWithOne($item, ?int $code = null, array $headers = [])
     {
-        return $this->respondWithResource($this->/** @scrutinizer ignore-call */getResourceSingle(), $item, $code, $headers);
+        return $this->respondWithResource($this->getResourceSingle(), $item, $code, $headers);
     }
 
     /**
@@ -44,7 +44,7 @@ trait HasResponse
      */
     protected function respondWithMany($items, $code = null, $headers = [])
     {
-        return $this->respondWithResource($this->/** @scrutinizer ignore-call */getResourceCollection(), $items, $code, $headers);
+        return $this->respondWithResource($this->getResourceCollection(), $items, $code, $headers);
     }
 
     /**

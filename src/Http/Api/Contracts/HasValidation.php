@@ -2,9 +2,7 @@
 
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
-
 use Phpsa\LaravelApiController\Exceptions\ApiException;
-
 
 trait HasValidation
 {
@@ -12,6 +10,7 @@ trait HasValidation
     /**
      * Get the validation rules for create.
      *
+     * @deprecated use FormRequest instead
      * @return array
      */
     protected function rulesForCreate(): array
@@ -22,11 +21,11 @@ trait HasValidation
     /**
      * Get the validation rules for update.
      *
-     * @param int $id
-     *
+     * @param int|string $id
+     * @depreacted use FormRquest instead
      * @return array
      */
-    protected function rulesForUpdate(/* @scrutinizer ignore-unused */$id): array
+    protected function rulesForUpdate($id): array
     {
         return [];
     }
