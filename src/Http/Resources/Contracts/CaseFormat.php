@@ -10,12 +10,13 @@ trait CaseFormat
     protected function caseFormat(Request $request, array $data): array
     {
         $case = $request->header('X-Accept-Case-Type');
-        if (!is_string($case)) {
+        if (! is_string($case)) {
             return $data;
         }
-        return match (str($case)->lower()) {
+        return match (str($case)->lower()->toString()) {
             'camel', 'camel-case' => Helpers::camelCaseArrayKeys($data),
             'snake', 'snake-case' => Helpers::snakeCaseArrayKeys($data),
+            'studly', 'studly-case' => Helpers::studlyCaseArrayKeys($data),
             default => $data,
         };
     }

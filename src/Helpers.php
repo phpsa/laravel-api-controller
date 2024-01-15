@@ -61,6 +61,26 @@ class Helpers
         return $array;
     }
 
+
+    public static function studlyCaseArrayKeys(array $array): array
+    {
+        $keys = array_keys($array);
+        foreach ($keys as $key) {
+            $value = &$array[$key]; //reference and not copy so that keeps any modifiers
+            unset($array[$key]);
+
+            if (is_array($value)) {
+                $value = self::studlyCaseArrayKeys($value);
+            }
+
+            $newKey = Str::of($key)->studly()->ucfirst()->toString();
+            $array[$newKey] = $value;
+            unset($value); //cleanup
+        }
+
+        return $array;
+    }
+
     /**
      * Snake cases array keys.
      *
@@ -124,6 +144,16 @@ class Helpers
         return Str::camel($value);
     }
 
+    public static function studly($value)
+    {
+        // Preserve all caps
+        if (strtoupper($value) === $value) {
+            return $value;
+        }
+
+        return Str::studly($value);
+    }
+
 
     protected static function filterExtraFields(array $fields, ?string $fieldKey): array
     {
@@ -141,7 +171,7 @@ class Helpers
 
     protected static function fetchRequestFieldValues($request, string $field, ?string $fieldKey = null): ?array
     {
-        if(!$request->has($field)){
+        if (! $request->has($field)) {
             return null;
         }
         return self::filterExtraFields(explode(",", $request->input($field)), $fieldKey);
