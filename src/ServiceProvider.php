@@ -108,6 +108,13 @@ class ServiceProvider extends BaseServiceProvider
             ]);
         });
 
+        Request::macro('apiScope', function (string $scope, ?string $value = null) {
+            /** @var Request $this */
+            return $this->merge([
+                $scope => $value,
+            ]);
+        });
+
         Request::macro('apiAddFields', function (string|array $fieldsOrAttributes) {
             /** @var Request $this */
 
