@@ -67,11 +67,11 @@ trait FiltersBuilder
             'starts_with', '^' => $builder->where($column, 'like',  "{$value}%"),
             '!starts_with','not_starts_with', '!^' => $builder->where($column, 'not like',  "{$value}%"),
 
-            'less','less_than', '<' => $builder->where($column, '<', $value),
-            'less_than_or_equal_to','less_or_equal', '<=' => $builder->where($column, '<=', $value),
+            'less','less_than','lt', '<' => $builder->where($column, '<', $value),
+            'less_than_or_equal_to','lte','less_or_equal', '<=' => $builder->where($column, '<=', $value),
 
-            'greater','greater_than', '>' => $builder->where($column, '>', $value),
-            'greater_than_or_equal_to','greater_or_equal', '>=' => $builder->where($column, '>=', $value),
+            'greater','greater_than', 'gt' '>' => $builder->where($column, '>', $value),
+            'greater_than_or_equal_to','gte','greater_or_equal', '>=' => $builder->where($column, '>=', $value),
 
             'contains','~' => $builder->where($column, 'like',  "%{$value}%"),
             '!contains','not_contains','!~' => $builder->where($column, 'not like',  "%{$value}%"),

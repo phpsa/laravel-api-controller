@@ -155,9 +155,9 @@ Add to your allowedScopes and can then be called in url as `?ageNull=1` for wher
 | empty / _`=`_ / `is` / `equals`    | Equals                                          | ?filters[field]=hello / ?filters[field][is]=hello  | select ... where field = 'hello'          |
 | _`!=`_ / `!is` / `!equals` / `not_equals`  | Not Equals                                      | ?filter[field][!is]=hello  | select ... where field != 'hello'         |
 | _`>`_ / `greater_than`    | Greater Than                                    | ?filter[field][greater_than]=5      | select ... where field > 5                |
-| _`>=`_ / `greater_than_or_equal_to` / `greater_or_equal`  | Greater Or Equal to                             | ?filter[field][greater_or_equal]=5     | select ... where field >= 5               |
+| _`>=`_ / `greater_than_or_equal_to` / `greater_or_equal` / `gte`  | Greater Or Equal to                             | ?filter[field][greater_or_equal]=5     | select ... where field >= 5               |
 | _`<`_  / `less_than`   | Less Than                                       | ?filter[field][<]=5      | select ... where field <> 5               |
-| _`<=`_ / `less_than_or_equal_to` / `less_or_equal`  | Less Or Equal to                                | ?filter[field][less_or_equal]=5     | select ... where field <= 5               |
+| _`<=`_ / `less_than_or_equal_to` / `less_or_equal` / `lte`  | Less Or Equal to                                | ?filter[field][less_or_equal]=5     | select ... where field <= 5               |
 | _`~`_  / `contains`   | Contains (LIKE with wildcard on both sides)     | ?filter[field][contains]=hello  | select ... where field like '%hello%'     |
 | _`^`_  / `starts_with`   | Starts with (LIKE with wildcard on end)         | ?filter[field][starts_with]=hello  | select ... where field like 'hello%'      |
 | _`$`_  / `ends_with`   | Ends with (LIKE with wildcard on start)         | ?filter[field][ends_with]=hello  | select ... where field like 'hello%'      |
