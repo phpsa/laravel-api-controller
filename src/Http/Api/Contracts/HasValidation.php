@@ -22,7 +22,7 @@ trait HasValidation
      * Get the validation rules for update.
      *
      * @param int|string $id
-     * @depreacted use FormRquest instead
+     * @deprecated use FormRequest instead
      * @return array
      */
     protected function rulesForUpdate($id): array
