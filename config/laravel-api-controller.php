@@ -12,6 +12,10 @@ return [
     // Relative path from the base directory to the route stub.
     'route_stub' => env('PHPSA_API_ROUTE_STUB', 'vendor/phpsa/laravel-api-controller/src/Generator/stubs/route.stub'),
 
+    'cache_table_columns' => env('PHPSA_API_CACHE_TABLE_COLUMNS', false), // Cache table columns
+    'cache_table_columns_ttl' => env('PHPSA_API_CACHE_TABLE_COLUMNS_TTL', 60 * 60 * 24), // Cache table columns ttl
+    'cache_table_columns_prefix' => env('PHPSA_API_CACHE_TABLE_COLUMNS_PREFIX', 'phpsa_table_columns_'), // Cache table columns prefix
+
     'parameters' => [
         'include' => 'include', // which hasOnes / HasMany etc to include in the response
         'filter' => 'filter', // filter on fields

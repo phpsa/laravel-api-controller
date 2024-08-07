@@ -3,6 +3,7 @@
 namespace Phpsa\LaravelApiController\Http\Api\Contracts;
 
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
 use Phpsa\LaravelApiController\Helpers;
 use Phpsa\LaravelApiController\Exceptions\ApiException;
@@ -138,7 +139,13 @@ trait HasModel
             $model = $this->getModel();
         }
         $table = $this->getUnqualifiedTableName($model);
-        $this->tableColumns[$table] = Schema::connection($model->getConnectionName())->getColumnListing($table);
+
+        if (config('laravel-api-controller.cache_table_columns')) {
+            $columns = Cache::remember(config('laravel-api-controller.cache_table_columns_prefix').$table, config('laravel-api-controller.cache_table_columns_ttl'), function() { return Schema::connection($model->getConnectionName())->getColumnListing($table);});
+        } else {
+            $columns = Schema::connection($model->getConnectionName())->getColumnListing($table);
+        }
+        $this->tableColumns[$table] = $columns;
     }
 
     /**
