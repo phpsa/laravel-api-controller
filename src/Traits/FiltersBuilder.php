@@ -70,7 +70,7 @@ trait FiltersBuilder
             'less','less_than','lt', '<' => $builder->where($column, '<', $value),
             'less_than_or_equal_to','lte','less_or_equal', '<=' => $builder->where($column, '<=', $value),
 
-            'greater','greater_than', 'gt' '>' => $builder->where($column, '>', $value),
+            'greater','greater_than', 'gt', '>' => $builder->where($column, '>', $value),
             'greater_than_or_equal_to','gte','greater_or_equal', '>=' => $builder->where($column, '>=', $value),
 
             'contains','~' => $builder->where($column, 'like',  "%{$value}%"),
