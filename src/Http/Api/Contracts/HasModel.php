@@ -141,7 +141,7 @@ trait HasModel
         $table = $this->getUnqualifiedTableName($model);
 
         if (config('laravel-api-controller.cache_table_columns')) {
-            $columns = Cache::remember(config('laravel-api-controller.cache_table_columns_prefix').$table, config('laravel-api-controller.cache_table_columns_ttl'), function() { return Schema::connection($model->getConnectionName())->getColumnListing($table);});
+            $columns = Cache::remember(config('laravel-api-controller.cache_table_columns_prefix').$table, config('laravel-api-controller.cache_table_columns_ttl'), function() use ($model, $table) { return Schema::connection($model->getConnectionName())->getColumnListing($table);});
         } else {
             $columns = Schema::connection($model->getConnectionName())->getColumnListing($table);
         }
