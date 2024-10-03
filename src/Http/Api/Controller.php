@@ -63,6 +63,14 @@ abstract class Controller extends BaseController
     protected $maximumLimit = 0;
 
     /**
+     * Guard to use for authentication and authorization.
+     * null defaults to default guard config (auth.defaults.guard)
+     *
+     * @var ?string
+     */
+    protected $guard = null;
+
+    /**
      * Display a listing of the resource.
      * GET /api/{resource}.
      *
