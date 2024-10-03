@@ -86,7 +86,8 @@ trait HasParser
         $parentPolicy = Gate::getPolicyFor($routeRelation);
 
         if (! is_null($parentPolicy)) {
-            $this->authorize('view', $routeRelation);
+            $user = auth($this->guard)->user();
+            $this->authorizeForUser($user, 'view', $routeRelation);
         }
 
         $filter = match (class_basename(get_class($relation))) {

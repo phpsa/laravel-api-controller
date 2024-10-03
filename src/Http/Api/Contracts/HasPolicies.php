@@ -13,7 +13,7 @@ trait HasPolicies
      */
     protected function qualifyCollectionQuery(): void
     {
-        $user = auth()->user();
+        $user = auth($this->guard)->user();
         $modelPolicy = Gate::getPolicyFor($this->model());
 
         if ($modelPolicy && method_exists($modelPolicy, 'qualifyCollectionQueryWithUser')) {
@@ -28,7 +28,7 @@ trait HasPolicies
      */
     protected function qualifyItemQuery(): void
     {
-        $user = auth()->user();
+        $user = auth($this->guard)->user();
         $modelPolicy = Gate::getPolicyFor($this->model());
 
         if ($modelPolicy && method_exists($modelPolicy, 'qualifyItemQueryWithUser')) {
@@ -45,7 +45,7 @@ trait HasPolicies
      */
     protected function qualifyStoreQuery(array $data): array
     {
-        $user = auth()->user();
+        $user = auth($this->guard)->user();
         $modelPolicy = Gate::getPolicyFor($this->model());
 
         if ($modelPolicy && method_exists($modelPolicy, 'qualifyStoreDataWithUser')) {
@@ -64,7 +64,7 @@ trait HasPolicies
      */
     protected function qualifyUpdateQuery(array $data): array
     {
-        $user = auth()->user();
+        $user = auth($this->guard)->user();
         $modelPolicy = Gate::getPolicyFor($this->model());
 
         if ($modelPolicy && method_exists($modelPolicy, 'qualifyUpdateDataWithUser')) {
@@ -124,8 +124,10 @@ trait HasPolicies
             return true;
         }
 
+        $user = auth($this->guard)->user();
+
         /* @scrutinizer ignore-call */
-        $this->authorize($ability, $model);
+        $this->authorizeForUser($user, $ability, $model);
 
         return true;
     }

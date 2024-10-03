@@ -58,6 +58,7 @@ trait HasResponse
     protected function respondWithResource($resource, $data, $code = null, $headers = [])
     {
         return $resource::make($data)
+            ->setGuard($this->guard)
             ->response()
             ->setStatusCode($code ?? $this->getStatusCode())
             ->withHeaders($headers);

@@ -54,6 +54,14 @@ trait AllowableFields
     protected static ?array $fieldGates = null;
 
     /**
+     * Guard used to retrieve the user from the request.
+     * null defaults to default guard config (auth.defaults.guard)
+     *
+     * @var ?string
+     */
+    protected ?string $guard = null;
+
+    /**
      * Makes sure we only return allowable fields.
      *
      * @param mixed $request
@@ -141,6 +149,13 @@ trait AllowableFields
         return $this->filterAllowedFields($fields);
     }
 
+    public function setGuard(string $guard): static
+    {
+        $this->guard = $guard;
+
+        return $this;
+    }
+
     public function filterAllowedFields($fields)
     {
         if (empty(static::$allowedFields) || static::$allowedFields === ['*']) {
@@ -217,7 +232,7 @@ trait AllowableFields
         return collect($this->mapFields($request))
         ->when(
             ! empty(static::$fieldGates),
-            fn($collection) => $collection->filter(fn($field) => $this->filterUserField($field, $request->user()))
+            fn($collection) => $collection->filter(fn($field) => $this->filterUserField($field, $request->user($this->guard)))
         )
         ->toArray();
     }
