@@ -149,7 +149,7 @@ trait AllowableFields
         return $this->filterAllowedFields($fields);
     }
 
-    public function setGuard(string $guard): static
+    public function setGuard(?string $guard): static
     {
         $this->guard = $guard;
 

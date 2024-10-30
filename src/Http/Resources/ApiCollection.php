@@ -17,7 +17,7 @@ class ApiCollection extends ResourceCollection
      */
     protected ?string $guard = null;
 
-    public function setGuard(string $guard): static
+    public function setGuard(?string $guard): static
     {
         $this->guard = $guard;
 
