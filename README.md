@@ -392,6 +392,10 @@ add the ability to cache the table definitions to reduce calls to fetch table co
 
 -- handleIndexAction will use full eloquent models, handleIndexActionRaw will bypass eloquent and use raw responses from the database.
 
+## Scramble Intergration
+
+in your scramble config file add  `\]hpsa\LaravelApiController\Scramble\ApiResourceOpenApi::class` to the extensions array. this will enhance the documentation for apiResources.
+
 ## Security
 
 If you discover any security related issues, please email
