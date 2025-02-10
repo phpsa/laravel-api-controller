@@ -51,8 +51,8 @@ class ApiResourceOpenApi extends JsonResourceTypeToSchema
 
         $file_url = $this->getModelPropertyType($type, 'file_url', $scope);
 
-        if (blank($fields)) {
-            $fields = $modelType->getMethodReturnType('toArray', [], $scope)->items;
+        if (blank($fields) && $modelType instanceof ObjectType) {
+            $fields = $modelType->getMethodReturnType('toArray', [], $scope)->items; //@phpstan-ignore property.notFound
         }
 
         //@todo -- check the mapResources property and add those fields to the array
@@ -62,18 +62,9 @@ class ApiResourceOpenApi extends JsonResourceTypeToSchema
         return $this->openApiTransformer->transform($array);
     }
 
-    private function getPropertyDefinitionsFromResource(Type $type): array
-    {
-        $c = new ReflectionClass($type->name);
-
-        return collect(PhpDoc::parse($c->getDocComment())->getPropertyTagValues())->mapWithKeys(function ($value) {
-            return [str($value->propertyName)->replace('$', '')->toString() => new ArrayItemType_(str($value->propertyName)->replace('$', '')->toString(),)];
-        })->toArray();
-    }
-
     private function getPropertyArray(Type $type, string $propertyName, Type $modelType, Scope $scope, bool $isOptional): array
     {
-        $prop = new ReflectionProperty($type->name, $propertyName);
+        $prop = new ReflectionProperty($type->name, $propertyName); //@phpstan-ignore property.notFound
         $val = $prop->getValue();
         if (! is_array($val)) {
             return [];
