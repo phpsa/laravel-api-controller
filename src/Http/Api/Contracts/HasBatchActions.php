@@ -11,6 +11,9 @@ use Phpsa\LaravelApiController\Exceptions\ApiException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 
+/**
+ * @phpstan-ignore trait.unused
+ */
 trait HasBatchActions
 {
 

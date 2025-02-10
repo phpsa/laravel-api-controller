@@ -24,6 +24,13 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
     protected $description = 'Create a new controller class';
 
 
+     /**
+     * Execute the console command.
+     *
+     * @return bool|null
+     *
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
     public function handle()
     {
 
@@ -36,6 +43,8 @@ class ApiControllerMakeCommand extends ControllerMakeCommand
         $this->addRoutes();
 
         $this->info('Complete');
+
+        return true;
     }
 
 

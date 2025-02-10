@@ -62,6 +62,7 @@ abstract class Controller extends BaseController
      */
     protected $maximumLimit = 0;
 
+
     /**
      * Guard to use for authentication and authorization.
      * null defaults to default guard config (auth.defaults.guard)
@@ -93,7 +94,9 @@ abstract class Controller extends BaseController
         $fields = $this->parseFieldParams();
         $limit = $this->parseLimitParams();
 
-        $items = $limit > 0 ? $this->getBuilder()->paginateRaw($limit, $fields)->appends($this->originalQueryParams) : $this->getBuilder()->getRaw($fields);
+        $items = $limit > 0 ?
+        $this->getBuilder()->paginateRaw($limit, $fields)->appends($this->originalQueryParams) : //@phpstan-ignore method.notFound
+        $this->getBuilder()->getRaw($fields); //@phpstan-ignore method.notFound
 
         return $this->handleIndexResponse($items);
     }

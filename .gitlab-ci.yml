@@ -4,8 +4,10 @@ include:
 
 variables:
   TEST_PHP_8_1: "1"
-  PHP_PRIMARY_VERSION: '8.2'
+  TEST_PHP_8_2: "1"
+  TEST_PHP_8_4: "1"
+  PHP_PRIMARY_VERSION: '8.3'
 
 test:codecoverage:
-  variables: 
+  variables:
     XDEBUG_MODE: "coverage"

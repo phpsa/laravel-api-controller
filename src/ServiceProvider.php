@@ -51,6 +51,7 @@ class ServiceProvider extends BaseServiceProvider
 
     public function addDbMacros()
     {
+        /** @macro EloquentBuilder */
         EloquentBuilder::macro('getRaw', function (array $columns = ['*']) {
             /**  @var \Illuminate\Database\Eloquent\Builder $this */
             return $this->toBase()
@@ -59,6 +60,7 @@ class ServiceProvider extends BaseServiceProvider
             });
         });
 
+         /** @macro EloquentBuilder */
         EloquentBuilder::macro('paginateRaw', function ($limit = 25, array $columns = ['*'], $pageName = 'page', $page = null) {
              /** @var \Illuminate\Database\Eloquent\Builder $this */
             $result = $this->toBase()
@@ -99,9 +101,8 @@ class ServiceProvider extends BaseServiceProvider
 
             $relations = (array) $relations;
 
-            $existing = $this->input($requestField,'');
+            $existing = $this->input($requestField, '');
             $includes = explode(',', $existing);
-
 
             return $this->merge([
                 $requestField => implode(",", array_filter([...$includes, ...$relations], fn($val) => filled($val))),
@@ -122,18 +123,17 @@ class ServiceProvider extends BaseServiceProvider
 
             $fields = (array) $fieldsOrAttributes;
 
-            $existingAddFields = $this->input($requestField,'');
+            $existingAddFields = $this->input($requestField, '');
             $existingAddFieldsArray = explode(',', $existingAddFields);
-
 
             return $this->merge([
                 $requestField => implode(
-                    ",", 
+                    ",",
                     array_filter(
-                        [...$existingAddFieldsArray, ...$fields], 
+                        [...$existingAddFieldsArray, ...$fields],
                         fn($val) => filled($val)
-                        )
-                    ),
+                    )
+                ),
             ]);
         });
     }

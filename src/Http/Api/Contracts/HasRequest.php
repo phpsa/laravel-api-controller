@@ -14,7 +14,7 @@ trait HasRequest
     /**
      * \Illuminate\Http\Request instance.
      *
-     * @var mixed|\Illuminate\Http\Request | \Illuminate\Foundation\Http\FormRequest;
+     * @var mixed|\Illuminate\Http\Request | \Illuminate\Foundation\Http\FormRequest
      */
     protected $request;
 
@@ -49,5 +49,4 @@ trait HasRequest
         $this->onlyValidated = $option;
         return $this;
     }
-
 }

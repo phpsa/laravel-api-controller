@@ -2,6 +2,7 @@
 
 namespace Phpsa\LaravelApiController\Http\Request\Traits;
 
+/** @phpstan-ignore trait.unused  */
 trait MethodRules
 {
     public function rules()

@@ -49,7 +49,7 @@ trait HasModel
      */
     protected function model()
     {
-        throw_if(! property_exists($this, 'resourceModel') || empty($this->resourceModel), RuntimeException::class, 'Api Controller requires the model to be listed on the resourceModel property of your Controller');
+        throw_if(empty($this->resourceModel), RuntimeException::class, 'Api Controller requires the model to be listed on the resourceModel property of your Controller');
         return $this->resourceModel;
     }
 
