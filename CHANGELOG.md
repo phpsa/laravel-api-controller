@@ -1,3 +1,18 @@
+# [7.4.0](https://git.customd.com/composer/laravel-api-controller/compare/v7.3.2...v7.4.0) (2025-02-24)
+
+
+### Bug Fixes
+
+* guard nullable on setGuard ([1d88000](https://git.customd.com/composer/laravel-api-controller/commit/1d88000119ea838696060f122d49d0ac3d149e68))
+* setGuard when extending api ([24b422e](https://git.customd.com/composer/laravel-api-controller/commit/24b422ec4b2fd295452fb98b625f72efa8f8db72))
+
+
+### Features
+
+* add support to custom guard in controller and resource ([#1](https://git.customd.com/composer/laravel-api-controller/issues/1)) ([bff23d0](https://git.customd.com/composer/laravel-api-controller/commit/bff23d0c2e204ab9917359a47d9742bd7f7aba5f))
+* scramble api docs helper ([a7f6f17](https://git.customd.com/composer/laravel-api-controller/commit/a7f6f17d93b6c4dafa6949587516d1a05573fcbe))
+* scramble api documentation plugin ([5f3e3ef](https://git.customd.com/composer/laravel-api-controller/commit/5f3e3ef8d094b2f3d13b6f2587d01ea202303fb4))
+
 # [7.4.0](https://git.customd.com/composer/laravel-api-controller/compare/v7.3.2...v7.4.0) (2025-02-11)
 
 
