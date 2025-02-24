@@ -50,16 +50,21 @@ trait HasResponse
     /**
      * Sends the response through a resource Object.
      *
-     * @param mixed $resource Phpsa\LaravelApiController\Http\Resources\ApiResponse|\Phpsa\LaravelApiController\Http\Resources\ApiCollection
+     * @param mixed $resource Phpsa\LaravelApiController\Http\Resources\ApiResource|\Phpsa\LaravelApiController\Http\Resources\ApiCollection
      * @param mixed $data
      * @param mixed $code
      * @param array $headers
      */
     protected function respondWithResource($resource, $data, $code = null, $headers = [])
     {
-        return $resource::make($data)
-            ->setGuard($this->guard)
-            ->response()
+
+        $resource = $resource::make($data);
+
+        if ($resource instanceof \Phpsa\LaravelApiController\Http\Resources\ApiCollection || $resource instanceof \Phpsa\LaravelApiController\Http\Resources\ApiResource) {
+            $resource = $resource->setGuard($this->guard);
+        }
+
+        return $resource->response()
             ->setStatusCode($code ?? $this->getStatusCode())
             ->withHeaders($headers);
     }
