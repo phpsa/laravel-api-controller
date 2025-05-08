@@ -1,7 +1,7 @@
 include:
   - project: "custom-d/devops-platform/ci-templates/php"
     file: "composer-package.gitlab-ci.yml"
-    ref: release/2.x
+    ref: v2.2.2
 
 variables:
   TEST_PHP_8_1: "1"
