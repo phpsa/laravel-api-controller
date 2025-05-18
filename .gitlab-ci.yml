@@ -1,14 +1,14 @@
-include:
-  - project: "custom-d/devops-platform/ci-templates/php"
-    file: "composer-package.gitlab-ci.yml"
-    ref: release/2.x
+# include:
+#   - project: "custom-d/devops-platform/ci-templates/php"
+#     file: "composer-package.gitlab-ci.yml"
+#     ref: release/2.x
 
-variables:
-  TEST_PHP_8_1: "1"
-  TEST_PHP_8_2: "1"
-  TEST_PHP_8_4: "1"
-  PHP_PRIMARY_VERSION: '8.3'
+# variables:
+#   TEST_PHP_8_1: "1"
+#   TEST_PHP_8_2: "1"
+#   TEST_PHP_8_4: "1"
+#   PHP_PRIMARY_VERSION: '8.3'
 
-test:codecoverage:
-  variables:
-    XDEBUG_MODE: "coverage"
+# test:codecoverage:
+#   variables:
+#     XDEBUG_MODE: "coverage"

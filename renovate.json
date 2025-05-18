@@ -3,5 +3,6 @@
   "extends": [
     "config:recommended",
     "local>custom-d/devops-platform/ci-templates/renovate"
-  ]
+  ],
+  "enabled": false
 }
